@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>531</width>
-    <height>370</height>
+    <width>573</width>
+    <height>577</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="titleLabel">
+      <widget class="QLabel" name="companyNameLabel">
        <property name="text">
         <string>江苏时代演艺设备有限公司</string>
        </property>
@@ -61,6 +61,20 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
+         <widget class="QPushButton" name="independentCtrlPushButton">
+          <property name="text">
+           <string>单控模式</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="autoRunningPushButton">
+          <property name="text">
+           <string>场景运行</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="settingPushButton">
           <property name="text">
            <string>设置数据</string>
@@ -68,14 +82,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_5">
-          <property name="text">
-           <string>场景运行</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_6">
+         <widget class="QPushButton" name="customPushButton">
           <property name="text">
            <string>按钮自定义</string>
           </property>
@@ -89,7 +96,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_4">
+         <widget class="QPushButton" name="accountPushButton">
           <property name="text">
            <string>账户管理</string>
           </property>
@@ -109,14 +116,14 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="resetFreqPushButton">
+         <widget class="QPushButton" name="resetInverterPushButton">
           <property name="text">
            <string>变频器复位</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="clearFaultBushButton">
+         <widget class="QPushButton" name="clearFaultPushButton">
           <property name="text">
            <string>清除故障信息</string>
           </property>
@@ -135,92 +142,19 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QFrame" name="contextFrame">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="title">
-          <string>设备</string>
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QPushButton" name="subUpDevPushButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>台上设备</string>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="subDownDevPushButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>台下设备</string>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <item>
-             <widget class="QScrollArea" name="subUpDevScrollArea">
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
-              <widget class="QWidget" name="scrollAreaWidgetContents">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>186</width>
-                 <height>144</height>
-                </rect>
-               </property>
-              </widget>
-             </widget>
-            </item>
-            <item>
-             <widget class="QScrollArea" name="subDownDevScrollArea">
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
-              <widget class="QWidget" name="scrollAreaWidgetContents_3">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>185</width>
-                 <height>144</height>
-                </rect>
-               </property>
-              </widget>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
         </widget>
        </item>
        <item>
@@ -246,6 +180,9 @@
               <property name="frameShadow">
                <enum>QFrame::Raised</enum>
               </property>
+              <property name="value" stdset="0">
+               <double>0.000000000000000</double>
+              </property>
              </widget>
             </item>
             <item row="1" column="0">
@@ -265,23 +202,23 @@
            </layout>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="raisePushButton">
             <property name="text">
-             <string>PushButton</string>
+             <string>上升</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_2">
+           <widget class="QPushButton" name="stopPushButton">
             <property name="text">
-             <string>PushButton</string>
+             <string>停止</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_3">
+           <widget class="QPushButton" name="fallPushButton">
             <property name="text">
-             <string>PushButton</string>
+             <string>下降</string>
             </property>
            </widget>
           </item>

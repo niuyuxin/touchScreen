@@ -10,6 +10,8 @@ from settingDialog import SettingDialog
 from pushbuttonwithattr import PushButtonWithAttr
 from database import *
 from forbiddevdialog import *
+from autorunningwidget import *
+from independentctrlwidget import *
 
 class MainWindow(QWidget):
     """ 初始化、定时器、版本设置
@@ -26,21 +28,25 @@ class MainWindow(QWidget):
         self.subDevList = [[],[]]
         self.creatSubDev(self.subDevList[0], "SubDevUpStage")
         self.creatSubDev(self.subDevList[1], "SubDevDownStage")
-        self.showAllDev()
         self.setWindowTitle("TouchScreen")
-        self.mainWindow.settingPushButton.clicked.connect(self.onSettingPushButtonClicked)
         self.init_mainWindow()
     def init_mainWindow(self):
-        """ up dev and down dev selection """
-        self.devSelectButtonGroup = QButtonGroup()
-        self.devSelectButtonGroup.setExclusive(True)
-        self.devSelectButtonGroup.addButton(self.mainWindow.subDownDevPushButton)
-        self.devSelectButtonGroup.addButton(self.mainWindow.subUpDevPushButton)
-        self.mainWindow.subUpDevPushButton.clicked.connect(self.onDevSelect)
-        self.mainWindow.subDownDevPushButton.clicked.connect(self.onDevSelect)
-        self.mainWindow.subUpDevPushButton.animateClick()
-        """ initialization database """
+        """ independent control widget """
+        self.forbidDevDialog = ForbidDevDialog(self.subDevList)
+        self.independentCtrlWidget = IndependentCtrlWidget(self.subDevList, self)
+        self.autoRunningWidget = AutoRunningWidget()
+        self.contextLayout = QHBoxLayout()
+        self.contextLayout.addWidget(self.independentCtrlWidget)
+        self.contextLayout.addWidget(self.autoRunningWidget)
+        self.mainWindow.contextFrame.setLayout(self.contextLayout)
+        self.mainWindow.independentCtrlPushButton.clicked.connect(self.onIndependentCtrlPushButton)
+        self.mainWindow.autoRunningPushButton.clicked.connect(self.onAutoRunningPushButton)
+        self.mainWindow.independentCtrlPushButton.animateClick()
+        """ setting dialog """
         self.settingDialog = SettingDialog()
+        self.mainWindow.settingPushButton.clicked.connect(self.onSettingPushButtonClicked)
+        """ data base """
+        #  Todo
         try:
             self.dataBaseThread = QThread()
             self.dataBase = DataBase()
@@ -53,21 +59,15 @@ class MainWindow(QWidget):
                                 str(err),
                                 QMessageBox.Yes)
         """ Forbidded dev dialog signals """
-        self.forbidDevDialog = 0 # ForbidDevDialog(self.subDevList)
         self.mainWindow.forbidDevPushButton.clicked.connect(self.onForbidDevDialog)
-    def onDevSelect(self, whichArea):
-        button = self.sender()
-        if button is None or not isinstance(button, QPushButton):
-            return
-        if button == self.mainWindow.subUpDevPushButton and whichArea:
-            self.mainWindow.subDownDevScrollArea.hide()
-            self.mainWindow.subUpDevScrollArea.show()
-        elif button == self.mainWindow.subDownDevPushButton and whichArea:
-            self.mainWindow.subUpDevScrollArea.hide()
-            self.mainWindow.subDownDevScrollArea.show()
+    def onIndependentCtrlPushButton(self):
+        self.autoRunningWidget.hide()
+        self.independentCtrlWidget.show()
+    def onAutoRunningPushButton(self):
+        self.independentCtrlWidget.hide()
+        self.autoRunningWidget.show()
     def rtcTimeout(self):
-        """ 实时时钟
-        """
+        """ real time """
         self.mainWindow.timeLabel.setText(QDateTime.currentDateTime().toString("yyyy-MM-dd hh:mm:ss"))
     def getVersion(self):
         return "PyQt Version {}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
@@ -84,49 +84,32 @@ class MainWindow(QWidget):
                 button = PushButtonWithAttr(pos)
                 button.setText(name)
                 subDevList.append(button)
-                button.clicked.connect(self.onSubDevPushButtonAllClicked)
+                button.clicked.connect(self.onAllSubDevPushButtonClicked)
                 count += 1
             except: pass
     def onSettingPushButtonClicked(self):
         # todo get data from server
         self.settingDialog.exec_()
-    def onSubDevPushButtonAllClicked(self):
+    def onAllSubDevPushButtonClicked(self):
         button = self.sender()
         if isinstance(self.forbidDevDialog, ForbidDevDialog) and self.forbidDevDialog.isVisible():
             if button.isChecked():
                 button.isUsed = False
                 button.setToolTip("设备已禁用")
+                print(button.text(), "设备已禁用")
             else:
                 button.isUsed = True
                 button.setToolTip("设备已启用")
-            print(button.text())
-
+                print(button.text(), "设备已启用")
+        else:
+            print(button.text(), "设备已选中")
     def test(self):
         print("kkk")
 
     def onForbidDevDialog(self):
-        self.forbidDevDialog = ForbidDevDialog(self.subDevList)
+        self.forbidDevDialog.createAllWidget(self.subDevList)
         self.forbidDevDialog.exec_()
-        self.showAllDev()
-    def showAllDev(self):
-        """show all device in up-stage and down stage form """
-        for i in range(len(self.subDevList)):
-            count = 0
-            widget = QWidget()
-            gridLayout = QGridLayout()
-            widget.setLayout(gridLayout)
-            for subDev in self.subDevList[i]:
-                if not subDev.isUsed:
-                    subDev.setEnabled(False)
-                else:
-                    subDev.setToolTip("")
-                    subDev.setEnabled(True)
-                if i == 0:
-                    self.mainWindow.subUpDevScrollArea.setWidget(widget)
-                else:
-                    self.mainWindow.subDownDevScrollArea.setWidget(widget)
-                gridLayout.addWidget(subDev, count/10, count%10)
-                count += 1
+        self.independentCtrlWidget.showAllDev(self.subDevList)
 
     def closeEvent(self, event):
         return
