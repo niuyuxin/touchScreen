@@ -5,10 +5,11 @@ from math import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from ui import ui_mainwindow
-from  config import  Config
+from config import  Config
 from settingDialog import SettingDialog
 from pushbuttonwithattr import PushButtonWithAttr
 from database import *
+from forbiddevdialog import *
 
 class MainWindow(QWidget):
     """ 初始化、定时器、版本设置
@@ -22,9 +23,10 @@ class MainWindow(QWidget):
         self.mainWindow = ui_mainwindow.Ui_mainWindow()
         self.mainWindow.setupUi(self)
         self.mainWindow.versionLabel.setText(self.getVersion())
-        self.subDevList = []
-        self.creatSubDev(QGridLayout(), True)
-        self.creatSubDev(QGridLayout(), False)
+        self.subDevList = [[],[]]
+        self.creatSubDev(self.subDevList[0], "SubDevUpStage")
+        self.creatSubDev(self.subDevList[1], "SubDevDownStage")
+        self.showAllDev()
         self.setWindowTitle("TouchScreen")
         self.mainWindow.settingPushButton.clicked.connect(self.onSettingPushButtonClicked)
         self.init_mainWindow()
@@ -50,15 +52,17 @@ class MainWindow(QWidget):
                                 "DataBaseError",
                                 str(err),
                                 QMessageBox.Yes)
-        """"""
-    def onDevSelect(self, which):
+        """ Forbidded dev dialog signals """
+        self.forbidDevDialog = 0 # ForbidDevDialog(self.subDevList)
+        self.mainWindow.forbidDevPushButton.clicked.connect(self.onForbidDevDialog)
+    def onDevSelect(self, whichArea):
         button = self.sender()
         if button is None or not isinstance(button, QPushButton):
             return
-        if button == self.mainWindow.subUpDevPushButton and which:
+        if button == self.mainWindow.subUpDevPushButton and whichArea:
             self.mainWindow.subDownDevScrollArea.hide()
             self.mainWindow.subUpDevScrollArea.show()
-        elif button == self.mainWindow.subDownDevPushButton and which:
+        elif button == self.mainWindow.subDownDevPushButton and whichArea:
             self.mainWindow.subUpDevScrollArea.hide()
             self.mainWindow.subDownDevScrollArea.show()
     def rtcTimeout(self):
@@ -68,17 +72,9 @@ class MainWindow(QWidget):
     def getVersion(self):
         return "PyQt Version {}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
 
-    def creatSubDev(self, grid=QGridLayout(), which = False):
+    def creatSubDev(self, subDevList, whichGroup):
         count = 0
-        widget = QWidget()
-        widget.setLayout(grid)
-        if which:
-            group = "SubDevUp"
-            self.mainWindow.subUpDevScrollArea.setWidget(widget)
-        else:
-            group = "SubDevDown"
-            self.mainWindow.subDownDevScrollArea.setWidget(widget)
-        for item in Config.getGroupValue(group):
+        for item in Config.getGroupValue(whichGroup):
             try:
                 if ":" in item[1]:
                     key, name, pos = str(item[1]).split(":")
@@ -87,22 +83,53 @@ class MainWindow(QWidget):
                     pos = 1000
                 button = PushButtonWithAttr(pos)
                 button.setText(name)
-                self.subDevList.append(button)
-                grid.addWidget(self.subDevList[-1], count/10, count % 10)
+                subDevList.append(button)
                 button.clicked.connect(self.onSubDevPushButtonAllClicked)
                 count += 1
             except: pass
-
     def onSettingPushButtonClicked(self):
-        # for item in self.subDevList:
-            # print(item.text())
-        self.settingDialog.show()
+        # todo get data from server
+        self.settingDialog.exec_()
     def onSubDevPushButtonAllClicked(self):
         button = self.sender()
-        print(button.getPos())
+        if isinstance(self.forbidDevDialog, ForbidDevDialog) and self.forbidDevDialog.isVisible():
+            if button.isChecked():
+                button.isUsed = False
+                button.setToolTip("设备已禁用")
+            else:
+                button.isUsed = True
+                button.setToolTip("设备已启用")
+            print(button.text())
+
     def test(self):
         print("kkk")
+
+    def onForbidDevDialog(self):
+        self.forbidDevDialog = ForbidDevDialog(self.subDevList)
+        self.forbidDevDialog.exec_()
+        self.showAllDev()
+    def showAllDev(self):
+        """show all device in up-stage and down stage form """
+        for i in range(len(self.subDevList)):
+            count = 0
+            widget = QWidget()
+            gridLayout = QGridLayout()
+            widget.setLayout(gridLayout)
+            for subDev in self.subDevList[i]:
+                if not subDev.isUsed:
+                    subDev.setEnabled(False)
+                else:
+                    subDev.setToolTip("")
+                    subDev.setEnabled(True)
+                if i == 0:
+                    self.mainWindow.subUpDevScrollArea.setWidget(widget)
+                else:
+                    self.mainWindow.subDownDevScrollArea.setWidget(widget)
+                gridLayout.addWidget(subDev, count/10, count%10)
+                count += 1
+
     def closeEvent(self, event):
+        return
         reply = QMessageBox.question(self,
                                      "quit application",
                                      "Don't you want to quit application",

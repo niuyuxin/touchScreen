@@ -28,15 +28,13 @@ class SettingDialog(QDialog):
         self.context = ui_settingdialog.Ui_SettingDialog()
         self.context.setupUi(self)
         self.setWindowTitle("Setting Device Parameter")
-        self.settingList = []
         self.showAllSettingItems()
-        self.subDevList = []
 
     def showAllSettingItems(self):
         devList = []
         devGroupList = []
         count = 1
-        allList = Config.getGroupValue("SubDevUp") + Config.getGroupValue("SubDevDown")
+        allList = Config.getGroupValue("SubDevUpStage") + Config.getGroupValue("SubDevDownStage")
         for item in allList:
             devList.append(tuple(str(item[1]).split(":")))
             if not count%15:

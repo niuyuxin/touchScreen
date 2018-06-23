@@ -13,8 +13,8 @@ class Config(object):
         if Config.version != str(set.value("Version")):
             set.setValue("Version", Config.version)
             for item in range(100):
-                set.setValue("SubDevUp/subButtonName{}".format(item), "subButtonName{}:按键{}:1000".format(item,item))
-                set.setValue("SubDevDown/subButtonName{}".format(item), "subButtonName{}:按键{}:1000".format(item, item))
+                set.setValue("SubDevUpStage/subButtonName{}".format(item), "subButtonName{}:设备{}:1000".format(item,item))
+                set.setValue("SubDevDownStage/subButtonName{}".format(item), "subButtonName{}:设备{}:1000".format(item, item))
             set.sync()
     @staticmethod
     def saveConfig(k, v):
@@ -32,7 +32,7 @@ class Config(object):
         set.beginGroup(gname)
         kvList = []
         count = 0
-        sortedKeys = sorted(set.allKeys(),key = lambda i:int(re.search(r'(\d+)', i).group()))
+        sortedKeys = sorted(set.allKeys(),key = lambda k:int(re.search(r'(\d+)', k).group()))
         for key in sortedKeys:
             t = (key, set.value(key))
             kvList.append(t)
@@ -41,4 +41,4 @@ class Config(object):
         return kvList
 if __name__ == "__main__":
     c = Config()
-    print(Config.getGroupValue("SubDevUp"))
+    print(Config.getGroupValue("SubDevUpStage"))

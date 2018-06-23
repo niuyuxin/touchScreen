@@ -82,7 +82,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_7">
+         <widget class="QPushButton" name="forbidDevPushButton">
           <property name="text">
            <string>设备禁用</string>
           </property>
