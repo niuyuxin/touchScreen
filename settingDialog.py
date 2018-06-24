@@ -7,6 +7,7 @@ from config import Config
 from ui import ui_settingpara
 from ui import ui_settingdialog
 
+
 class SettingParaWidget(QWidget, ui_settingpara.Ui_SettingPara):
     doneSetting = pyqtSignal(bool)
     def __init__(self, name = "", parent = None):

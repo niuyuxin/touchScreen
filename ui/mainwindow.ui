@@ -98,7 +98,7 @@
         <item>
          <widget class="QPushButton" name="accountPushButton">
           <property name="text">
-           <string>账户管理</string>
+           <string>账号管理</string>
           </property>
          </widget>
         </item>

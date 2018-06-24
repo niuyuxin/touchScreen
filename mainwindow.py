@@ -12,6 +12,7 @@ from database import *
 from forbiddevdialog import *
 from autorunningwidget import *
 from independentctrlwidget import *
+from systemmanagement import SystemManagement
 
 class MainWindow(QWidget):
     """ 初始化、定时器、版本设置
@@ -53,6 +54,7 @@ class MainWindow(QWidget):
             self.settingDialog.saveSetting.connect(self.dataBase.insertRecord)
             self.settingDialog.getSetting.connect(self.dataBase.selectRecord)
             self.dataBase.moveToThread(self.dataBaseThread)
+            self.dataBaseThread.start()
         except DataBaseException as err:
             QMessageBox.warning(self,
                                 "DataBaseError",
@@ -60,6 +62,8 @@ class MainWindow(QWidget):
                                 QMessageBox.Yes)
         """ Forbidded dev dialog signals """
         self.mainWindow.forbidDevPushButton.clicked.connect(self.onForbidDevDialog)
+        """ account setting dialog """
+        self.mainWindow.accountPushButton.clicked.connect(self.onAccountManagement)
     def onIndependentCtrlPushButton(self):
         self.autoRunningWidget.hide()
         self.independentCtrlWidget.show()
@@ -110,7 +114,9 @@ class MainWindow(QWidget):
         self.forbidDevDialog.createAllWidget(self.subDevList)
         self.forbidDevDialog.exec_()
         self.independentCtrlWidget.showAllDev(self.subDevList)
-
+    def onAccountManagement(self):
+        a = SystemManagement()
+        a.exec_()
     def closeEvent(self, event):
         return
         reply = QMessageBox.question(self,
@@ -119,3 +125,5 @@ class MainWindow(QWidget):
                                      QMessageBox.Yes | QMessageBox.No)
         if reply == QMessageBox.No:
             event.ignore()
+        else:
+            event.accept()

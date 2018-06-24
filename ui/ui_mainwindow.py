@@ -132,7 +132,7 @@ class Ui_mainWindow(object):
         self.settingPushButton.setText(_translate("mainWindow", "设置数据"))
         self.customPushButton.setText(_translate("mainWindow", "按钮自定义"))
         self.forbidDevPushButton.setText(_translate("mainWindow", "设备禁用"))
-        self.accountPushButton.setText(_translate("mainWindow", "账户管理"))
+        self.accountPushButton.setText(_translate("mainWindow", "账号管理"))
         self.resetInverterPushButton.setText(_translate("mainWindow", "变频器复位"))
         self.clearFaultPushButton.setText(_translate("mainWindow", "清除故障信息"))
         self.exitBushButton.setText(_translate("mainWindow", "退出"))

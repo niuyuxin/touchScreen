@@ -35,6 +35,7 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
             count = 0
             widget = QWidget()
             gridLayout = QGridLayout()
+            gridLayout.setSpacing(10)
             widget.setLayout(gridLayout)
             for subDev in subDevList[i]:
                 if not subDev.isUsed:

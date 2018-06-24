@@ -4,6 +4,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from ui import ui_forbiddevdialog
+
 class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
     def __init__(self, subDevList):
         super().__init__()
@@ -19,6 +20,7 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         self.createAllWidget(subDevList, self.widgetNumber)
         self.nextPushButton.clicked.connect(self.onNextPushButtonClicked)
         self.previousPushButton.clicked.connect(self.onPreviousPushButtonClicked)
+        self.setFixedSize(self.sizeHint())
     def createAllWidget(self, subDevList, num = 0):
         count = 0
         self.widgetList = []
