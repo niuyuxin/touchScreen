@@ -24,33 +24,37 @@ class SettingParaWidget(QWidget, ui_settingpara.Ui_SettingPara):
 class SettingDialog(QDialog):
     saveSetting = pyqtSignal(str, dict)
     getSetting = pyqtSignal(str, dict)
-    def __init__(self, parent = None):
+    def __init__(self, allDev, parent = None):
         super().__init__(parent)
         self.context = ui_settingdialog.Ui_SettingDialog()
         self.context.setupUi(self)
         self.setWindowTitle("Setting Device Parameter")
-        self.showAllSettingItems()
+        self.readyAllSettingItems(allDev)
 
-    def showAllSettingItems(self):
+    def readyAllSettingItems(self, allDevList):
+        """ set TabWidget items, each tabWidget 15 items
+            allDevList include on the stage and off the stage device
+        """
         devList = []
-        devGroupList = []
+        devListGroup = []
         count = 1
-        allList = Config.getGroupValue("SubDevUpStage") + Config.getGroupValue("SubDevDownStage")
-        for item in allList:
-            devList.append(tuple(str(item[1]).split(":")))
+        allList = []
+        for l in allDevList:
+            allList.extend(l)
+        for dev in allList:
+            devList.append(dev)
             if not count%15:
-                devGroupList.append(devList)
+                devListGroup.append(devList)
                 devList = []
             count += 1
-        devGroupList.append(devList)
-        for tab in devGroupList:
+        devListGroup.append(devList) # 追加不足 15 个元素的数据为一组
+        for groupItem in devListGroup:
             vCount = 0
             hCount = 0
             widget = QWidget()
             gridLayout = QGridLayout()
-            self.context.tabWidget.addTab(widget, "#######")
-            for item in tab:
-                sp = SettingParaWidget(item[1])
+            for item in groupItem:
+                sp = SettingParaWidget(item.text())
                 sp.doneSetting.connect(self.somthingChanged)
                 gridLayout.addWidget(sp, hCount, vCount)
                 vCount += 1
@@ -58,6 +62,7 @@ class SettingDialog(QDialog):
                     vCount = 0
                     hCount += 1
             widget.setLayout(gridLayout)
+            self.context.tabWidget.addTab(widget, " 组 {} ".format(devListGroup.index(groupItem)+1))
     def somthingChanged(self, s):
         spw = self.sender()
         if spw is None or not isinstance(spw, SettingParaWidget):
@@ -68,10 +73,10 @@ class SettingDialog(QDialog):
              "downLimitedPos":spw.downLimittedPosSpinBox.value(),
              "zeroPos":spw.zeroPosSpinBox.value()}
         if s:
-            print("Send parameter to Server!") # todo
+            print("Send parameter to Server!", d) # todo
             # self.saveSetting.emit("DeviceInfo", d)
         else:
-            print("Get parameter from Server") # todo
+            print("Get parameter from Server", d) # todo
             # self.getSetting.emit("DeviceInfo", d)
     def showEvent(self, QShowEvent):
-        self.getSetting.emit("", dict()) # todo
+        self.getSetting.emit("Get data from server", dict()) # todo get data from server

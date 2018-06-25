@@ -13,10 +13,9 @@ from forbiddevdialog import *
 from autorunningwidget import *
 from independentctrlwidget import *
 from systemmanagement import SystemManagement
+from tcpsocket import  TcpSocket
 
 class MainWindow(QWidget):
-    """ 初始化、定时器、版本设置
-    """
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         Config()
@@ -32,7 +31,7 @@ class MainWindow(QWidget):
         self.setWindowTitle("TouchScreen")
         self.init_mainWindow()
     def init_mainWindow(self):
-        """ independent control widget """
+        # independent control widget
         self.forbidDevDialog = ForbidDevDialog(self.subDevList)
         self.independentCtrlWidget = IndependentCtrlWidget(self.subDevList, self)
         self.autoRunningWidget = AutoRunningWidget()
@@ -43,10 +42,10 @@ class MainWindow(QWidget):
         self.mainWindow.independentCtrlPushButton.clicked.connect(self.onIndependentCtrlPushButton)
         self.mainWindow.autoRunningPushButton.clicked.connect(self.onAutoRunningPushButton)
         self.mainWindow.independentCtrlPushButton.animateClick()
-        """ setting dialog """
-        self.settingDialog = SettingDialog()
+        # setting dialog
+        self.settingDialog = SettingDialog(self.subDevList)
         self.mainWindow.settingPushButton.clicked.connect(self.onSettingPushButtonClicked)
-        """ data base """
+        # data base
         #  Todo
         try:
             self.dataBaseThread = QThread()
@@ -60,14 +59,21 @@ class MainWindow(QWidget):
                                 "DataBaseError",
                                 str(err),
                                 QMessageBox.Yes)
-        """ Forbidded dev dialog signals """
+        # Forbidded dev dialog signals
         self.mainWindow.forbidDevPushButton.clicked.connect(self.onForbidDevDialog)
-        """ account setting dialog """
+        # account setting dialog
         self.mainWindow.accountPushButton.clicked.connect(self.onAccountManagement)
+        # Tcp socket, creat alone thread
+        self.tcpSocket = TcpSocket()
+        self.tcpSocketThread = QThread()
+        self.tcpSocket.moveToThread(self.tcpSocketThread)
+        self.tcpSocketThread.start()
     def onIndependentCtrlPushButton(self):
+        self.mainWindow.modelLabel.setText(self.sender().text())
         self.autoRunningWidget.hide()
         self.independentCtrlWidget.show()
     def onAutoRunningPushButton(self):
+        self.mainWindow.modelLabel.setText(self.sender().text())
         self.independentCtrlWidget.hide()
         self.autoRunningWidget.show()
     def rtcTimeout(self):
@@ -106,7 +112,10 @@ class MainWindow(QWidget):
                 button.setToolTip("设备已启用")
                 print(button.text(), "设备已启用")
         else:
-            print(button.text(), "设备已选中")
+            if button.isChecked():
+                print(button.text(), "设备已选中")
+            else:
+                print(button.text(), "设备已取消")
     def test(self):
         print("kkk")
 

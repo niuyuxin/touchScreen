@@ -6,11 +6,12 @@ from PyQt5.QtCore import *
 import re
 
 class Config(object):
-    version = "18.06.20"
+    version = "18.06.21"
     def __init__(self):
         set = QSettings("TouchScreen.ini", QSettings.IniFormat)
         set.setIniCodec(QTextCodec.codecForName("UTF-8"));
         if Config.version != str(set.value("Version")):
+            set.clear()
             set.setValue("Version", Config.version)
             set.setValue("Password", "123")
             for item in range(100):

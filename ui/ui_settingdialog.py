@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\PythonCode\PyQtCode\touchScreen\ui\settingdialog.ui'
+# Form implementation generated from reading ui file 'settingdialog.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #
@@ -11,18 +11,38 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_SettingDialog(object):
     def setupUi(self, SettingDialog):
         SettingDialog.setObjectName("SettingDialog")
-        SettingDialog.resize(518, 518)
+        SettingDialog.resize(621, 490)
         self.verticalLayout = QtWidgets.QVBoxLayout(SettingDialog)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.label = QtWidgets.QLabel(SettingDialog)
+        self.label.setObjectName("label")
+        self.verticalLayout.addWidget(self.label)
         self.tabWidget = QtWidgets.QTabWidget(SettingDialog)
         self.tabWidget.setObjectName("tabWidget")
         self.verticalLayout.addWidget(self.tabWidget)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
+        self.cancelPushButton = QtWidgets.QPushButton(SettingDialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.cancelPushButton.sizePolicy().hasHeightForWidth())
+        self.cancelPushButton.setSizePolicy(sizePolicy)
+        self.cancelPushButton.setObjectName("cancelPushButton")
+        self.horizontalLayout.addWidget(self.cancelPushButton)
+        self.verticalLayout.addLayout(self.horizontalLayout)
 
         self.retranslateUi(SettingDialog)
         self.tabWidget.setCurrentIndex(-1)
+        self.cancelPushButton.clicked.connect(SettingDialog.close)
         QtCore.QMetaObject.connectSlotsByName(SettingDialog)
 
     def retranslateUi(self, SettingDialog):
         _translate = QtCore.QCoreApplication.translate
         SettingDialog.setWindowTitle(_translate("SettingDialog", "Dialog"))
+        self.label.setText(_translate("SettingDialog", "参数设置， 应用设置点击\"ok\"按钮， 取消点击\"Cancel\"\n"
+" 单位xxx"))
+        self.cancelPushButton.setText(_translate("SettingDialog", "Cancel"))
 

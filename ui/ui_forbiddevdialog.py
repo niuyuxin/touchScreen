@@ -19,6 +19,9 @@ class Ui_ForbidDevDialog(object):
         ForbidDevDialog.setSizePolicy(sizePolicy)
         self.verticalLayout = QtWidgets.QVBoxLayout(ForbidDevDialog)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.tipsLabel = QtWidgets.QLabel(ForbidDevDialog)
+        self.tipsLabel.setObjectName("tipsLabel")
+        self.verticalLayout.addWidget(self.tipsLabel)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -59,13 +62,19 @@ class Ui_ForbidDevDialog(object):
         self.forbidDevWidget.setSizePolicy(sizePolicy)
         self.forbidDevWidget.setObjectName("forbidDevWidget")
         self.verticalLayout.addWidget(self.forbidDevWidget)
+        self.pushButton = QtWidgets.QPushButton(ForbidDevDialog)
+        self.pushButton.setObjectName("pushButton")
+        self.verticalLayout.addWidget(self.pushButton)
 
         self.retranslateUi(ForbidDevDialog)
+        self.pushButton.clicked.connect(ForbidDevDialog.close)
         QtCore.QMetaObject.connectSlotsByName(ForbidDevDialog)
 
     def retranslateUi(self, ForbidDevDialog):
         _translate = QtCore.QCoreApplication.translate
         ForbidDevDialog.setWindowTitle(_translate("ForbidDevDialog", "禁用设备列表"))
+        self.tipsLabel.setText(_translate("ForbidDevDialog", "请点击禁用设备"))
         self.previousPushButton.setText(_translate("ForbidDevDialog", "Previous"))
         self.nextPushButton.setText(_translate("ForbidDevDialog", "Next"))
+        self.pushButton.setText(_translate("ForbidDevDialog", "exit"))
 

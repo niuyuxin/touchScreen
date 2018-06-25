@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>设备：</string>
+      <string>设备名称：</string>
      </property>
     </widget>
    </item>
@@ -71,7 +71,7 @@
    <item row="0" column="1">
     <widget class="QLabel" name="devNameLabel">
      <property name="frameShape">
-      <enum>QFrame::Panel</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="text">
       <string>TextLabel</string>

@@ -8,7 +8,8 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
     def __init__(self, subDevList, parent = None):
         super().__init__(parent)
         self.setupUi(self)
-        self.showAllDev(subDevList)
+        self.allDevList = subDevList
+        self.showAllDev(self.allDevList)
         """ up dev and down dev selection """
         self.devSelectButtonGroup = QButtonGroup()
         self.devSelectButtonGroup.setExclusive(True)
@@ -17,6 +18,9 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
         self.subUpDevPushButton.clicked.connect(self.onDevSelect)
         self.subDownDevPushButton.clicked.connect(self.onDevSelect)
         self.subUpDevPushButton.animateClick()
+        self.confirmButtonBox.rejected.connect(self.onConfirmButtonBoxReject)
+        self.confirmButtonBox.accepted.connect(self.onConfirmButtonBoxAccept)
+
 
     def onDevSelect(self, whichArea):
         button = self.sender()
@@ -49,3 +53,17 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
                     self.subDownDevScrollArea.setWidget(widget)
                 gridLayout.addWidget(subDev, count/10, count%10)
                 count += 1
+    def onConfirmButtonBoxReject(self):
+        for item in self.searchCheckedButton(self.allDevList):
+            item.setChecked(False)
+            print(item.text(), "已取消选中")
+    def onConfirmButtonBoxAccept(self):
+        for item in self.searchCheckedButton(self.allDevList):
+            print(item.text())
+    def searchCheckedButton(self, allDevList):
+        checkedList = []
+        for devList in allDevList:
+            for item in devList:
+                if item.isChecked():
+                    checkedList.append(item)
+        return checkedList

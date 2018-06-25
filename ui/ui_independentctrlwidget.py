@@ -11,9 +11,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_independentCtrlWidget(object):
     def setupUi(self, independentCtrlWidget):
         independentCtrlWidget.setObjectName("independentCtrlWidget")
-        independentCtrlWidget.resize(196, 154)
+        independentCtrlWidget.resize(629, 493)
         self.verticalLayout = QtWidgets.QVBoxLayout(independentCtrlWidget)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.tipsLabel = QtWidgets.QLabel(independentCtrlWidget)
+        self.tipsLabel.setObjectName("tipsLabel")
+        self.verticalLayout.addWidget(self.tipsLabel)
         self.independentCtrlGroupBox = QtWidgets.QGroupBox(independentCtrlWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -50,7 +53,7 @@ class Ui_independentCtrlWidget(object):
         self.subUpDevScrollArea.setWidgetResizable(True)
         self.subUpDevScrollArea.setObjectName("subUpDevScrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 73, 69))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 290, 361))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.subUpDevScrollArea.setWidget(self.scrollAreaWidgetContents)
         self.horizontalLayout_4.addWidget(self.subUpDevScrollArea)
@@ -58,12 +61,16 @@ class Ui_independentCtrlWidget(object):
         self.subDownDevScrollArea.setWidgetResizable(True)
         self.subDownDevScrollArea.setObjectName("subDownDevScrollArea")
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 73, 69))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 289, 361))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.subDownDevScrollArea.setWidget(self.scrollAreaWidgetContents_3)
         self.horizontalLayout_4.addWidget(self.subDownDevScrollArea)
         self.verticalLayout_4.addLayout(self.horizontalLayout_4)
         self.verticalLayout.addWidget(self.independentCtrlGroupBox)
+        self.confirmButtonBox = QtWidgets.QDialogButtonBox(independentCtrlWidget)
+        self.confirmButtonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.confirmButtonBox.setObjectName("confirmButtonBox")
+        self.verticalLayout.addWidget(self.confirmButtonBox)
 
         self.retranslateUi(independentCtrlWidget)
         QtCore.QMetaObject.connectSlotsByName(independentCtrlWidget)
@@ -71,6 +78,7 @@ class Ui_independentCtrlWidget(object):
     def retranslateUi(self, independentCtrlWidget):
         _translate = QtCore.QCoreApplication.translate
         independentCtrlWidget.setWindowTitle(_translate("independentCtrlWidget", "Form"))
+        self.tipsLabel.setText(_translate("independentCtrlWidget", "请选择设备"))
         self.independentCtrlGroupBox.setTitle(_translate("independentCtrlWidget", "设备"))
         self.subUpDevPushButton.setText(_translate("independentCtrlWidget", "台上设备"))
         self.subDownDevPushButton.setText(_translate("independentCtrlWidget", "台下设备"))

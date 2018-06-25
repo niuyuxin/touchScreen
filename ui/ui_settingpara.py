@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\PythonCode\PyQtCode\touchScreen\ui\settingpara.ui'
+# Form implementation generated from reading ui file 'settingpara.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #
@@ -46,7 +46,7 @@ class Ui_SettingPara(object):
         self.settingParaButtonBox.setObjectName("settingParaButtonBox")
         self.formLayout.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.settingParaButtonBox)
         self.devNameLabel = QtWidgets.QLabel(SettingPara)
-        self.devNameLabel.setFrameShape(QtWidgets.QFrame.Panel)
+        self.devNameLabel.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.devNameLabel.setObjectName("devNameLabel")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.devNameLabel)
 
@@ -56,7 +56,7 @@ class Ui_SettingPara(object):
     def retranslateUi(self, SettingPara):
         _translate = QtCore.QCoreApplication.translate
         SettingPara.setWindowTitle(_translate("SettingPara", "Form"))
-        self.label.setText(_translate("SettingPara", "设备："))
+        self.label.setText(_translate("SettingPara", "设备名称："))
         self.label_2.setText(_translate("SettingPara", "当前位置："))
         self.label_3.setText(_translate("SettingPara", "软上限："))
         self.label_4.setText(_translate("SettingPara", "软下限："))
