@@ -15,12 +15,12 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         self.buttonGroup.addButton(self.nextPushButton)
         self.buttonGroup.setExclusive(True)
         self.vLayout = QHBoxLayout()
+        self.vLayout.setAlignment(Qt.AlignHCenter)
         self.forbidDevWidget.setLayout(self.vLayout)
         self.widgetNumber = 0
         self.createAllWidget(subDevList, self.widgetNumber)
         self.nextPushButton.clicked.connect(self.onNextPushButtonClicked)
         self.previousPushButton.clicked.connect(self.onPreviousPushButtonClicked)
-        self.setFixedSize(self.sizeHint())
     def createAllWidget(self, subDevList, num = 0):
         count = 0
         self.widgetList = []

@@ -15,6 +15,7 @@ from independentctrlwidget import *
 from systemmanagement import SystemManagement
 from tcpsocket import  TcpSocket
 
+
 class MainWindow(QWidget):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -47,6 +48,7 @@ class MainWindow(QWidget):
         self.mainWindow.settingPushButton.clicked.connect(self.onSettingPushButtonClicked)
         # data base
         #  Todo
+        """
         try:
             self.dataBaseThread = QThread()
             self.dataBase = DataBase()
@@ -59,6 +61,7 @@ class MainWindow(QWidget):
                                 "DataBaseError",
                                 str(err),
                                 QMessageBox.Yes)
+                                """
         # Forbidded dev dialog signals
         self.mainWindow.forbidDevPushButton.clicked.connect(self.onForbidDevDialog)
         # account setting dialog
@@ -68,6 +71,7 @@ class MainWindow(QWidget):
         self.tcpSocketThread = QThread()
         self.tcpSocket.moveToThread(self.tcpSocketThread)
         self.tcpSocketThread.start()
+        print("Tcp socket thread = ", self.tcpSocketThread, "current thread = ", self.thread())
     def onIndependentCtrlPushButton(self):
         self.mainWindow.modelLabel.setText(self.sender().text())
         self.autoRunningWidget.hide()
@@ -77,7 +81,7 @@ class MainWindow(QWidget):
         self.independentCtrlWidget.hide()
         self.autoRunningWidget.show()
     def rtcTimeout(self):
-        """ real time """
+        # real time
         self.mainWindow.timeLabel.setText(QDateTime.currentDateTime().toString("yyyy-MM-dd hh:mm:ss"))
     def getVersion(self):
         return "PyQt Version {}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
@@ -121,6 +125,7 @@ class MainWindow(QWidget):
 
     def onForbidDevDialog(self):
         self.forbidDevDialog.createAllWidget(self.subDevList)
+        self.forbidDevDialog.showFullScreen()
         self.forbidDevDialog.exec_()
         self.independentCtrlWidget.showAllDev(self.subDevList)
     def onAccountManagement(self):
