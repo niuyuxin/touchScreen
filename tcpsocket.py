@@ -25,6 +25,7 @@ class TcpSocket(QTcpSocket):
     def sendData(self, data):
         if self.state() == QAbstractSocket.ConnectedState:
             self.write(data)
+            self.waitForBytesWritten()
         else:
             print("网络不可用")
     def connectServer(self):
