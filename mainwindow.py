@@ -72,6 +72,7 @@ class MainWindow(QWidget):
         self.tcpSocketThread = QThread()
         self.tcpSocket.moveToThread(self.tcpSocketThread)
         self.sendDataToTcpSocket.connect(self.tcpSocket.onSendDataToTcpSocket)
+        self.tcpSocket.tcpState.connect(self.onTcpState)
         self.tcpSocketThread.start()
         # print("Tcp socket thread = ", self.tcpSocketThread, "current thread = ", self.thread())
     def onIndependentWidgetSelected(self, l):
@@ -128,8 +129,11 @@ class MainWindow(QWidget):
                 print(button.text(), "设备已选中")
             else:
                 print(button.text(), "设备已取消")
-    def test(self):
-        print("kkk")
+    def onTcpState(self, s):
+        if s == TcpSocket.ConnectedState:
+            self.mainWindow.internetLabel.setText("网络已连接")
+        else:
+            self.mainWindow.internetLabel.setText("网络已断开")
 
     def onForbidDevDialog(self):
         self.forbidDevDialog.createAllWidget(self.subDevList)
