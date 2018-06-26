@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 import sys
 from math import *
-from PyQt5.QtCore import *
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
 from ui import ui_mainwindow
 from config import  Config
@@ -15,8 +15,8 @@ from independentctrlwidget import *
 from systemmanagement import SystemManagement
 from tcpsocket import  TcpSocket
 
-
 class MainWindow(QWidget):
+    sendDataToTcpSocket = pyqtSignal(QByteArray)
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         Config()
@@ -35,6 +35,7 @@ class MainWindow(QWidget):
         # independent control widget
         self.forbidDevDialog = ForbidDevDialog(self.subDevList)
         self.independentCtrlWidget = IndependentCtrlWidget(self.subDevList, self)
+        self.independentCtrlWidget.selectedList.connect(self.onIndependentWidgetSelected)
         self.autoRunningWidget = AutoRunningWidget()
         self.contextLayout = QHBoxLayout()
         self.contextLayout.addWidget(self.independentCtrlWidget)
@@ -70,8 +71,15 @@ class MainWindow(QWidget):
         self.tcpSocket = TcpSocket()
         self.tcpSocketThread = QThread()
         self.tcpSocket.moveToThread(self.tcpSocketThread)
+        self.sendDataToTcpSocket.connect(self.tcpSocket.onSendDataToTcpSocket)
         self.tcpSocketThread.start()
-        print("Tcp socket thread = ", self.tcpSocketThread, "current thread = ", self.thread())
+        # print("Tcp socket thread = ", self.tcpSocketThread, "current thread = ", self.thread())
+    def onIndependentWidgetSelected(self, l):
+        data = ""
+        for i in l:
+            data = data + i.text() + ", "
+        print("选择了以下设备：", data)
+        self.sendDataToTcpSocket.emit(QByteArray(bytes(data, encoding="utf-8")))
     def onIndependentCtrlPushButton(self):
         self.mainWindow.modelLabel.setText(self.sender().text())
         self.autoRunningWidget.hide()
@@ -132,7 +140,6 @@ class MainWindow(QWidget):
         a = SystemManagement()
         a.exec_()
     def closeEvent(self, event):
-        return
         reply = QMessageBox.question(self,
                                      "quit application",
                                      "Don't you want to quit application",
@@ -140,4 +147,6 @@ class MainWindow(QWidget):
         if reply == QMessageBox.No:
             event.ignore()
         else:
+            self.tcpSocketThread.quit()
+            self.tcpSocketThread.wait()
             event.accept()

@@ -3,6 +3,7 @@
 
 from PyQt5.QtNetwork import *
 from PyQt5.QtCore import *
+from threading import Thread
 
 class TcpSocket(QTcpSocket):
     def __init__(self, parent = None):
@@ -11,24 +12,32 @@ class TcpSocket(QTcpSocket):
         self.readyRead.connect(self.onTcpSocketReadyRead)
         self.disconnected.connect(self.onTcpSocketDisconnected)
         self.error.connect(self.onTcpSocketError)
-        self.connectTimer = QTimer()
-        self.connectTimer.timeout.connect(self.onConnectTimerTimeout)
-        self.connectTimer.start(1000)
-
-
+        self.connectToHost(QHostAddress("192.168.1.177"), 5000)
+        self.connectTimer = QTimer(self)
+        self.connectTimer.timeout.connect(self.connectServer)
     def onTcpSocketConnected(self):
-        print("Tcp sockett connected")
+        print("Tcp socket connected")
+        self.connectTimer.stop()
+    def sendData(self, data):
+        if self.state() == QAbstractSocket.ConnectedState:
+            self.write(data)
+        else:
+            print("网络不可用")
+    def connectServer(self):
+        if self.state() == QAbstractSocket.UnconnectedState:
+            print("Retry to connect localhost", self.state())
+            self.connectToHost(QHostAddress("192.168.1.177"), 5000)
+        else:
+            print(self.state())
     def onTcpSocketReadyRead(self):
-        print("tcp ready read")
+        print("服务器获取到已选择设备")
     def onTcpSocketDisconnected(self):
         print("Tcp socket disconnected")
+        self.connectTimer.start(1000)
     def onTcpSocketError(self, err):
-        print("Tcp socket error", err, self.thread())
+        self.close()
+        self.connectTimer.start(1000)
+    def onSendDataToTcpSocket(self, data):
+        self.sendData(data)
 
-    def onConnectTimerTimeout(self):
-        self.connectToHost("localhost", 50000)
-        self.connectTimer.stop()
-        print("wait for connected ...", self.thread())
-        self.waitForConnected(10000)
-        print("timeout .... ")
-        self.sender().start(1000)
+

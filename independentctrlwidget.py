@@ -3,8 +3,10 @@
 
 from ui import ui_independentctrlwidget
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 
 class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrlWidget):
+    selectedList = pyqtSignal(list)
     def __init__(self, subDevList, parent = None):
         super().__init__(parent)
         self.setupUi(self)
@@ -58,8 +60,9 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
             item.setChecked(False)
             print(item.text(), "已取消选中")
     def onConfirmButtonBoxAccept(self):
-        for item in self.searchCheckedButton(self.allDevList):
-            print(item.text())
+        #for item in self.searchCheckedButton(self.allDevList):
+         #   print(item.text())
+        self.selectedList.emit(self.searchCheckedButton(self.allDevList))
     def searchCheckedButton(self, allDevList):
         checkedList = []
         for devList in allDevList:
