@@ -8,7 +8,7 @@ class PushButtonWithAttr(QPushButton):
         super(PushButtonWithAttr, self).__init__(parent)
         self.__pos = p
         self.isUsed = True
-        self.setMinimumHeight(100)
+        self.setFixedSize(100, 100)
         self.setCheckable(True)
     def getPos(self):
         return self.__pos

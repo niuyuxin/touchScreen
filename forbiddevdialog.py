@@ -14,9 +14,8 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         self.buttonGroup.addButton(self.previousPushButton)
         self.buttonGroup.addButton(self.nextPushButton)
         self.buttonGroup.setExclusive(True)
-        self.vLayout = QHBoxLayout()
-        self.vLayout.setAlignment(Qt.AlignHCenter)
-        self.forbidDevWidget.setLayout(self.vLayout)
+        self.vLayout = QVBoxLayout()
+        self.forbidDevFrame.setLayout(self.vLayout)
         self.widgetNumber = 0
         self.createAllWidget(subDevList, self.widgetNumber)
         self.nextPushButton.clicked.connect(self.onNextPushButtonClicked)
@@ -24,7 +23,6 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
     def createAllWidget(self, subDevList, num = 0):
         count = 0
         self.widgetList = []
-        subWidget = QWidget()
         for subList in subDevList:
             for item in subList:
                 if item.isChecked() and item.isUsed:
@@ -32,7 +30,7 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
                     item.setToolTip("设备已启用")
                 elif item.isUsed == False:
                     item.setEnabled(True)
-                if count%40 == 0:
+                if count%60 == 0:
                     hCount = 0
                     vCount = 0
                     subWidget = QWidget()
@@ -42,7 +40,7 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
                     self.vLayout.addWidget(subWidget)
                 layout.addWidget(item, hCount, vCount)
                 vCount += 1
-                if vCount >= 10:
+                if vCount >= 12:
                     vCount = 0
                     hCount += 1
                 count += 1
@@ -50,7 +48,7 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
     def showSubWidget(self, num):
         for i in range(len(self.widgetList)):
             self.widgetList[i].setVisible(False)
-        self.widgetList[num].show()
+        self.widgetList[num].setVisible(True)
 
     def onNextPushButtonClicked(self):
         self.widgetNumber += 1

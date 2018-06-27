@@ -12,11 +12,11 @@ from database import *
 from forbiddevdialog import *
 from autorunningwidget import *
 from independentctrlwidget import *
-from systemmanagement import SystemManagement
+from systemmanagement import *
 from tcpsocket import  TcpSocket
 
 class MainWindow(QWidget):
-    sendDataToTcpSocket = pyqtSignal(QByteArray)
+    sendDataToTcpSocket = pyqtSignal(QByteArray, int)
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         Config()
@@ -33,7 +33,6 @@ class MainWindow(QWidget):
         self.init_mainWindow()
     def init_mainWindow(self):
         # independent control widget
-        self.forbidDevDialog = ForbidDevDialog(self.subDevList)
         self.independentCtrlWidget = IndependentCtrlWidget(self.subDevList, self)
         self.independentCtrlWidget.selectedList.connect(self.onIndependentWidgetSelected)
         self.autoRunningWidget = AutoRunningWidget()
@@ -71,7 +70,7 @@ class MainWindow(QWidget):
         self.tcpSocket = TcpSocket()
         self.tcpSocketThread = QThread()
         self.tcpSocket.moveToThread(self.tcpSocketThread)
-        self.sendDataToTcpSocket.connect(self.tcpSocket.onSendDataToTcpSocket)
+        self.sendDataToTcpSocket.connect(self.tcpSocket.onExternOrderToTcpSocket)
         self.tcpSocket.tcpState.connect(self.onTcpState)
         self.tcpSocketThread.start()
         # print("Tcp socket thread = ", self.tcpSocketThread, "current thread = ", self.thread())
@@ -79,8 +78,8 @@ class MainWindow(QWidget):
         data = ""
         for i in l:
             data = data + i.text() + ", "
-        print("选择了以下设备：", data)
-        self.sendDataToTcpSocket.emit(QByteArray(bytes(data, encoding="utf-8")))
+        print(self.tr("选择了以下设备："), data)
+        self.sendDataToTcpSocket.emit(QByteArray(bytes(data, encoding="utf-8")), 0)
     def onIndependentCtrlPushButton(self):
         self.mainWindow.modelLabel.setText(self.sender().text())
         self.autoRunningWidget.hide()
@@ -112,17 +111,18 @@ class MainWindow(QWidget):
             except: pass
     def onSettingPushButtonClicked(self):
         # todo get data from server
+        self.settingDialog.showFullScreen()
         self.settingDialog.exec_()
     def onAllSubDevPushButtonClicked(self):
         button = self.sender()
-        if isinstance(self.forbidDevDialog, ForbidDevDialog) and self.forbidDevDialog.isVisible():
+        if not self.isActiveWindow():
             if button.isChecked():
                 button.isUsed = False
-                button.setToolTip("设备已禁用")
+                button.setToolTip(self.tr("设备已禁用"))
                 print(button.text(), "设备已禁用")
             else:
                 button.isUsed = True
-                button.setToolTip("设备已启用")
+                button.setToolTip(self.tr("设备已启用"))
                 print(button.text(), "设备已启用")
         else:
             if button.isChecked():
@@ -131,18 +131,28 @@ class MainWindow(QWidget):
                 print(button.text(), "设备已取消")
     def onTcpState(self, s):
         if s == TcpSocket.ConnectedState:
-            self.mainWindow.internetLabel.setText("网络已连接")
+            self.mainWindow.internetLabel.setText(self.tr("网络已连接"))
+        elif s == TcpSocket.ConnectingState:
+            self.mainWindow.internetLabel.setText(self.tr("网络正在连接..."))
         else:
-            self.mainWindow.internetLabel.setText("网络已断开")
+            self.mainWindow.internetLabel.setText(self.tr("网络已断开"))
 
     def onForbidDevDialog(self):
-        self.forbidDevDialog.createAllWidget(self.subDevList)
-        self.forbidDevDialog.showFullScreen()
-        self.forbidDevDialog.exec_()
+        forbidDevDialog = ForbidDevDialog(self.subDevList)
+        forbidDevDialog.showFullScreen()
+        forbidDevDialog.exec_()
         self.independentCtrlWidget.showAllDev(self.subDevList)
     def onAccountManagement(self):
-        a = SystemManagement()
-        a.exec_()
+        login = AccountLogin()
+        if login.exec_():
+            a = SystemManagement()
+            a.somthingChanged.connect(self.onSystemManagementSomthingChanged)
+            a.exec_()
+        else:
+            return
+    def onSystemManagementSomthingChanged(self, key, value):
+        self.sendDataToTcpSocket.emit(QByteArray(bytes("", encoding="utf-8")), 1)
+
     def closeEvent(self, event):
         reply = QMessageBox.question(self,
                                      "quit application",

@@ -4,13 +4,16 @@
 import  sys
 from PyQt5.QtCore import *
 import re
-
+class ConfigKeys():
+    version = "Version"
+    settingFileName = "TouchScreen.ini"
+    serverIp = "ServerIp"
 class Config(object):
     version = "18.06.21"
     def __init__(self):
-        set = QSettings("TouchScreen.ini", QSettings.IniFormat)
+        set = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
         set.setIniCodec(QTextCodec.codecForName("UTF-8"));
-        if Config.version != str(set.value("Version")):
+        if Config.version != str(set.value(ConfigKeys.version)):
             set.clear()
             set.setValue("Version", Config.version)
             set.setValue("Password", "123")
@@ -20,16 +23,16 @@ class Config(object):
             set.sync()
     @staticmethod
     def saveConfig(k, v):
-        set = QSettings("TouchScreen.ini", QSettings.IniFormat)
+        set = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
         set.setValue(k, v)
         set.sync()
     @staticmethod
     def getValue(k):
-        set  = QSettings("TouchScreen.ini", QSettings.IniFormat)
+        set  = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
         return set.value(k)
     @staticmethod
     def getGroupValue(gname):
-        set  = QSettings("TouchScreen.ini", QSettings.IniFormat)
+        set  = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
         set.setIniCodec(QTextCodec.codecForName("UTF-8"));
         set.beginGroup(gname)
         kvList = []
