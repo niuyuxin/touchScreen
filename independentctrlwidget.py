@@ -23,7 +23,6 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
         self.confirmButtonBox.rejected.connect(self.onConfirmButtonBoxReject)
         self.confirmButtonBox.accepted.connect(self.onConfirmButtonBoxAccept)
 
-
     def onDevSelect(self, whichArea):
         button = self.sender()
         if button is None or not isinstance(button, QPushButton):
@@ -67,6 +66,6 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
         checkedList = []
         for devList in allDevList:
             for item in devList:
-                if item.isChecked():
+                if item.isUsed and item.isChecked():
                     checkedList.append(item)
         return checkedList

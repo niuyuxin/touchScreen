@@ -190,6 +190,15 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>300</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximum">
+               <number>1000</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>

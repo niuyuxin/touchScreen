@@ -44,5 +44,5 @@ class Ui_SettingDialog(object):
         SettingDialog.setWindowTitle(_translate("SettingDialog", "Dialog"))
         self.label.setText(_translate("SettingDialog", "参数设置， 应用设置点击\"ok\"按钮， 取消点击\"Cancel\"\n"
 " 单位xxx"))
-        self.cancelPushButton.setText(_translate("SettingDialog", "Cancel"))
+        self.cancelPushButton.setText(_translate("SettingDialog", "Exit"))
 

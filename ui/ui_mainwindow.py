@@ -101,6 +101,8 @@ class Ui_mainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.horizontalSlider.sizePolicy().hasHeightForWidth())
         self.horizontalSlider.setSizePolicy(sizePolicy)
+        self.horizontalSlider.setMinimumSize(QtCore.QSize(300, 0))
+        self.horizontalSlider.setMaximum(1000)
         self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider.setObjectName("horizontalSlider")
         self.gridLayout_2.addWidget(self.horizontalSlider, 1, 1, 1, 2)
