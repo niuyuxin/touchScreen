@@ -79,10 +79,11 @@ class MainWindow(QWidget):
         self.mainWindow.settingDevPushButton.clicked.connect(self.onSettingDevPushButtonClicked)
     def onIndependentWidgetSelected(self, l):
         data = ""
-        for i in l:
-            data = data + i.text() + ", "
-        print(self.tr("选择了以下设备："), data)
-        self.sendDataToTcpSocket.emit(QByteArray(bytes(data, encoding="utf-8")), 0)
+        if l:
+            for i in l:
+                data = data + i.text() + ", "
+            print(self.tr("选择了以下设备："), data.rstrip(', '))
+            self.sendDataToTcpSocket.emit(QByteArray(bytes(data, encoding="utf-8")), 0)
     def onIndependentCtrlPushButton(self):
         self.mainWindow.modelLabel.setText(self.sender().text())
         self.autoRunningWidget.hide()

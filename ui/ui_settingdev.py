@@ -77,7 +77,8 @@ class Ui_SettingDevDialog(object):
     def retranslateUi(self, SettingDevDialog):
         _translate = QtCore.QCoreApplication.translate
         SettingDevDialog.setWindowTitle(_translate("SettingDevDialog", "Dialog"))
-        self.label_2.setText(_translate("SettingDevDialog", "旁路设定，当前只允许选中单个设备"))
+        self.label_2.setText(_translate("SettingDevDialog", "旁路设定，当前只允许选中单个设备\n"
+" “ok”选择生效 “cancel”放弃选择"))
         self.pushButton_3.setText(_translate("SettingDevDialog", "旁路"))
         self.prevPushButton.setText(_translate("SettingDevDialog", "上一页"))
         self.indexLabel.setText(_translate("SettingDevDialog", "1/1"))

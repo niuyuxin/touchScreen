@@ -19,7 +19,8 @@
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>旁路设定，当前只允许选中单个设备</string>
+        <string>旁路设定，当前只允许选中单个设备
+ “ok”选择生效 “cancel”放弃选择</string>
        </property>
       </widget>
      </item>

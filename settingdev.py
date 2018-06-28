@@ -11,17 +11,22 @@ class SettingDevUnit(QWidget):
     def __init__(self, subDev=None):
         super().__init__()
         if subDev is not None:
+            self.subDev = subDev
             idLabel = QLabel(subDev.devId)
             idLabel.setAlignment(Qt.AlignHCenter)
             nameLabel = QLabel(subDev.text())
             nameLabel.setFrameShadow(QFrame.Raised)
             nameLabel.setFrameShape(QFrame.Box)
             nameLabel.setAlignment(Qt.AlignHCenter)
-            upLimitCheckBox = QCheckBox("上极限")
-            downLimitCheckBox = QCheckBox("下极限")
+            upLimitRadioButton = QRadioButton("上极限")
+            downLimitRadioButton = QRadioButton("下极限")
+            upLimitRadioButton.clicked.connect(self.disableSubDev)
+            downLimitRadioButton.clicked.connect(self.disableSubDev)
+            upLimitRadioButton.setEnabled(False)
+            downLimitRadioButton.setEnabled(False)
             hLayout = QHBoxLayout()
-            hLayout.addWidget(upLimitCheckBox)
-            hLayout.addWidget(downLimitCheckBox)
+            hLayout.addWidget(upLimitRadioButton)
+            hLayout.addWidget(downLimitRadioButton)
             vLayout = QVBoxLayout()
             vLayout.addWidget(idLabel)
             vLayout.addWidget(nameLabel)
@@ -35,7 +40,8 @@ class SettingDevUnit(QWidget):
             self.layout = QVBoxLayout()
             self.layout.addWidget(idLabel)
             self.setLayout(self.layout)
-
+    def disableSubDev(self, b):
+        self.subDev.setEnabled(not b)
 
 class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
     def __init__(self, subDevList):
@@ -46,16 +52,9 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
         self.holdSelectedDev = []
         self.widgetNumber = 0
         self.buttonGroup = QButtonGroup()
-        self.buttonGroup.buttonToggled.connect(self.onButtonGroupButtonReleased)
         self.createAllWidget(self.buttonGroup, subDevList, self.widgetNumber)
         self.nextPushButton.clicked.connect(self.onNextPushButtonClicked)
         self.prevPushButton.clicked.connect(self.onPreviousPushButtonClicked)
-    def onButtonGroupButtonReleased(self, button, checked):
-        if checked:
-            pass
-        else: pass
-            # button.isPartialCircuit = False
-            # print(button.text(), "设备旁路已取消 id = ", button.devId)
     def createAllWidget(self, buttonGroup, subDevList, num = 0):
         count = 0
         self.widgetList = []
@@ -111,22 +110,23 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
         self.doneSomthing(False)
         self.done(False)
     def doneSomthing(self, retValue):
-        partialDevSelected = None
-        for button in self.buttonGroup.buttons():
-            self.buttonGroup.removeButton(button)
-            if button.isChecked() and retValue: # 选择， 确认
-                partialDevSelected = button
-            elif button.isChecked() and not retValue: # 选中， 未确认
-                button.setChecked(False)
-            elif button.isPartialCircuit and not button.isChecked(): # 之前选中未取消
-                button.clicked.emit(False)
+        partialDevSelected = self.buttonGroup.checkedButton()
+        del self.buttonGroup
         if partialDevSelected is None:
             for item in self.holdSelectedDev:
                 item.setChecked(True)
-        else:
+            return
+        if retValue:
             for item in self.holdSelectedDev:
                 item.clicked.emit(False)
             partialDevSelected.isPartialCircuit = True
             print(partialDevSelected.text(), "设备旁路已选中 id = ", partialDevSelected.devId)
+        else: # 选中， 未确认
+            partialDevSelected.setChecked(False)
+            partialDevSelected.clicked.emit(False)
+            # partialDevSelected.animateClick()
+            for item in self.holdSelectedDev:
+                item.setChecked(True)
+
 
 

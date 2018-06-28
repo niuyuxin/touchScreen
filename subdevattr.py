@@ -15,5 +15,3 @@ class SubDevAttr(QPushButton):
         self.isSelected = False
         self.setFixedSize(100, 100)
         self.setCheckable(True)
-    def getPos(self):
-        return self.__pos
