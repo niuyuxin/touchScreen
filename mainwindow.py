@@ -7,13 +7,14 @@ from PyQt5.QtWidgets import *
 from ui import ui_mainwindow
 from config import  Config
 from settingDialog import SettingDialog
-from pushbuttonwithattr import PushButtonWithAttr
+from subdevattr import SubDevAttr
 from database import *
 from forbiddevdialog import *
 from autorunningwidget import *
 from independentctrlwidget import *
 from systemmanagement import *
 from tcpsocket import  TcpSocket
+from settingdev import  SettingDevDialog
 
 class MainWindow(QWidget):
     sendDataToTcpSocket = pyqtSignal(QByteArray, int)
@@ -45,7 +46,7 @@ class MainWindow(QWidget):
         self.mainWindow.independentCtrlPushButton.animateClick()
         # setting dialog
         self.settingDialog = SettingDialog(self.subDevList)
-        self.mainWindow.settingPushButton.clicked.connect(self.onSettingPushButtonClicked)
+        self.mainWindow.settingDataPushButton.clicked.connect(self.onSettingPushButtonClicked)
         # data base
         #  Todo
         """
@@ -74,6 +75,8 @@ class MainWindow(QWidget):
         self.tcpSocket.tcpState.connect(self.onTcpState)
         self.tcpSocketThread.start()
         # print("Tcp socket thread = ", self.tcpSocketThread, "current thread = ", self.thread())
+        # setting dev dialog
+        self.mainWindow.settingDevPushButton.clicked.connect(self.onSettingDevPushButtonClicked)
     def onIndependentWidgetSelected(self, l):
         data = ""
         for i in l:
@@ -103,7 +106,7 @@ class MainWindow(QWidget):
                 else:
                     name = item[1]
                     pos = 1000
-                button = PushButtonWithAttr(pos)
+                button = SubDevAttr(pos, key)
                 button.setText(name)
                 subDevList.append(button)
                 button.clicked.connect(self.onAllSubDevPushButtonClicked)
@@ -113,9 +116,15 @@ class MainWindow(QWidget):
         # todo get data from server
         self.settingDialog.showFullScreen()
         self.settingDialog.exec_()
+    def onSettingDevPushButtonClicked(self):
+        settingDev = SettingDevDialog(self.subDevList)
+        settingDev.showFullScreen()
+        settingDev.exec_()
+        self.independentCtrlWidget.showAllDev(self.subDevList)
     def onAllSubDevPushButtonClicked(self):
         button = self.sender()
-        if not self.isActiveWindow():
+        activeWin = QApplication.activeWindow()
+        if isinstance(activeWin, ForbidDevDialog):
             if button.isChecked():
                 button.isUsed = False
                 button.setToolTip(self.tr("设备已禁用"))
@@ -126,8 +135,11 @@ class MainWindow(QWidget):
                 print(button.text(), "设备已启用")
         else:
             if button.isChecked():
-                print(button.text(), "设备已选中")
+                print(button.text(), "设备已选中 id = ", button.devId)
             else:
+                if button.isPartialCircuit:
+                    button.isPartialCircuit = False # 取消旁路设备
+                    print(button.text(), "设备旁路已取消")
                 print(button.text(), "设备已取消")
     def onTcpState(self, s):
         if s == TcpSocket.ConnectedState:
@@ -154,6 +166,7 @@ class MainWindow(QWidget):
         self.sendDataToTcpSocket.emit(QByteArray(bytes("", encoding="utf-8")), 1)
 
     def closeEvent(self, event):
+        return
         reply = QMessageBox.question(self,
                                      "quit application",
                                      "Don't you want to quit application",

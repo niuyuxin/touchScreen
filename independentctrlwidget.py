@@ -43,6 +43,7 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
             gridLayout.setSpacing(10)
             widget.setLayout(gridLayout)
             for subDev in subDevList[i]:
+                subDev.setFixedSize(100, 100)
                 if not subDev.isUsed:
                     subDev.setEnabled(False)
                 else:
