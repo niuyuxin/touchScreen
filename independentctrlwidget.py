@@ -10,8 +10,9 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
     def __init__(self, subDevList, parent = None):
         super().__init__(parent)
         self.setupUi(self)
-        self.allDevButtonGroup = QButtonGroup()
-        self.allDevButtonGroup.setExclusive(False)
+        self.devButtonGroup = QButtonGroup(self)
+        self.devButtonGroup.setExclusive(False)
+        self.devButtonGroup.buttonPressed.connect(self.onDevButtonGroupPressed)
         self.allDevList = subDevList
         self.showAllDev(self.allDevList)
         """ up dev and down dev selection """
@@ -22,8 +23,11 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
         self.subUpDevPushButton.clicked.connect(self.onDevSelect)
         self.subDownDevPushButton.clicked.connect(self.onDevSelect)
         self.subUpDevPushButton.animateClick()
-        self.confirmButtonBox.rejected.connect(self.onConfirmButtonBoxReject)
-        self.confirmButtonBox.accepted.connect(self.onConfirmButtonBoxAccept)
+        self.cancelPushButton.clicked.connect(self.onCancelPushButtonClicked)
+        self.confirmPushButton.clicked.connect(self.onConfirmPushButtonClicked)
+        self.userConfirmButtonGroup = QButtonGroup(self)
+        self.userConfirmButtonGroup.addButton(self.cancelPushButton)
+        self.userConfirmButtonGroup.addButton(self.confirmPushButton)
 
     def onDevSelect(self, whichArea):
         button = self.sender()
@@ -45,7 +49,7 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
             gridLayout.setSpacing(10)
             widget.setLayout(gridLayout)
             for subDev in subDevList[i]:
-                self.allDevButtonGroup.addButton(subDev)
+                self.devButtonGroup.addButton(subDev)
                 subDev.setFixedSize(100, 100)
                 if not subDev.isUsed:
                     subDev.setEnabled(False)
@@ -58,11 +62,11 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
                     self.subDownDevScrollArea.setWidget(widget)
                 gridLayout.addWidget(subDev, count/10, count%10)
                 count += 1
-    def onConfirmButtonBoxReject(self):
+    def onCancelPushButtonClicked(self):
         for item in self.searchCheckedButton(self.allDevList):
             item.setChecked(False)
             print(item.text(), "已取消选中")
-    def onConfirmButtonBoxAccept(self):
+    def onConfirmPushButtonClicked(self):
         # for item in self.searchCheckedButton(self.allDevList):
         #   print(item.text())
         self.selectedList.emit(self.searchCheckedButton(self.allDevList))
@@ -73,3 +77,6 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
                 if item.isUsed and item.isChecked():
                     checkedList.append(item)
         return checkedList
+    def onDevButtonGroupPressed(self):
+        print("...")
+        self.cancelPushButton.setChecked(True)

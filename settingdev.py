@@ -11,22 +11,19 @@ class SettingDevUnit(QWidget):
     def __init__(self, subDev=None):
         super().__init__()
         if subDev is not None:
-            self.subDev = subDev
             idLabel = QLabel(subDev.devId)
             idLabel.setAlignment(Qt.AlignHCenter)
             nameLabel = QLabel(subDev.text())
             nameLabel.setFrameShadow(QFrame.Raised)
             nameLabel.setFrameShape(QFrame.Box)
             nameLabel.setAlignment(Qt.AlignHCenter)
-            upLimitRadioButton = QRadioButton("上极限")
-            downLimitRadioButton = QRadioButton("下极限")
-            upLimitRadioButton.clicked.connect(self.disableSubDev)
-            downLimitRadioButton.clicked.connect(self.disableSubDev)
-            upLimitRadioButton.setEnabled(False)
-            downLimitRadioButton.setEnabled(False)
+            onStagetCheckBox = QCheckBox("上极限")
+            offStageCheckBox = QCheckBox("下极限")
+            onStagetCheckBox.setEnabled(False)
+            offStageCheckBox.setEnabled(False)
             hLayout = QHBoxLayout()
-            hLayout.addWidget(upLimitRadioButton)
-            hLayout.addWidget(downLimitRadioButton)
+            hLayout.addWidget(onStagetCheckBox)
+            hLayout.addWidget(offStageCheckBox)
             vLayout = QVBoxLayout()
             vLayout.addWidget(idLabel)
             vLayout.addWidget(nameLabel)
@@ -40,8 +37,6 @@ class SettingDevUnit(QWidget):
             self.layout = QVBoxLayout()
             self.layout.addWidget(idLabel)
             self.setLayout(self.layout)
-    def disableSubDev(self, b):
-        self.subDev.setEnabled(not b)
 
 class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
     def __init__(self, subDevList):
@@ -64,7 +59,7 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
                     item.setChecked(False)
                     self.holdSelectedDev.append(item)
                 elif item.isPartialCircuit: pass
-                    #item.setChecked(True)
+                    # item.setChecked(True)
                 buttonGroup.addButton(item)
                 self.buttonGroup.addButton(QPushButton())
                 if item.isUpLimited or item.isDownLimited:
