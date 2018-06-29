@@ -9,7 +9,7 @@ class ConfigKeys():
     settingFileName = "TouchScreen.ini"
     serverIp = "ServerIp"
 class Config(object):
-    version = "18.06.21"
+    version = "18.06.29"
     def __init__(self):
         set = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
         set.setIniCodec(QTextCodec.codecForName("UTF-8"));
@@ -18,8 +18,8 @@ class Config(object):
             set.setValue("Version", Config.version)
             set.setValue("Password", "123")
             for item in range(100):
-                set.setValue("SubDevUpStage/subButtonName{}".format(item), "subButtonName{}:设备{}:1000".format(item,item))
-                set.setValue("SubDevDownStage/subButtonName{}".format(item), "subButtonName{}:设备{}:1000".format(item, item))
+                set.setValue("SubDevUpStage/subButtonName{}".format(item), "1806200000{}:设备{}:1000".format(item,item))
+                set.setValue("SubDevDownStage/subButtonName{}".format(item), "1806200000{}:设备{}:1000".format(item+100, item))
             set.sync()
     @staticmethod
     def saveConfig(k, v):

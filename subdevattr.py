@@ -6,8 +6,11 @@ from PyQt5.QtWidgets import QPushButton
 class SubDevAttr(QPushButton):
     def __init__(self, p = 0, id = 0, parent = None):
         super(SubDevAttr, self).__init__(parent)
-        self.__pos = p
+        self.currentPos = int(p)+19
         self.devId = id
+        self.upLimitedPos = 1000
+        self.downLimitedPos = 0
+        self.zeroPos = 0
         self.isUsed = True
         self.isUpLimited = False
         self.isDownLimited = False

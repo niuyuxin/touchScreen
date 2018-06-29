@@ -15,6 +15,7 @@ from independentctrlwidget import *
 from systemmanagement import *
 from tcpsocket import  TcpSocket
 from settingdev import  SettingDevDialog
+from userkeys import  UserKyesDialog
 
 class MainWindow(QWidget):
     sendDataToTcpSocket = pyqtSignal(QByteArray, int)
@@ -77,6 +78,8 @@ class MainWindow(QWidget):
         # print("Tcp socket thread = ", self.tcpSocketThread, "current thread = ", self.thread())
         # setting dev dialog
         self.mainWindow.settingDevPushButton.clicked.connect(self.onSettingDevPushButtonClicked)
+        # user keys
+        self.mainWindow.userKeysPushButton.clicked.connect(self.onUserKeysPushButtonClicked)
     def onIndependentWidgetSelected(self, l):
         data = ""
         if l:
@@ -106,13 +109,14 @@ class MainWindow(QWidget):
                     key, name, pos = str(item[1]).split(":")
                 else:
                     name = item[1]
-                    pos = 1000
-                button = SubDevAttr(pos, key)
+                    pos = 100
+                button = SubDevAttr(int(pos), key)
                 button.setText(name)
                 subDevList.append(button)
                 button.clicked.connect(self.onAllSubDevPushButtonClicked)
                 count += 1
-            except: pass
+            except:
+                print("creat sub dev error")
     def onSettingPushButtonClicked(self):
         # todo get data from server
         self.settingDialog.showFullScreen()
@@ -122,6 +126,9 @@ class MainWindow(QWidget):
         settingDev.showFullScreen()
         settingDev.exec_()
         self.independentCtrlWidget.showAllDev(self.subDevList)
+    def onUserKeysPushButtonClicked(self):
+        userKeys = UserKyesDialog(self.subDevList)
+        userKeys.exec_()
     def onAllSubDevPushButtonClicked(self):
         button = self.sender()
         activeWin = QApplication.activeWindow()

@@ -66,7 +66,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="customPushButton">
+         <widget class="QPushButton" name="userKeysPushButton">
           <property name="text">
            <string>按钮自定义</string>
           </property>
