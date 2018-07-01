@@ -135,18 +135,16 @@ class MainWindow(QWidget):
         count = 0
         for item in Config.getGroupValue(whichGroup):
             try:
-                if ":" in item[1]:
-                    key, name, pos = str(item[1]).split(":")
-                else:
-                    name = item[1]
-                    pos = 100
-                button = SubDevAttr(100+count, item[0])
-                button.setText(name)
-                subDevList.append(button)
-                button.clicked.connect(self.onAllSubDevPushButtonClicked)
-                count += 1
-            except:
-                print("creat sub dev error")
+                sp = ":"
+                if sp in item[1]:
+                    infoList = str(item[1]).split(sp)
+                    button = SubDevAttr(100+count, item[0])
+                    button.setText(infoList[1])
+                    subDevList.append(button)
+                    button.clicked.connect(self.onAllSubDevPushButtonClicked)
+                    count += 1
+            except Exception as err:
+                print("creat sub dev error:{}, {}".format(err, item))
     def onSettingPushButtonClicked(self):
         # todo get data from server
         self.settingDialog.showFullScreen()
@@ -177,7 +175,7 @@ class MainWindow(QWidget):
                 print(button.text(), "设备已启用")
         else:
             if button.isChecked():
-                print(button.text(), "设备已选中 id = ", button.devKey)
+                print(button.text(), "设备已选中 key = ", button.devKey)
             else:
                 if button.isPartialCircuit:
                     button.isPartialCircuit = False # 取消旁路设备
