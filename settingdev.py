@@ -11,7 +11,7 @@ class SettingDevUnit(QWidget):
     def __init__(self, subDev=None):
         super().__init__()
         if subDev is not None:
-            idLabel = QLabel(subDev.devId)
+            idLabel = QLabel(subDev.devKey)
             idLabel.setAlignment(Qt.AlignHCenter)
             nameLabel = QLabel(subDev.text())
             nameLabel.setFrameShadow(QFrame.Raised)
@@ -115,7 +115,7 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
             for item in self.holdSelectedDev:
                 item.clicked.emit(False)
             partialDevSelected.isPartialCircuit = True
-            print(partialDevSelected.text(), "设备旁路已选中 id = ", partialDevSelected.devId)
+            print(partialDevSelected.text(), "设备旁路已选中 id = ", partialDevSelected.devKey)
         else: # 选中， 未确认
             partialDevSelected.setChecked(False)
             partialDevSelected.clicked.emit(False)

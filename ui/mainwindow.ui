@@ -16,6 +16,9 @@
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QLabel" name="companyNameLabel">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(0, 85, 255);</string>
+     </property>
      <property name="text">
       <string>江苏时代演艺设备有限公司</string>
      </property>
@@ -49,6 +52,12 @@
           <property name="text">
            <string>单控选择</string>
           </property>
+          <property name="iconSize">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
          </widget>
         </item>
         <item>
@@ -68,7 +77,7 @@
         <item>
          <widget class="QPushButton" name="userKeysPushButton">
           <property name="text">
-           <string>按钮自定义</string>
+           <string>按键自定义</string>
           </property>
          </widget>
         </item>

@@ -15,7 +15,7 @@ from independentctrlwidget import *
 from systemmanagement import *
 from tcpsocket import  TcpSocket
 from settingdev import  SettingDevDialog
-from userkeys import  UserKyesDialog
+from userkeys import  *
 
 class MainWindow(QWidget):
     sendDataToTcpSocket = pyqtSignal(QByteArray, int)
@@ -31,6 +31,11 @@ class MainWindow(QWidget):
         self.subDevList = [[],[]]
         self.creatSubDev(self.subDevList[0], "SubDevUpStage")
         self.creatSubDev(self.subDevList[1], "SubDevDownStage")
+        self.userKeysList = []
+        self.allDevList = []
+        self.allDevList.extend(self.subDevList[0])
+        self.allDevList.extend(self.subDevList[1])
+        self.creatUserKeys(self.userKeysList, self.allDevList)
         self.setWindowTitle("TouchScreen")
         self.init_mainWindow()
     def init_mainWindow(self):
@@ -80,6 +85,7 @@ class MainWindow(QWidget):
         self.mainWindow.settingDevPushButton.clicked.connect(self.onSettingDevPushButtonClicked)
         # user keys
         self.mainWindow.userKeysPushButton.clicked.connect(self.onUserKeysPushButtonClicked)
+        self.showUserKeys(self.userKeysList, self)
     def onIndependentWidgetSelected(self, l):
         data = ""
         if l:
@@ -100,7 +106,31 @@ class MainWindow(QWidget):
         self.mainWindow.timeLabel.setText(QDateTime.currentDateTime().toString("yyyy-MM-dd hh:mm:ss"))
     def getVersion(self):
         return "PyQt Version {}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
-
+    def creatUserKeys(self, userKeys = [], allDevList = []):
+        for item in Config.getGroupValue(ConfigKeys.userKeys): # all button for user
+            try:
+                if ":" in item[1]:
+                    id, name, pointtoid = str(item[1]).split(":")
+                    indexInSubDevList = 0
+                    for dev in allDevList:
+                        if dev.devKey == pointtoid:
+                            dev.isReplaced = True
+                            break
+                        indexInSubDevList += 1
+                    else:
+                        indexInSubDevList = -1
+                    button = UserKeysUnit(name, item[0], indexInSubDevList, self)
+                    userKeys.append(button)
+            except Exception as err:
+                print(str(err))
+    def showUserKeys(self, userKeysList, parent):
+        for w in userKeysList:
+            w.setParent(parent)
+        count = 0
+        for button in self.userKeysList:
+            button.show()
+            button.move(400 + count * 200, 0)
+            count += 1
     def creatSubDev(self, subDevList, whichGroup):
         count = 0
         for item in Config.getGroupValue(whichGroup):
@@ -110,7 +140,7 @@ class MainWindow(QWidget):
                 else:
                     name = item[1]
                     pos = 100
-                button = SubDevAttr(int(pos), key)
+                button = SubDevAttr(int(pos), item[0])
                 button.setText(name)
                 subDevList.append(button)
                 button.clicked.connect(self.onAllSubDevPushButtonClicked)
@@ -127,8 +157,12 @@ class MainWindow(QWidget):
         settingDev.exec_()
         self.independentCtrlWidget.showAllDev(self.subDevList)
     def onUserKeysPushButtonClicked(self):
-        userKeys = UserKyesDialog(self.subDevList)
-        userKeys.exec_()
+        try:
+            userKeys = UserKyesDialog(self.allDevList, self.userKeysList)
+            userKeys.exec_()
+            self.showUserKeys(self.userKeysList, self)
+        except Exception as e:
+            print(str(e))
     def onAllSubDevPushButtonClicked(self):
         button = self.sender()
         activeWin = QApplication.activeWindow()
@@ -143,7 +177,7 @@ class MainWindow(QWidget):
                 print(button.text(), "设备已启用")
         else:
             if button.isChecked():
-                print(button.text(), "设备已选中 id = ", button.devId)
+                print(button.text(), "设备已选中 id = ", button.devKey)
             else:
                 if button.isPartialCircuit:
                     button.isPartialCircuit = False # 取消旁路设备
@@ -185,3 +219,10 @@ class MainWindow(QWidget):
             self.tcpSocketThread.quit()
             self.tcpSocketThread.wait()
             event.accept()
+    # def resizeEvent(self, QResizeEvent):
+    #     rect = self.pos()
+    #     print(rect)
+    #     count = 0
+    #     for button in self.userKeysList:
+    #         button.move(rect.x() + 300 + count*120, 0)
+    #         count += 1
