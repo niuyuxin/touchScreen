@@ -78,5 +78,4 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
                     checkedList.append(item)
         return checkedList
     def onDevButtonGroupPressed(self):
-        print("...")
         self.cancelPushButton.setChecked(True)

@@ -29,8 +29,8 @@ class MainWindow(QWidget):
         self.mainWindow.setupUi(self)
         self.mainWindow.versionLabel.setText(self.getVersion())
         self.subDevList = [[],[]]
-        self.creatSubDev(self.subDevList[0], "SubDevUpStage")
-        self.creatSubDev(self.subDevList[1], "SubDevDownStage")
+        self.creatSubDev(self.subDevList[0], ConfigKeys.onStageDev)
+        self.creatSubDev(self.subDevList[1], ConfigKeys.offStageDev)
         self.userKeysList = []
         self.allDevList = []
         self.allDevList.extend(self.subDevList[0])
@@ -140,7 +140,7 @@ class MainWindow(QWidget):
                 else:
                     name = item[1]
                     pos = 100
-                button = SubDevAttr(int(pos), item[0])
+                button = SubDevAttr(100+count, item[0])
                 button.setText(name)
                 subDevList.append(button)
                 button.clicked.connect(self.onAllSubDevPushButtonClicked)

@@ -105,9 +105,9 @@ class UserKyesDialog(QDialog):
     def onUserButtonGroupButtonPressed(self, button):
         self.renameLineEdit.setText(button.text())
         self.currentUserkey = button
-        self.devAssignedComboBox.setCurrentIndex(button.indexOfDev+1)
+        self.devAssignedComboBox.setCurrentIndex(button.indexOfDev+1) # first item is none， so...
     def onApplyPushButtonClicked(self):
-        retValue = self.checkUserInput(self.devAssignedComboBox.currentIndex()-1)
+        retValue = self.checkUserInput(self.devAssignedComboBox.currentIndex()-1) #
         if retValue is not None:
             ret = QMessageBox.warning(self,
                                 self.tr("警告"),
@@ -123,16 +123,24 @@ class UserKyesDialog(QDialog):
     def onCancelPushButtonClicked(self):
         self.reject()
     def onDevAssignedComboBoxCurrentIndexChanged(self, index):
-        dev = self.subDevList[index]
-        try:
-            self.posSpinBox.setValue(dev.currentPos)
-            self.zeroPosSpinBox.setValue(dev.zeroPos)
-        except Exception as err:
-            print(str(err))
-    def checkUserInput(self, index): # note: devAsignedComboBox index should minus 1
+        if index != 0:
+            dev = self.subDevList[index-1] # first item is None,
+            try:
+                self.posSpinBox.setEnabled(True)
+                self.zeroPosSpinBox.setEnabled(True)
+                self.posSpinBox.setValue(dev.currentPos)
+                self.zeroPosSpinBox.setValue(dev.zeroPos)
+            except Exception as err:
+                print(str(err))
+        else:
+            self.posSpinBox.setEnabled(False)
+            self.zeroPosSpinBox.setEnabled(False)
+            self.absPosSpinBox.setEnabled(False)
+            self.relPosSpinBox.setEnabled(False)
+    def checkUserInput(self, index): # note: when check object for devAsignedComboBox, index should minus 1
         checkedButton = self.userButtonGroup.checkedButton()
         if checkedButton is None:
-            notice = self.tr("请选择也要指定的按键")
+            notice = self.tr("请选择要指定的按键")
             return notice
         if self.devAssignedComboBox.currentText() == "None":
             notice = self.tr("请选择要指定的设备")
