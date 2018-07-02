@@ -51,7 +51,7 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
             for subDev in subDevList[i]:
                 self.devButtonGroup.addButton(subDev)
                 subDev.setFixedSize(100, 100)
-                if not subDev.isUsed or subDev.isReplaced:
+                if not subDev.isUsed:
                     subDev.setEnabled(False)
                 else:
                     subDev.setToolTip("")

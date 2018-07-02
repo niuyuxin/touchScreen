@@ -5,13 +5,14 @@ from PyQt5.QtWidgets import *
 from config import *
 
 class UserKeysUnit(QPushButton):
-    def __init__(self, name, key, iod, parent = None):
+    def __init__(self, name, key, specKey, iod, speed, parent = None):
         super().__init__(parent)
         self.indexOfDev = iod
         self.name = name
-        self.keyId = key
+        self.selfKey = key
+        self.specificDevKey = specKey
         self.func = ""
-        self.speed = 100
+        self.speed = speed
         self.pos = 100
         self.absPos = 100
         self.relPos = 100
@@ -87,6 +88,7 @@ class UserKyesDialog(QDialog):
         self.userButtonGroup = QButtonGroup()
         self.userButtonGroup.buttonPressed.connect(self.onUserButtonGroupButtonPressed)
         for button in self.userKeysList:
+            button.show()
             button.setCheckable(True)
             button.setEnabled(True)
             self.userButtonGroup.addButton(button)
@@ -103,9 +105,13 @@ class UserKyesDialog(QDialog):
         # self.setLayout(self.mainLayout)
         self.cancelPushButton.setDefault(True)
     def onUserButtonGroupButtonPressed(self, button):
-        self.renameLineEdit.setText(button.text())
-        self.currentUserkey = button
-        self.devAssignedComboBox.setCurrentIndex(button.indexOfDev+1) # first item is none， so...
+        try:
+            self.renameLineEdit.setText(button.text())
+            self.currentUserkey = button
+            self.devAssignedComboBox.setCurrentIndex(button.indexOfDev+1) # first item is none， so...
+            self.speedSpinBox.setValue(button.speed)
+        except Exception as err:
+            print(str(err))
     def onApplyPushButtonClicked(self):
         retValue = self.checkUserInput(self.devAssignedComboBox.currentIndex()-1) #
         if retValue is not None:
@@ -142,42 +148,57 @@ class UserKyesDialog(QDialog):
         if checkedButton is None:
             notice = self.tr("请选择要指定的按键")
             return notice
-        if self.devAssignedComboBox.currentText() == "None":
-            notice = self.tr("请选择要指定的设备")
-            return notice
+        # if self.devAssignedComboBox.currentText() == "None":
+        #     notice = self.tr("请选择要指定的设备")
+        #     return notice
         for button in self.userKeysList:
+            notice = None
             if button == checkedButton:
                 pass
             else:
-                if index == button.indexOfDev:
+                if index != -1 and index == button.indexOfDev:
                     notice = self.tr("'{}' 已经指定到 '{}', 请重新选择设备".format(button.text(), self.devAssignedComboBox.currentText()))
                     return notice
-        return None
+                elif self.subDevList[index].isUsed == False:
+                    notice = self.tr("'{}' 已被禁用， 请重新选择设备。".format(self.subDevList[index].text()))
+        return notice
     def applyUserSelected(self, index): # note: devAsignedComboBox index should minus 1
-        dev = self.subDevList[index]
-        if self.currentUserkey is not None:
-            if self.currentUserkey.indexOfDev != -1: # had indicate some device
-                self.subDevList[self.currentUserkey.indexOfDev].setChecked(False)
-                self.subDevList[self.currentUserkey.indexOfDev].setEnabled(True)
-                self.subDevList[self.currentUserkey.indexOfDev].isReplaced = False
+        if self.currentUserkey is not None: # there has no necessary to check this parameter
+            if index == self.currentUserkey.indexOfDev:  # same device specification...
+                return
+            if self.currentUserkey.indexOfDev != -1: # had specific some device
+                # self.subDevList[self.currentUserkey.indexOfDev].setChecked(False)
+                # self.subDevList[self.currentUserkey.indexOfDev].setEnabled(True)
+                self.subDevList[self.currentUserkey.indexOfDev].isReplaced = False # cancel
             else:
                 pass
-            try:
-                dev.setChecked(False)
-                dev.setEnabled(False)
-                dev.isReplaced = True
-                self.currentUserkey.indexOfDev = index
-                currentButton = self.userButtonGroup.checkedButton()
-                value = Config.getValue("UserKeys/{}".format(currentButton.keyId))
-                id, name, keyid = value.split(":")
+            currentButton = self.userButtonGroup.checkedButton()
+            self.currentUserkey.indexOfDev = index
+            value = Config.getValue("UserKeys/{}".format(currentButton.selfKey))
+            infoList = value.split(":")
+            if index == -1: # cancel device specific, maybe this device is already specific to someone
                 name = self.renameLineEdit.text()
                 currentButton.setText(name)
-                keyid = self.subDevList[index].devKey
-                # print("UserKeys/{}".format(currentButton.keyId), "{}:{}:{}".format(id, name, keyid))
-                print("Todo: update new button parameter")
-                Config.saveConfig("UserKeys/{}".format(currentButton.keyId), "{}:{}:{}".format(id, name, keyid))
-            except Exception as e:
-                print(str(e))
+                currentButton.specificDevKey = ""
+                currentButton.speed = 0
+                print("Todo: cancel device specific")
+            else:
+                try:
+                    dev = self.subDevList[index]
+                    # dev.setChecked(False)
+                    # dev.setEnabled(False)
+                    dev.isReplaced = True
+                    name = self.renameLineEdit.text()
+                    currentButton.setText(name)
+                    currentButton.specificDevKey = self.subDevList[index].devKey
+                    currentButton.speed = self.speedSpinBox.value()
+                    print("Todo: update new button parameter")
+                except Exception as e:
+                    print(str(e))
+            key = "UserKeys/{}".format(currentButton.selfKey)
+            value = "{}:{}:{}:{}".format(infoList[0], currentButton.text(), currentButton.speed, currentButton.specificDevKey)
+            print(key, value)
+            Config.saveConfig(key, value)
     def hideEvent(self, QCloseEvent):
         self.doSomthingForExit()
         pass

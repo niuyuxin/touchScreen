@@ -110,16 +110,18 @@ class MainWindow(QWidget):
         for item in Config.getGroupValue(ConfigKeys.userKeys): # all button for user
             try:
                 if ":" in item[1]:
-                    id, name, pointtoid = str(item[1]).split(":")
+                    # id, name, pointtoid = str(item[1]).split(":")
+                    infoList = str(item[1]).split(":")
                     indexInSubDevList = 0
                     for dev in allDevList:
-                        if dev.devKey == pointtoid:
+                        if dev.devKey == infoList[-1]: # the last info is specific device id
                             dev.isReplaced = True
                             break
                         indexInSubDevList += 1
                     else:
                         indexInSubDevList = -1
-                    button = UserKeysUnit(name, item[0], indexInSubDevList, self)
+                    # print(infoList) # 0,id 1,name 2,speed 3,specificDevKey
+                    button = UserKeysUnit(infoList[1], item[0], infoList[-1], indexInSubDevList, int(infoList[2]), self)
                     userKeys.append(button)
             except Exception as err:
                 print(str(err))
@@ -128,9 +130,12 @@ class MainWindow(QWidget):
             w.setParent(parent)
         count = 0
         for button in self.userKeysList:
-            button.show()
             button.move(400 + count * 200, 0)
             count += 1
+            if button.indexOfDev == -1:
+                button.hide()
+            else:
+                button.show()
     def creatSubDev(self, subDevList, whichGroup):
         count = 0
         for item in Config.getGroupValue(whichGroup):
