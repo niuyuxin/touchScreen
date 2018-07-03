@@ -5,10 +5,11 @@ from PyQt5.QtNetwork import *
 from PyQt5.QtCore import *
 from config import *
 
-class TcpSocket(QTcpSocket):
+class TcpSocket(QObject):
     tcpState=pyqtSignal(int)
-    def __init__(self, parent = None):
+    def __init__(self, allSubDev, parent = None):
         super().__init__(parent)
+        self.allSubDev = allSubDev
         self.tcpSocket = QTcpSocket()
         self.tcpSocket.connected.connect(self.onTcpSocketConnected)
         self.tcpSocket.readyRead.connect(self.onTcpSocketReadyRead)
@@ -38,13 +39,20 @@ class TcpSocket(QTcpSocket):
         elif self.tcpSocket.state() == QAbstractSocket.ConnectingState:
             self.tcpState.emit(self.tcpSocket.state())
     def onTcpSocketReadyRead(self):
-        print("Get server data:", str(self.tcpSocket.readAll(), encoding="utf-8"))
+        serverData = str(self.tcpSocket.readAll(), encoding="utf-8")
+        print("Get server data:", serverData)
+        if "Hello" in serverData:
+            try:
+                li = [item.text() for item in self.allSubDev]
+                self.tcpSocket.write(QByteArray(bytes(str(li), encoding="utf-8")))
+            except Exception as e:
+                print(str(e))
     def onTcpSocketDisconnected(self):
         print("Tcp socket disconnected")
-        self.tcpState.emit(self.state())
+        self.tcpState.emit(self.tcpSocket.state())
         self.connectTimer.start(1000)
     def onTcpSocketError(self, err):
-        self.tcpState.emit(self.state())
+        self.tcpState.emit(self.tcpSocket.state())
         self.tcpSocket.close()
         self.connectTimer.start(1000)
     def onExternOrderToTcpSocket(self, data = None, order = None):

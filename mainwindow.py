@@ -4,6 +4,7 @@ import sys
 from math import *
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
+from PyQt5.QtNetwork import *
 from ui import ui_mainwindow
 from config import  Config
 from settingDialog import SettingDialog
@@ -74,7 +75,7 @@ class MainWindow(QWidget):
         # account setting dialog
         self.mainWindow.accountPushButton.clicked.connect(self.onAccountManagement)
         # Tcp socket, creat alone thread
-        self.tcpSocket = TcpSocket()
+        self.tcpSocket = TcpSocket(self.allDevList)
         self.tcpSocketThread = QThread()
         self.tcpSocket.moveToThread(self.tcpSocketThread)
         self.sendDataToTcpSocket.connect(self.tcpSocket.onExternOrderToTcpSocket)
@@ -187,13 +188,15 @@ class MainWindow(QWidget):
                     print(button.text(), "设备旁路已取消")
                 print(button.text(), "设备已取消")
     def onTcpState(self, s):
-        if s == TcpSocket.ConnectedState:
-            self.mainWindow.internetLabel.setText(self.tr("网络已连接"))
-        elif s == TcpSocket.ConnectingState:
-            self.mainWindow.internetLabel.setText(self.tr("网络正在连接..."))
-        else:
-            self.mainWindow.internetLabel.setText(self.tr("网络已断开"))
-
+        try:
+            if s == QTcpSocket.ConnectedState:
+                self.mainWindow.internetLabel.setText(self.tr("网络已连接"))
+            elif s == QTcpSocket.ConnectingState:
+                self.mainWindow.internetLabel.setText(self.tr("网络正在连接..."))
+            else:
+                self.mainWindow.internetLabel.setText(self.tr("网络已断开"))
+        except Exception as e:
+            print(str(e))
     def onForbidDevDialog(self):
         forbidDevDialog = ForbidDevDialog(self.subDevList)
         forbidDevDialog.showFullScreen()

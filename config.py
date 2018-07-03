@@ -37,6 +37,7 @@ class Config(object):
     @staticmethod
     def getValue(k):
         set  = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
+        set.setIniCodec(QTextCodec.codecForName("UTF-8"));
         return set.value(k)
     @staticmethod
     def getGroupValue(gname):

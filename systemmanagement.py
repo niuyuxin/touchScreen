@@ -41,7 +41,7 @@ class AccountLogin(QDialog):
         self.dialogButtonBox.button(QDialogButtonBox.Ok).animateClick()
     def userEntry(self):
         password = self.accountPasswdLineEdit.text()
-        if password == Config.getValue("PassWord"):
+        if password == Config.getVaue("Password"):
             self.accept()
         else:
             QMessageBox.warning(self,
