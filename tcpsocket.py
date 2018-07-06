@@ -44,7 +44,8 @@ class TcpSocket(QObject):
         if "Hello" in serverData:
             try:
                 li = [item.text() for item in self.allSubDev]
-                self.tcpSocket.write(QByteArray(bytes(str(li), encoding="utf-8")))
+                di = {"MonitorName":"TouchScreen", "MonitorId":"123456789", "MonitorHoldDevice":li}
+                self.tcpSocket.write(QByteArray(bytes(str(di), encoding="utf-8")))
             except Exception as e:
                 print(str(e))
     def onTcpSocketDisconnected(self):
