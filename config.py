@@ -13,8 +13,9 @@ class ConfigKeys():
     offStageDev = "OffStageDev"
     onStageButtonName = "OnStageButtonName"
     offStageButtonName = "OffStageButtonName"
+    monitorName = "MonitorName"
 class Config(object):
-    version = "18.07.06"
+    version = "18.07.08"
     def __init__(self):
         set = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
         set.setIniCodec(QTextCodec.codecForName("UTF-8"));
@@ -28,6 +29,7 @@ class Config(object):
                 set.setValue("{}/{}{}".format(ConfigKeys.offStageDev, ConfigKeys.offStageButtonName, item), "1806200000{}:设备{}:".format(item+100, item+100))
             for item in range(4):
                 set.setValue("UserKeys/UserKey{}".format(item), "1806300000{}:自定义{}:{}:".format(item, item, item+100))
+            set.setValue(ConfigKeys.monitorName, "TouchScreen")
             set.sync()
     @staticmethod
     def saveConfig(k, v):
