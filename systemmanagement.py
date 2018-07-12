@@ -41,13 +41,10 @@ class AccountLogin(QDialog):
         self.dialogButtonBox.button(QDialogButtonBox.Ok).animateClick()
     def userEntry(self):
         password = self.accountPasswdLineEdit.text()
-        if password == Config.getVaue("Password"):
+        if password == Config.getValue("Password"):
             self.accept()
         else:
-            QMessageBox.warning(self,
-                                "Warning",
-                                "Password error, please try again!")
-
+            QMessageBox.warning(self, "Warning", "Password error, please try again!")
 class SystemManagement(QDialog, ui_systemmanagementwidget.Ui_SystemManagementWidget):
     somthingChanged = pyqtSignal(str, str)
     def __init__(self, parent = None):
