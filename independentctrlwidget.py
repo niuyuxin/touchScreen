@@ -66,6 +66,7 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
         for item in self.searchCheckedButton(self.allDevList):
             item.setChecked(False)
             print(item.text(), "已取消选中")
+        self.selectedList.emit([])
     def onConfirmPushButtonClicked(self):
         # for item in self.searchCheckedButton(self.allDevList):
         #   print(item.text())

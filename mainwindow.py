@@ -87,13 +87,19 @@ class MainWindow(QWidget):
         # user keys
         self.mainWindow.userKeysPushButton.clicked.connect(self.onUserKeysPushButtonClicked)
         self.showUserKeys(self.userKeysList, self)
-    def onIndependentWidgetSelected(self, l):
+    def onIndependentWidgetSelected(self, selectedDev):
         data = ""
-        if l:
-            for i in l:
-                data = data + i.text() + ", "
+        devList = []
+        if selectedDev:
+            for dev in selectedDev:
+                data = data + dev.text() + ", "
+                devList.append(dev.text())
             print(self.tr("选择了以下设备："), data.rstrip(', '))
-            self.sendDataToTcpSocket.emit(QByteArray(bytes(data, encoding="utf-8")), 0)
+            formatData = {"selectedDevice": devList}
+            self.sendDataToTcpSocket.emit(QByteArray(bytes(str(formatData), encoding="utf-8")), 0)
+        else:
+            formatData = {"selectedDevice": []}
+            self.sendDataToTcpSocket.emit(QByteArray(bytes(str(formatData), encoding="utf-8")), 0)
     def onIndependentCtrlPushButton(self):
         self.mainWindow.modelLabel.setText(self.sender().text())
         self.autoRunningWidget.hide()
