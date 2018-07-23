@@ -49,6 +49,7 @@ class TcpSocket(QObject):
                       "MonitorHoldDevice":li
                       }
                 self.tcpSocket.write(QByteArray(bytes(str(di), encoding="utf-8")))
+                self.tcpSocket.waitForBytesWritten()
             except Exception as e:
                 print(str(e))
     def onTcpSocketDisconnected(self):

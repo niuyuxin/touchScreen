@@ -37,8 +37,8 @@ class AccountLogin(QDialog):
         self.dialogButtonBox.button(QDialogButtonBox.Cancel).clicked.connect(self.reject)
         self.accountPasswdLineEdit.setFocus()
         # Fixme for test code
-        self.accountPasswdLineEdit.setText("123")
-        self.dialogButtonBox.button(QDialogButtonBox.Ok).animateClick()
+        # self.accountPasswdLineEdit.setText("123")
+        # self.dialogButtonBox.button(QDialogButtonBox.Ok).animateClick()
     def userEntry(self):
         password = self.accountPasswdLineEdit.text()
         if password == Config.getValue("Password"):
