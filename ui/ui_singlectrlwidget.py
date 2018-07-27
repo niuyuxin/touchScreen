@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'independentctrlwidget.ui'
+# Form implementation generated from reading ui file 'singlectrlwidget.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #
@@ -8,16 +8,16 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_independentCtrlWidget(object):
-    def setupUi(self, independentCtrlWidget):
-        independentCtrlWidget.setObjectName("independentCtrlWidget")
-        independentCtrlWidget.resize(629, 493)
-        self.verticalLayout = QtWidgets.QVBoxLayout(independentCtrlWidget)
+class Ui_SingleCtrlWidget(object):
+    def setupUi(self, SingleCtrlWidget):
+        SingleCtrlWidget.setObjectName("SingleCtrlWidget")
+        SingleCtrlWidget.resize(629, 493)
+        self.verticalLayout = QtWidgets.QVBoxLayout(SingleCtrlWidget)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.tipsLabel = QtWidgets.QLabel(independentCtrlWidget)
+        self.tipsLabel = QtWidgets.QLabel(SingleCtrlWidget)
         self.tipsLabel.setObjectName("tipsLabel")
         self.verticalLayout.addWidget(self.tipsLabel)
-        self.independentCtrlGroupBox = QtWidgets.QGroupBox(independentCtrlWidget)
+        self.independentCtrlGroupBox = QtWidgets.QGroupBox(SingleCtrlWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -72,12 +72,12 @@ class Ui_independentCtrlWidget(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.confirmPushButton = QtWidgets.QPushButton(independentCtrlWidget)
+        self.confirmPushButton = QtWidgets.QPushButton(SingleCtrlWidget)
         self.confirmPushButton.setMinimumSize(QtCore.QSize(0, 40))
         self.confirmPushButton.setCheckable(True)
         self.confirmPushButton.setObjectName("confirmPushButton")
         self.horizontalLayout.addWidget(self.confirmPushButton)
-        self.cancelPushButton = QtWidgets.QPushButton(independentCtrlWidget)
+        self.cancelPushButton = QtWidgets.QPushButton(SingleCtrlWidget)
         self.cancelPushButton.setMinimumSize(QtCore.QSize(0, 40))
         self.cancelPushButton.setCheckable(True)
         self.cancelPushButton.setObjectName("cancelPushButton")
@@ -86,16 +86,16 @@ class Ui_independentCtrlWidget(object):
         self.horizontalLayout.addItem(spacerItem1)
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.retranslateUi(independentCtrlWidget)
-        QtCore.QMetaObject.connectSlotsByName(independentCtrlWidget)
+        self.retranslateUi(SingleCtrlWidget)
+        QtCore.QMetaObject.connectSlotsByName(SingleCtrlWidget)
 
-    def retranslateUi(self, independentCtrlWidget):
+    def retranslateUi(self, SingleCtrlWidget):
         _translate = QtCore.QCoreApplication.translate
-        independentCtrlWidget.setWindowTitle(_translate("independentCtrlWidget", "Form"))
-        self.tipsLabel.setText(_translate("independentCtrlWidget", "请选择设备"))
-        self.independentCtrlGroupBox.setTitle(_translate("independentCtrlWidget", "设备"))
-        self.subUpDevPushButton.setText(_translate("independentCtrlWidget", "台上设备"))
-        self.subDownDevPushButton.setText(_translate("independentCtrlWidget", "台下设备"))
-        self.confirmPushButton.setText(_translate("independentCtrlWidget", "确认"))
-        self.cancelPushButton.setText(_translate("independentCtrlWidget", "全部取消"))
+        SingleCtrlWidget.setWindowTitle(_translate("SingleCtrlWidget", "Form"))
+        self.tipsLabel.setText(_translate("SingleCtrlWidget", "请选择设备"))
+        self.independentCtrlGroupBox.setTitle(_translate("SingleCtrlWidget", "设备"))
+        self.subUpDevPushButton.setText(_translate("SingleCtrlWidget", "台上设备"))
+        self.subDownDevPushButton.setText(_translate("SingleCtrlWidget", "台下设备"))
+        self.confirmPushButton.setText(_translate("SingleCtrlWidget", "确认"))
+        self.cancelPushButton.setText(_translate("SingleCtrlWidget", "全部取消"))
 

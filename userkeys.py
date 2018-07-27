@@ -174,7 +174,7 @@ class UserKyesDialog(QDialog):
                 pass
             currentButton = self.userButtonGroup.checkedButton()
             self.currentUserkey.indexOfDev = index
-            value = Config.getValue("UserKeys/{}".format(currentButton.selfKey))
+            value = Config.value("UserKeys/{}".format(currentButton.selfKey))
             infoList = value.split(":")
             if index == -1: # cancel device specific, maybe this device is already specific to someone
                 name = self.renameLineEdit.text()
@@ -198,7 +198,7 @@ class UserKyesDialog(QDialog):
             key = "UserKeys/{}".format(currentButton.selfKey)
             value = "{}:{}:{}:{}".format(infoList[0], currentButton.text(), currentButton.speed, currentButton.specificDevKey)
             print(key, value)
-            Config.saveConfig(key, value)
+            Config.setValue(key, value)
     def hideEvent(self, QCloseEvent):
         self.doSomthingForExit()
         pass

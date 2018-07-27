@@ -41,7 +41,7 @@ class AccountLogin(QDialog):
         # self.dialogButtonBox.button(QDialogButtonBox.Ok).animateClick()
     def userEntry(self):
         password = self.accountPasswdLineEdit.text()
-        if password == Config.getValue("Password"):
+        if password == Config.value("Password"):
             self.accept()
         else:
             QMessageBox.warning(self, "Warning", "Password error, please try again!")
@@ -53,9 +53,9 @@ class SystemManagement(QDialog, ui_systemmanagementwidget.Ui_SystemManagementWid
         self.setWindowTitle("账号管理")
         regExp = QRegExp(r"((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)")
         self.serverIpLineEdit.setValidator(QRegExpValidator(regExp))
-        self.serverIpLineEdit.setText(Config.getValue(ConfigKeys.serverIp))
+        self.serverIpLineEdit.setText(Config.value(ConfigKeys.serverIp))
         self.serverIpLineEdit.editingFinished.connect(self.onServerIpLineEditingEditFinished)
 
     def onServerIpLineEditingEditFinished(self):
-        Config.saveConfig(ConfigKeys.serverIp, self.sender().text())
+        Config.setValue(ConfigKeys.serverIp, self.sender().text())
         self.somthingChanged.emit(ConfigKeys.serverIp, self.sender().text())

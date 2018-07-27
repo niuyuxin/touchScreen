@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 
-from ui import ui_independentctrlwidget
+from ui import ui_singlectrlwidget
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrlWidget):
+class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
     selectedList = pyqtSignal(list)
     def __init__(self, subDevList, parent = None):
         super().__init__(parent)
@@ -80,3 +80,6 @@ class IndependentCtrlWidget(QWidget, ui_independentctrlwidget.Ui_independentCtrl
         return checkedList
     def onDevButtonGroupPressed(self):
         self.cancelPushButton.setChecked(True)
+    def onHandleExternOrder(self, o):
+        if o == "Forbidden":
+            self.setEnabled(False)

@@ -4,11 +4,14 @@
 from PyQt5.QtNetwork import *
 from PyQt5.QtCore import *
 from config import *
+import  json
 
 class TcpSocket(QObject):
     tcpState=pyqtSignal(int)
-    def __init__(self, allSubDev, parent = None):
+    tcpGetOrder = pyqtSignal(str)
+    def __init__(self, mid, allSubDev, parent = None):
         super().__init__(parent)
+        self.monitorId = mid
         self.allSubDev = allSubDev
         self.tcpSocket = QTcpSocket()
         self.tcpSocket.connected.connect(self.onTcpSocketConnected)
@@ -30,7 +33,7 @@ class TcpSocket(QObject):
             print("网络不可用")
     def connectServer(self, e = 0):
         if e == 1 or self.tcpSocket.state() == QAbstractSocket.UnconnectedState:
-            ip = Config.getValue(ConfigKeys.serverIp)
+            ip = Config.value(ConfigKeys.serverIp)
             if ip == None:
                 socketIp = QHostAddress(QHostAddress.LocalHost)  # "192.168.1.177"
             else:
@@ -39,19 +42,30 @@ class TcpSocket(QObject):
         elif self.tcpSocket.state() == QAbstractSocket.ConnectingState:
             self.tcpState.emit(self.tcpSocket.state())
     def onTcpSocketReadyRead(self):
-        serverData = str(self.tcpSocket.readAll(), encoding="utf-8")
+        temp = self.tcpSocket.readAll()
+        serverData = str(temp, encoding="utf-8")
         print("Get server data:", serverData)
         if "Hello" in serverData:
             try:
-                li = [item.text() for item in self.allSubDev]
-                di = {ConfigKeys.monitorName:Config.getValue(ConfigKeys.monitorName),
-                      "MonitorId":"123456789",
-                      "MonitorHoldDevice":li
+                di = {ConfigKeys.monitorName:Config.value(ConfigKeys.monitorName),
+                      "MonitorId":self.monitorId,
+                      "MonitorHoldDevice": [item.text() for item in self.allSubDev]
                       }
                 self.tcpSocket.write(QByteArray(bytes(str(di), encoding="utf-8")))
                 self.tcpSocket.waitForBytesWritten()
             except Exception as e:
                 print(str(e))
+        else:
+            self.analysisData(serverData)
+    def analysisData(self, data):
+        try:
+            dataJson = json.loads(data, encoding='UTF-8')
+            if len(dataJson) == 4 and dataJson[0] == 2:
+                order = dataJson[2]
+                if order == "Forbidden":
+                    self.tcpGetOrder.emit(order)
+        except Exception as e:
+            print("analysisData", str(e))
     def onTcpSocketDisconnected(self):
         print("Tcp socket disconnected")
         self.tcpState.emit(self.tcpSocket.state())

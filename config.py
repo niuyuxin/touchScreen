@@ -6,6 +6,7 @@ from PyQt5.QtCore import *
 import re
 class ConfigKeys():
     version = "Version"
+    monitorId = "MonitorId"
     settingFileName = "TouchScreen.ini"
     serverIp = "ServerIp"
     userKeys = "UserKeys"
@@ -15,13 +16,14 @@ class ConfigKeys():
     offStageButtonName = "OffStageButtonName"
     monitorName = "MonitorName"
 class Config(object):
-    version = "18.07.08"
+    version = "18.07.08.1"
     def __init__(self):
         set = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
         set.setIniCodec(QTextCodec.codecForName("UTF-8"));
         if Config.version != str(set.value(ConfigKeys.version)):
             set.clear()
             set.setValue("Version", Config.version)
+            set.setValue(ConfigKeys.monitorId, 0)
             set.setValue("Password", "123")
             for item in range(100):
                 set.setValue("{}/{}{}".format(ConfigKeys.onStageDev, ConfigKeys.onStageButtonName, item), "1806200000{}:设备{}:".format(item,item))
@@ -32,13 +34,13 @@ class Config(object):
             set.setValue(ConfigKeys.monitorName, "TouchScreen")
             set.sync()
     @staticmethod
-    def saveConfig(k, v):
+    def setValue(k, v):
         set = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
         set.setIniCodec(QTextCodec.codecForName("UTF-8"));
         set.setValue(k, v)
         set.sync()
     @staticmethod
-    def getValue(k):
+    def value(k):
         set  = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
         set.setIniCodec(QTextCodec.codecForName("UTF-8"));
         return set.value(k)

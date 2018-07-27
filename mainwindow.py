@@ -9,10 +9,8 @@ from ui import ui_mainwindow
 from config import  Config
 from settingDialog import SettingDialog
 from subdevattr import SubDevAttr
-from database import *
 from forbiddevdialog import *
-from autorunningwidget import *
-from independentctrlwidget import *
+from singlectrlwidget import *
 from systemmanagement import *
 from tcpsocket import  TcpSocket
 from settingdev import  SettingDevDialog
@@ -20,6 +18,7 @@ from userkeys import  *
 
 class MainWindow(QWidget):
     sendDataToTcpSocket = pyqtSignal(QByteArray, int)
+    mainWindowOrder = pyqtSignal(str)
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         Config()
@@ -29,6 +28,7 @@ class MainWindow(QWidget):
         self.mainWindow = ui_mainwindow.Ui_mainWindow()
         self.mainWindow.setupUi(self)
         self.mainWindow.versionLabel.setText(self.getVersion())
+        self.setWindowTitle("TouchScreen({})".format(Config.value(ConfigKeys.monitorId)))
         self.subDevList = [[],[]]
         self.creatSubDev(self.subDevList[0], ConfigKeys.onStageDev)
         self.creatSubDev(self.subDevList[1], ConfigKeys.offStageDev)
@@ -37,49 +37,31 @@ class MainWindow(QWidget):
         self.allDevList.extend(self.subDevList[0])
         self.allDevList.extend(self.subDevList[1])
         self.creatUserKeys(self.userKeysList, self.allDevList)
-        self.setWindowTitle("TouchScreen")
         self.init_mainWindow()
     def init_mainWindow(self):
         # independent control widget
-        self.independentCtrlWidget = IndependentCtrlWidget(self.subDevList, self)
-        self.independentCtrlWidget.selectedList.connect(self.onIndependentWidgetSelected)
-        self.autoRunningWidget = AutoRunningWidget()
+        self.singleCtrlWidget = SingleCtrlWidget(self.subDevList, self)
+        self.singleCtrlWidget.selectedList.connect(self.onSingleWidgetSelected)
+        self.mainWindowOrder.connect(self.singleCtrlWidget.onHandleExternOrder)
         self.contextLayout = QHBoxLayout()
-        self.contextLayout.addWidget(self.independentCtrlWidget)
-        self.contextLayout.addWidget(self.autoRunningWidget)
+        self.contextLayout.addWidget(self.singleCtrlWidget)
         self.mainWindow.contextFrame.setLayout(self.contextLayout)
-        self.mainWindow.independentCtrlPushButton.clicked.connect(self.onIndependentCtrlPushButton)
-        self.mainWindow.autoRunningPushButton.clicked.connect(self.onAutoRunningPushButton)
-        self.mainWindow.independentCtrlPushButton.animateClick()
+        self.mainWindow.singleCtrlPushButton.clicked.connect(self.onSingleCtrlPushButton)
+        self.mainWindow.singleCtrlPushButton.animateClick()
         # setting dialog
         self.settingDialog = SettingDialog(self.subDevList)
         self.mainWindow.settingDataPushButton.clicked.connect(self.onSettingPushButtonClicked)
-        # data base
-        #  Todo
-        """
-        try:
-            self.dataBaseThread = QThread()
-            self.dataBase = DataBase()
-            self.settingDialog.saveSetting.connect(self.dataBase.insertRecord)
-            self.settingDialog.getSetting.connect(self.dataBase.selectRecord)
-            self.dataBase.moveToThread(self.dataBaseThread)
-            self.dataBaseThread.start()
-        except DataBaseException as err:
-            QMessageBox.warning(self,
-                                "DataBaseError",
-                                str(err),
-                                QMessageBox.Yes)
-                                """
         # Forbidded dev dialog signals
         self.mainWindow.forbidDevPushButton.clicked.connect(self.onForbidDevDialog)
         # account setting dialog
         self.mainWindow.accountPushButton.clicked.connect(self.onAccountManagement)
         # Tcp socket, creat alone thread
-        self.tcpSocket = TcpSocket(self.allDevList)
+        self.tcpSocket = TcpSocket(Config.value(ConfigKeys.monitorId), self.allDevList)
         self.tcpSocketThread = QThread()
         self.tcpSocket.moveToThread(self.tcpSocketThread)
         self.sendDataToTcpSocket.connect(self.tcpSocket.onExternOrderToTcpSocket)
         self.tcpSocket.tcpState.connect(self.onTcpState)
+        self.tcpSocket.tcpGetOrder.connect(self.mainWindowOrder)
         self.tcpSocketThread.start()
         # print("Tcp socket thread = ", self.tcpSocketThread, "current thread = ", self.thread())
         # setting dev dialog
@@ -87,7 +69,7 @@ class MainWindow(QWidget):
         # user keys
         self.mainWindow.userKeysPushButton.clicked.connect(self.onUserKeysPushButtonClicked)
         self.showUserKeys(self.userKeysList, self)
-    def onIndependentWidgetSelected(self, selectedDev):
+    def onSingleWidgetSelected(self, selectedDev):
         data = ""
         devList = []
         if selectedDev:
@@ -100,14 +82,9 @@ class MainWindow(QWidget):
         else:
             formatData = {"selectedDevice": []}
             self.sendDataToTcpSocket.emit(QByteArray(bytes(str(formatData), encoding="utf-8")), 0)
-    def onIndependentCtrlPushButton(self):
+    def onSingleCtrlPushButton(self):
         self.mainWindow.modelLabel.setText(self.sender().text())
-        self.autoRunningWidget.hide()
-        self.independentCtrlWidget.show()
-    def onAutoRunningPushButton(self):
-        self.mainWindow.modelLabel.setText(self.sender().text())
-        self.independentCtrlWidget.hide()
-        self.autoRunningWidget.show()
+        self.singleCtrlWidget.show()
     def rtcTimeout(self):
         # real time
         self.mainWindow.timeLabel.setText(QDateTime.currentDateTime().toString("yyyy-MM-dd hh:mm:ss"))
@@ -165,7 +142,7 @@ class MainWindow(QWidget):
         settingDev = SettingDevDialog(self.subDevList)
         settingDev.showFullScreen()
         settingDev.exec_()
-        self.independentCtrlWidget.showAllDev(self.subDevList)
+        self.singleCtrlWidget.showAllDev(self.subDevList)
     def onUserKeysPushButtonClicked(self):
         try:
             userKeys = UserKyesDialog(self.allDevList, self.userKeysList)
@@ -207,7 +184,7 @@ class MainWindow(QWidget):
         forbidDevDialog = ForbidDevDialog(self.subDevList)
         forbidDevDialog.showFullScreen()
         forbidDevDialog.exec_()
-        self.independentCtrlWidget.showAllDev(self.subDevList)
+        self.singleCtrlWidget.showAllDev(self.subDevList)
     def onAccountManagement(self):
         login = AccountLogin()
         if login.exec_():
