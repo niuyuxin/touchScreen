@@ -37,8 +37,8 @@ class AccountLogin(QDialog):
         self.dialogButtonBox.button(QDialogButtonBox.Cancel).clicked.connect(self.reject)
         self.accountPasswdLineEdit.setFocus()
         # Fixme for test code
-        # self.accountPasswdLineEdit.setText("123")
-        # self.dialogButtonBox.button(QDialogButtonBox.Ok).animateClick()
+        self.accountPasswdLineEdit.setText("123")
+        self.dialogButtonBox.button(QDialogButtonBox.Ok).animateClick()
     def userEntry(self):
         password = self.accountPasswdLineEdit.text()
         if password == Config.value("Password"):
@@ -54,8 +54,9 @@ class SystemManagement(QDialog, ui_systemmanagementwidget.Ui_SystemManagementWid
         regExp = QRegExp(r"((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)")
         self.serverIpLineEdit.setValidator(QRegExpValidator(regExp))
         self.serverIpLineEdit.setText(Config.value(ConfigKeys.serverIp))
-        self.serverIpLineEdit.editingFinished.connect(self.onServerIpLineEditingEditFinished)
+        self.serverIpLineEdit.returnPressed.connect(self.onServerIpLineEditingReturnPressed)
 
-    def onServerIpLineEditingEditFinished(self):
+    def onServerIpLineEditingReturnPressed(self):
+        serverIpText = self.sender().text()
         Config.setValue(ConfigKeys.serverIp, self.sender().text())
-        self.somthingChanged.emit(ConfigKeys.serverIp, self.sender().text())
+        self.somthingChanged.emit(ConfigKeys.serverIp, serverIpText)

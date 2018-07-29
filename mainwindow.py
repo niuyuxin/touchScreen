@@ -17,7 +17,8 @@ from settingdev import  SettingDevDialog
 from userkeys import  *
 
 class MainWindow(QWidget):
-    sendDataToTcpSocket = pyqtSignal(QByteArray, int)
+    sendDataToTcpSocket = pyqtSignal(int, str, dict)
+    tcpSocketManagement = pyqtSignal(int)
     mainWindowOrder = pyqtSignal(str)
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -59,9 +60,11 @@ class MainWindow(QWidget):
         self.tcpSocket = TcpSocket(Config.value(ConfigKeys.monitorId), self.allDevList)
         self.tcpSocketThread = QThread()
         self.tcpSocket.moveToThread(self.tcpSocketThread)
-        self.sendDataToTcpSocket.connect(self.tcpSocket.onExternOrderToTcpSocket)
+        self.sendDataToTcpSocket.connect(self.tcpSocket.onDataToSend)
+        self.tcpSocketManagement.connect(self.tcpSocket.onTcpSocketManagement)
         self.tcpSocket.tcpState.connect(self.onTcpState)
         self.tcpSocket.tcpGetOrder.connect(self.mainWindowOrder)
+        self.tcpSocketThread.started.connect(self.tcpSocket.tcpSocketInit)
         self.tcpSocketThread.start()
         # print("Tcp socket thread = ", self.tcpSocketThread, "current thread = ", self.thread())
         # setting dev dialog
@@ -70,18 +73,19 @@ class MainWindow(QWidget):
         self.mainWindow.userKeysPushButton.clicked.connect(self.onUserKeysPushButtonClicked)
         self.showUserKeys(self.userKeysList, self)
     def onSingleWidgetSelected(self, selectedDev):
-        data = ""
-        devList = []
-        if selectedDev:
-            for dev in selectedDev:
-                data = data + dev.text() + ", "
-                devList.append(dev.text())
-            print(self.tr("选择了以下设备："), data.rstrip(', '))
-            formatData = {"selectedDevice": devList}
-            self.sendDataToTcpSocket.emit(QByteArray(bytes(str(formatData), encoding="utf-8")), 0)
-        else:
-            formatData = {"selectedDevice": []}
-            self.sendDataToTcpSocket.emit(QByteArray(bytes(str(formatData), encoding="utf-8")), 0)
+        try:
+            if selectedDev and isinstance(selectedDev, list):
+                devName = []
+                for dev in selectedDev:
+                    devName.append(dev.text())
+                print(self.tr("选择了以下设备："), ",".join(devName))
+                formatData = {"Device": devName}
+                self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SelectedDevice, formatData)
+            else:
+                formatData = {"Device": []}
+                self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SelectedDevice, formatData)
+        except Exception as e:
+            print("onSingleWidgetSelected", str(e))
     def onSingleCtrlPushButton(self):
         self.mainWindow.modelLabel.setText(self.sender().text())
         self.singleCtrlWidget.show()
@@ -127,7 +131,7 @@ class MainWindow(QWidget):
                 sp = ":"
                 if sp in item[1]:
                     infoList = str(item[1]).split(sp)
-                    button = SubDevAttr(100+count, item[0])
+                    button = SubDevAttr(100+count, infoList[0], item[0])
                     button.setText(infoList[1])
                     subDevList.append(button)
                     button.clicked.connect(self.onAllSubDevPushButtonClicked)
@@ -187,14 +191,18 @@ class MainWindow(QWidget):
         self.singleCtrlWidget.showAllDev(self.subDevList)
     def onAccountManagement(self):
         login = AccountLogin()
-        if login.exec_():
-            a = SystemManagement()
-            a.somthingChanged.connect(self.onSystemManagementSomthingChanged)
-            a.exec_()
-        else:
-            return
+        try:
+            if login.exec_():
+                a = SystemManagement()
+                a.somthingChanged.connect(self.onSystemManagementSomthingChanged)
+                a.exec_()
+            else:
+                return
+        except Exception as e:
+            print(str(e))
+    @pyqtSlot(str, str)
     def onSystemManagementSomthingChanged(self, key, value):
-        self.sendDataToTcpSocket.emit(QByteArray(bytes("", encoding="utf-8")), 1)
+        self.tcpSocketManagement.emit(1)
 
     def closeEvent(self, event):
         return

@@ -4,9 +4,10 @@
 from PyQt5.QtWidgets import QPushButton
 
 class SubDevAttr(QPushButton):
-    def __init__(self, p = 0, key = None, parent = None):
+    def __init__(self, p = 0, id = 0, key = None, parent = None):
         super(SubDevAttr, self).__init__(parent)
         self.currentPos = p
+        self.devId = id
         self.devKey = key
         self.upLimitedPos = 1000
         self.downLimitedPos = 0

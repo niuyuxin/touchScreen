@@ -5,32 +5,42 @@ from PyQt5.QtNetwork import *
 from PyQt5.QtCore import *
 from config import *
 import  json
+import random
+import json
+import copy
 
 class TcpSocket(QObject):
     tcpState=pyqtSignal(int)
     tcpGetOrder = pyqtSignal(str)
+    Call = 2
+    CallResult = 3
+    CallError = 4
+    SelectedDevice = "SelectedDevice"
+    MonitorId = "MonitorId"
+    MonitorDevice = "MonitorDevice"
+    MonitorDeviceCount = "MonitorDeviceCount"
+    MonitorName = "MonitorName"
+    BootNotification = "BootNotification"
+    UpdateDevice = "UpdateDevice"
     def __init__(self, mid, allSubDev, parent = None):
         super().__init__(parent)
         self.monitorId = mid
         self.allSubDev = allSubDev
-        self.tcpSocket = QTcpSocket()
+        self.toUpdateDev = []
+    def tcpSocketInit(self):
+        self.tcpSocket = QTcpSocket(self)
         self.tcpSocket.connected.connect(self.onTcpSocketConnected)
         self.tcpSocket.readyRead.connect(self.onTcpSocketReadyRead)
         self.tcpSocket.disconnected.connect(self.onTcpSocketDisconnected)
         self.tcpSocket.error.connect(self.onTcpSocketError)
-        self.connectTimer = QTimer()
+        self.connectTimer = QTimer(self)
         self.connectTimer.timeout.connect(self.connectServer)
         self.connectTimer.start(1000)
+
     def onTcpSocketConnected(self):
         print("Tcp socket connected")
         self.tcpState.emit(self.tcpSocket.state())
         self.connectTimer.stop()
-    def sendData(self, data):
-        if self.tcpSocket.state() == QAbstractSocket.ConnectedState:
-            self.tcpSocket.write(data)
-            self.tcpSocket.waitForBytesWritten()
-        else:
-            print("网络不可用")
     def connectServer(self, e = 0):
         if e == 1 or self.tcpSocket.state() == QAbstractSocket.UnconnectedState:
             ip = Config.value(ConfigKeys.serverIp)
@@ -47,12 +57,12 @@ class TcpSocket(QObject):
         print("Get server data:", serverData)
         if "Hello" in serverData:
             try:
-                di = {ConfigKeys.monitorName:Config.value(ConfigKeys.monitorName),
-                      "MonitorId":self.monitorId,
-                      "MonitorHoldDevice": [item.text() for item in self.allSubDev]
+                di = {TcpSocket.MonitorName:Config.value(ConfigKeys.monitorName),
+                      TcpSocket.MonitorId:self.monitorId,
+                      TcpSocket.MonitorDeviceCount:len(self.allSubDev)
                       }
-                self.tcpSocket.write(QByteArray(bytes(str(di), encoding="utf-8")))
-                self.tcpSocket.waitForBytesWritten()
+                self.toUpdateDev = copy.copy(self.allSubDev)
+                self.onDataToSend(TcpSocket.Call, TcpSocket.BootNotification, di)
             except Exception as e:
                 print(str(e))
         else:
@@ -60,25 +70,67 @@ class TcpSocket(QObject):
     def analysisData(self, data):
         try:
             dataJson = json.loads(data, encoding='UTF-8')
-            if len(dataJson) == 4 and dataJson[0] == 2:
+            if len(dataJson) == 4 and dataJson[0] == 2: # 服务器call
                 order = dataJson[2]
                 if order == "Forbidden":
                     self.tcpGetOrder.emit(order)
+            elif len(dataJson) == 4 and dataJson[0] == 3: # 服务器callreturn
+                order = dataJson[2]
+                if order == TcpSocket.BootNotification:
+                    self.updateDev()
+                elif order == TcpSocket.UpdateDevice:
+                    self.updateDev()
+
         except Exception as e:
             print("analysisData", str(e))
+
     def onTcpSocketDisconnected(self):
+        self.tcpState.emit(self.tcpSocket.state())
+        self.connectTimer.start(1000)
         print("Tcp socket disconnected")
-        self.tcpState.emit(self.tcpSocket.state())
-        self.connectTimer.start(1000)
+
+    @pyqtSlot(QAbstractSocket.SocketError)
     def onTcpSocketError(self, err):
+        print("onTcpSocketError")
         self.tcpState.emit(self.tcpSocket.state())
-        self.tcpSocket.close()
+        self.tcpSocket.disconnectFromHost()
         self.connectTimer.start(1000)
-    def onExternOrderToTcpSocket(self, data = None, order = None):
-        if order == 0: # send data
-            self.sendData(data)
-        elif order == 1: # 重启网络
+        print("onTcpSocketError...")
+    @pyqtSlot(int)
+    def onTcpSocketManagement(self, code):
+        if code:
             self.tcpSocket.disconnectFromHost()
+            print("on tcp socket abort()")
+    @pyqtSlot(int, str, dict)
+    def onDataToSend(self, messageTypeId, action, data):
+        try:
+            if not isinstance(messageTypeId, int) or not isinstance(action, str) or not isinstance(data, dict):
+                raise "onDataToSend: data type error"
+            message = [messageTypeId, self.createUnionId(action), action, data]
+            self.sendData(bytes(json.dumps(message, ensure_ascii='UTF-8'), encoding='utf-8')+b'\0')
+        except Exception as e:
+            print("onDataToSend", str(e))
 
+    def sendData(self, data):
+        if self.tcpSocket.state() == QAbstractSocket.ConnectedState:
+            self.tcpSocket.write(data)
+            self.tcpSocket.waitForBytesWritten()
+        else:
+            print("网络不可用")
 
+    def createUnionId(self, type):
+        time = QDateTime.currentDateTime().toString("yyMMddhhmmsszzz")
+        rand = str(random.randint(0, 100))
+        return str(type) + '-' + time + '-' + rand
 
+    def updateDev(self):
+        devList = []
+        for count in range(2):
+            if len(self.toUpdateDev) != 0:
+                item = self.toUpdateDev.pop(0)
+                devList.append((item.devId, item.text()))
+            else:
+                break
+        if devList:
+            di = {TcpSocket.MonitorDevice:devList}
+            self.onDataToSend(TcpSocket.Call, TcpSocket.UpdateDevice, di)
