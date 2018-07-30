@@ -11,20 +11,19 @@ import copy
 
 class TcpSocket(QObject):
     tcpState=pyqtSignal(int)
-    tcpGetOrder = pyqtSignal(str)
+    tcpGetOrder = pyqtSignal(str, dict)
     Call = 2
     CallResult = 3
     CallError = 4
-    SelectedDevice = "SelectedDevice"
+    DeviceStateChanged = "DeviceStateChanged"
     MonitorId = "MonitorId"
     MonitorDevice = "MonitorDevice"
     MonitorDeviceCount = "MonitorDeviceCount"
     MonitorName = "MonitorName"
     BootNotification = "BootNotification"
     UpdateDevice = "UpdateDevice"
-    def __init__(self, mid, allSubDev, parent = None):
+    def __init__(self, allSubDev, parent = None):
         super().__init__(parent)
-        self.monitorId = mid
         self.allSubDev = allSubDev
         self.toUpdateDev = []
     def tcpSocketInit(self):
@@ -58,7 +57,7 @@ class TcpSocket(QObject):
         if "Hello" in serverData:
             try:
                 di = {TcpSocket.MonitorName:Config.value(ConfigKeys.monitorName),
-                      TcpSocket.MonitorId:self.monitorId,
+                      TcpSocket.MonitorId: Config.monitorId,
                       TcpSocket.MonitorDeviceCount:len(self.allSubDev)
                       }
                 self.toUpdateDev = copy.copy(self.allSubDev)
@@ -66,14 +65,16 @@ class TcpSocket(QObject):
             except Exception as e:
                 print(str(e))
         else:
-            self.analysisData(serverData)
+            serverDataList = serverData.split('\0')
+            for data in serverDataList:
+                if len(data) != 0:
+                    self.analysisData(data)
     def analysisData(self, data):
         try:
             dataJson = json.loads(data, encoding='UTF-8')
             if len(dataJson) == 4 and dataJson[0] == 2: # 服务器call
                 order = dataJson[2]
-                if order == "Forbidden":
-                    self.tcpGetOrder.emit(order)
+                self.tcpGetOrder.emit(order, dataJson[3])
             elif len(dataJson) == 4 and dataJson[0] == 3: # 服务器callreturn
                 order = dataJson[2]
                 if order == TcpSocket.BootNotification:
@@ -91,16 +92,16 @@ class TcpSocket(QObject):
 
     @pyqtSlot(QAbstractSocket.SocketError)
     def onTcpSocketError(self, err):
-        print("onTcpSocketError")
         self.tcpState.emit(self.tcpSocket.state())
         self.tcpSocket.disconnectFromHost()
         self.connectTimer.start(1000)
-        print("onTcpSocketError...")
+
     @pyqtSlot(int)
     def onTcpSocketManagement(self, code):
         if code:
             self.tcpSocket.disconnectFromHost()
             print("on tcp socket abort()")
+
     @pyqtSlot(int, str, dict)
     def onDataToSend(self, messageTypeId, action, data):
         try:

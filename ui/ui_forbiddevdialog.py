@@ -39,6 +39,7 @@ class Ui_ForbidDevDialog(object):
         sizePolicy.setHeightForWidth(self.previousPushButton.sizePolicy().hasHeightForWidth())
         self.previousPushButton.setSizePolicy(sizePolicy)
         self.previousPushButton.setCheckable(True)
+        self.previousPushButton.setAutoDefault(False)
         self.previousPushButton.setObjectName("previousPushButton")
         self.horizontalLayout.addWidget(self.previousPushButton)
         self.nextPushButton = QtWidgets.QPushButton(ForbidDevDialog)
@@ -49,6 +50,7 @@ class Ui_ForbidDevDialog(object):
         self.nextPushButton.setSizePolicy(sizePolicy)
         self.nextPushButton.setCheckable(True)
         self.nextPushButton.setChecked(False)
+        self.nextPushButton.setAutoDefault(False)
         self.nextPushButton.setObjectName("nextPushButton")
         self.horizontalLayout.addWidget(self.nextPushButton)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -74,6 +76,7 @@ class Ui_ForbidDevDialog(object):
         sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
         self.pushButton.setSizePolicy(sizePolicy)
         self.pushButton.setMinimumSize(QtCore.QSize(0, 40))
+        self.pushButton.setDefault(True)
         self.pushButton.setObjectName("pushButton")
         self.verticalLayout.addWidget(self.pushButton)
 

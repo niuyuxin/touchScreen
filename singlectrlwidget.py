@@ -4,6 +4,7 @@
 from ui import ui_singlectrlwidget
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from config import *
 
 class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
     selectedList = pyqtSignal(list)
@@ -14,6 +15,7 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
         self.devButtonGroup.setExclusive(False)
         self.devButtonGroup.buttonPressed.connect(self.onDevButtonGroupPressed)
         self.allDevList = subDevList
+        self.deviceStateList = {}
         self.showAllDev(self.allDevList)
         """ up dev and down dev selection """
         self.devSelectButtonGroup = QButtonGroup()
@@ -42,6 +44,11 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
 
     def showAllDev(self, subDevList):
         """show all device in up-stage and down-stage form """
+        allSelectedDev = []
+        for sec, devList in self.deviceStateList.items():
+            if sec != Config.monitorId:
+                for dev in devList:
+                    allSelectedDev.append(dev)
         for i in range(len(subDevList)):
             count = 0
             widget = QWidget()
@@ -53,6 +60,9 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
                 subDev.setFixedSize(100, 100)
                 if not subDev.isUsed:
                     subDev.setEnabled(False)
+                elif subDev.text() in allSelectedDev:
+                    subDev.setEnabled(False)
+                    subDev.setToolTip(self.tr("设备已在其他区域选中"))
                 else:
                     subDev.setToolTip("")
                     subDev.setEnabled(True)
@@ -77,8 +87,41 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
                 if item.isUsed and item.isChecked():
                     checkedList.append(item)
         return checkedList
+
     def onDevButtonGroupPressed(self):
         self.cancelPushButton.setChecked(True)
-    def onHandleExternOrder(self, o):
-        if o == "Forbidden":
-            self.setEnabled(False)
+
+    @pyqtSlot(str, dict)
+    def onHandleExternOrder(self, o, info):
+        try:
+            if o == "ForbiddenDevice":
+                self.setEnabled(not info["Enable"])
+            elif o == "DeviceStateChanged":
+                sec = info["Section"]
+                deviceList = info["Device"]
+                if len(deviceList) == 0 and sec in self.deviceStateList.keys():
+                    self.releaseSelectedDevice(self.deviceStateList[sec])
+                self.deviceStateList[sec] = deviceList
+                self.forbidSelectedDevice()
+            else:
+                print("Unknow order", o)
+        except Exception as e:
+            print("Error: onHandleExternOrder", str(e))
+    def releaseSelectedDevice(self, devList):
+        for dev in devList:
+            self.getDeviceFromDevList(dev[0]).setEnabled(True)
+
+    def forbidSelectedDevice(self):
+        for sec, devList in self.deviceStateList.items():
+            if sec == Config.monitorId:
+                pass
+            else:
+                for dev in devList:
+                    self.getDeviceFromDevList(dev[0]).setEnabled(False)
+
+    def getDeviceFromDevList(self, name):
+        for temp in self.allDevList:
+            for subDev in temp:
+                if name == subDev.text():
+                    return subDev
+

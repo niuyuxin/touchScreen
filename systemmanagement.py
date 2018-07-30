@@ -58,5 +58,5 @@ class SystemManagement(QDialog, ui_systemmanagementwidget.Ui_SystemManagementWid
 
     def onServerIpLineEditingReturnPressed(self):
         serverIpText = self.sender().text()
-        Config.setValue(ConfigKeys.serverIp, self.sender().text())
+        Config.setValue(ConfigKeys.serverIp, serverIpText)
         self.somthingChanged.emit(ConfigKeys.serverIp, serverIpText)

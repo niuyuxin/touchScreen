@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtCore import *
 
 class SubDevAttr(QPushButton):
     def __init__(self, p = 0, id = 0, key = None, parent = None):
@@ -19,3 +20,4 @@ class SubDevAttr(QPushButton):
         self.isReplaced = False
         self.setFixedSize(100, 100)
         self.setCheckable(True)
+        self.setFocusPolicy(Qt.NoFocus)

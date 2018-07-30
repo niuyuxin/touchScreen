@@ -1,0 +1,10 @@
+
+QTabWidget#tabWidget::pane{
+    border-top: 2px solid #C2C7CB;
+}
+
+SystemManagement {
+    background-color: green
+}
+
+QPushButton:hover{ background-color: white }

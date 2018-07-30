@@ -16,10 +16,10 @@ from tcpsocket import  TcpSocket
 from settingdev import  SettingDevDialog
 from userkeys import  *
 
-class MainWindow(QWidget):
+class MainWindow(QFrame):
     sendDataToTcpSocket = pyqtSignal(int, str, dict)
     tcpSocketManagement = pyqtSignal(int)
-    mainWindowOrder = pyqtSignal(str)
+    mainWindowOrder = pyqtSignal(str, dict)
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         Config()
@@ -29,7 +29,7 @@ class MainWindow(QWidget):
         self.mainWindow = ui_mainwindow.Ui_mainWindow()
         self.mainWindow.setupUi(self)
         self.mainWindow.versionLabel.setText(self.getVersion())
-        self.setWindowTitle("TouchScreen({})".format(Config.value(ConfigKeys.monitorId)))
+        self.setWindowTitle("TouchScreen({})".format(Config.monitorId))
         self.subDevList = [[],[]]
         self.creatSubDev(self.subDevList[0], ConfigKeys.onStageDev)
         self.creatSubDev(self.subDevList[1], ConfigKeys.offStageDev)
@@ -57,7 +57,7 @@ class MainWindow(QWidget):
         # account setting dialog
         self.mainWindow.accountPushButton.clicked.connect(self.onAccountManagement)
         # Tcp socket, creat alone thread
-        self.tcpSocket = TcpSocket(Config.value(ConfigKeys.monitorId), self.allDevList)
+        self.tcpSocket = TcpSocket(self.allDevList)
         self.tcpSocketThread = QThread()
         self.tcpSocket.moveToThread(self.tcpSocketThread)
         self.sendDataToTcpSocket.connect(self.tcpSocket.onDataToSend)
@@ -75,15 +75,15 @@ class MainWindow(QWidget):
     def onSingleWidgetSelected(self, selectedDev):
         try:
             if selectedDev and isinstance(selectedDev, list):
-                devName = []
+                devInfoList = []
                 for dev in selectedDev:
-                    devName.append(dev.text())
-                print(self.tr("选择了以下设备："), ",".join(devName))
-                formatData = {"Device": devName}
-                self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SelectedDevice, formatData)
+                    devInfoList.append((dev.text(), 0x1))
+                print(self.tr("选择了以下设备："), devInfoList)
+                formatData = {"Device": devInfoList}
+                self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.DeviceStateChanged, formatData)
             else:
                 formatData = {"Device": []}
-                self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SelectedDevice, formatData)
+                self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.DeviceStateChanged, formatData)
         except Exception as e:
             print("onSingleWidgetSelected", str(e))
     def onSingleCtrlPushButton(self):
@@ -167,8 +167,8 @@ class MainWindow(QWidget):
                 button.setToolTip(self.tr("设备已启用"))
                 print(button.text(), "设备已启用")
         else:
-            if button.isChecked():
-                print(button.text(), "设备已选中 key = ", button.devKey)
+            if button.isChecked():pass
+                # print(button.text(), "设备已选中 key = ", button.devKey)
             else:
                 if button.isPartialCircuit:
                     button.isPartialCircuit = False # 取消旁路设备
