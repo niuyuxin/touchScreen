@@ -99,7 +99,7 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
             elif o == "DeviceStateChanged":
                 sec = info["Section"]
                 deviceList = info["Device"]
-                if len(deviceList) == 0 and sec in self.deviceStateList.keys():
+                if sec in self.deviceStateList.keys():
                     self.releaseSelectedDevice(self.deviceStateList[sec])
                 self.deviceStateList[sec] = deviceList
                 self.forbidSelectedDevice()
