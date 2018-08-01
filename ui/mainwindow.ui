@@ -160,8 +160,14 @@
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0" colspan="2">
              <widget class="QLabel" name="label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
-               <string>速度rpm/min</string>
+               <string>速度(%)</string>
               </property>
              </widget>
             </item>
@@ -192,7 +198,7 @@
              </widget>
             </item>
             <item row="1" column="1" colspan="2">
-             <widget class="QSlider" name="horizontalSlider">
+             <widget class="QSlider" name="speedSetSlider">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -206,7 +212,7 @@
                </size>
               </property>
               <property name="maximum">
-               <number>1000</number>
+               <number>100</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -226,6 +232,9 @@
             <property name="text">
              <string>上升</string>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
@@ -239,10 +248,13 @@
             <property name="text">
              <string>停止</string>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="fallPushButton">
+           <widget class="QPushButton" name="dropPushButton">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -251,6 +263,9 @@
             </property>
             <property name="text">
              <string>下降</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -348,7 +363,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>horizontalSlider</sender>
+   <sender>speedSetSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>lcdNumber</receiver>
    <slot>display(int)</slot>

@@ -3,3 +3,4 @@ ui/__pycache__/*
 *.db
 *.ini
 .idea/*
+./ui_*.py

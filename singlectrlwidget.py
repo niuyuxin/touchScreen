@@ -7,7 +7,8 @@ from PyQt5.QtCore import *
 from config import *
 
 class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
-    selectedList = pyqtSignal(list)
+    selectedList = pyqtSignal(int, list)
+    SelectedOperation = 1<<0
     def __init__(self, subDevList, parent = None):
         super().__init__(parent)
         self.setupUi(self)
@@ -73,12 +74,18 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
                 gridLayout.addWidget(subDev, count/10, count%10)
                 count += 1
     def onCancelPushButtonClicked(self):
-        for item in self.searchCheckedButton(self.allDevList):
-            item.setChecked(False)
-            print(item.text(), "已取消选中")
-        self.selectedList.emit([])
+        try:
+            for item in self.searchCheckedButton(self.allDevList):
+                item.setChecked(False)
+                if item.isPartialCircuit:
+                    item.isPartialCircuit = False
+                # print(item.text(), "已取消选中")
+            self.selectedList.emit(SingleCtrlWidget.SelectedOperation, [])
+        except Exception as e:
+            print("cancel...", str(e))
+
     def onConfirmPushButtonClicked(self):
-        self.selectedList.emit(self.searchCheckedButton(self.allDevList))
+        self.selectedList.emit(SingleCtrlWidget.SelectedOperation, self.searchCheckedButton(self.allDevList))
 
     def searchCheckedButton(self, allDevList):
         checkedList = []
@@ -100,16 +107,19 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
                 sec = info["Section"]
                 deviceList = info["Device"]
                 if sec in self.deviceStateList.keys():
-                    self.releaseSelectedDevice(self.deviceStateList[sec])
+                    self.releaseSelectedDevice(sec, self.deviceStateList[sec])
                 self.deviceStateList[sec] = deviceList
                 self.forbidSelectedDevice()
             else:
                 print("Unknow order", o)
         except Exception as e:
             print("Error: onHandleExternOrder", str(e))
-    def releaseSelectedDevice(self, devList):
-        for dev in devList:
-            self.getDeviceFromDevList(dev[0]).setEnabled(True)
+    def releaseSelectedDevice(self, sec, devList):
+        if sec == Config.monitorId:
+            pass
+        else:
+            for dev in devList:
+                self.getDeviceFromDevList(dev[0]).setEnabled(True)
 
     def forbidSelectedDevice(self):
         for sec, devList in self.deviceStateList.items():

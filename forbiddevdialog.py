@@ -6,6 +6,7 @@ from PyQt5.QtCore import *
 from ui import ui_forbiddevdialog
 
 class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
+    ForbiddenOperation = 1<<1
     def __init__(self, subDevList):
         super().__init__()
         # self.setWindowFlags(Qt.WindowMinimizeButtonHint)
@@ -30,6 +31,7 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
                     item.setToolTip("设备已启用")
                 elif item.isUsed == False:
                     item.setEnabled(True)
+                    item.setChecked(True)
                 if count%60 == 0:
                     hCount = 0
                     vCount = 0

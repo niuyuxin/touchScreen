@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtNetwork import *
 from ui import ui_mainwindow
 from config import  Config
-from settingDialog import SettingDialog
+from parasettingdialog import ParaSetting
 from subdevattr import SubDevAttr
 from forbiddevdialog import *
 from singlectrlwidget import *
@@ -30,6 +30,15 @@ class MainWindow(QFrame):
         self.mainWindow.setupUi(self)
         self.mainWindow.versionLabel.setText(self.getVersion())
         self.setWindowTitle("TouchScreen({})".format(Config.monitorId))
+        self.operationButtonGroup = QButtonGroup()
+        self.operationButtonGroup.addButton(self.mainWindow.raisePushButton)
+        self.operationButtonGroup.addButton(self.mainWindow.stopPushButton)
+        self.operationButtonGroup.addButton(self.mainWindow.dropPushButton)
+        self.mainWindow.raisePushButton.pressed.connect(self.onOperationPushButtonPressed)
+        self.mainWindow.stopPushButton.pressed.connect(self.onOperationPushButtonPressed)
+        self.mainWindow.dropPushButton.pressed.connect(self.onOperationPushButtonPressed)
+        self.mainWindow.speedSetSlider.valueChanged.connect(self.onSpeedSetSliderValueChanged)
+        self.devOperationDict = {1<<0:[], 1<<1:[], 1<<2:[]}
         self.subDevList = [[],[]]
         self.creatSubDev(self.subDevList[0], ConfigKeys.onStageDev)
         self.creatSubDev(self.subDevList[1], ConfigKeys.offStageDev)
@@ -42,7 +51,7 @@ class MainWindow(QFrame):
     def init_mainWindow(self):
         # independent control widget
         self.singleCtrlWidget = SingleCtrlWidget(self.subDevList, self)
-        self.singleCtrlWidget.selectedList.connect(self.onSingleWidgetSelected)
+        self.singleCtrlWidget.selectedList.connect(self.onDevOperated)
         self.mainWindowOrder.connect(self.singleCtrlWidget.onHandleExternOrder)
         self.contextLayout = QHBoxLayout()
         self.contextLayout.addWidget(self.singleCtrlWidget)
@@ -50,8 +59,9 @@ class MainWindow(QFrame):
         self.mainWindow.singleCtrlPushButton.clicked.connect(self.onSingleCtrlPushButton)
         self.mainWindow.singleCtrlPushButton.animateClick()
         # setting dialog
-        self.settingDialog = SettingDialog(self.subDevList)
+        self.paraSetting = ParaSetting(self.allDevList)
         self.mainWindow.settingDataPushButton.clicked.connect(self.onSettingPushButtonClicked)
+        self.paraSetting.sendDataToTcpSocket.connect(self.sendDataToTcpSocket)
         # Forbidded dev dialog signals
         self.mainWindow.forbidDevPushButton.clicked.connect(self.onForbidDevDialog)
         # account setting dialog
@@ -72,20 +82,21 @@ class MainWindow(QFrame):
         # user keys
         self.mainWindow.userKeysPushButton.clicked.connect(self.onUserKeysPushButtonClicked)
         self.showUserKeys(self.userKeysList, self)
-    def onSingleWidgetSelected(self, selectedDev):
+    def onDevOperated(self, state, selectedDev):
         try:
             if selectedDev and isinstance(selectedDev, list):
                 devInfoList = []
                 for dev in selectedDev:
-                    devInfoList.append((dev.text(), 0x1))
+                    devInfoList.append(dev.text())
                 print(self.tr("选择了以下设备："), devInfoList)
-                formatData = {"Device": devInfoList}
-                self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.DeviceStateChanged, formatData)
-            else:
-                formatData = {"Device": []}
-                self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.DeviceStateChanged, formatData)
+                self.devOperationDict[state] = selectedDev
+                self.pushDeviceState()
+            else: # 取消旁路设备
+                self.devOperationDict[SettingDevDialog.PartialOperation] = []
+                self.devOperationDict[state] = []
+                self.pushDeviceState()
         except Exception as e:
-            print("onSingleWidgetSelected", str(e))
+            print("onDevOperated", str(e))
     def onSingleCtrlPushButton(self):
         self.mainWindow.modelLabel.setText(self.sender().text())
         self.singleCtrlWidget.show()
@@ -138,15 +149,11 @@ class MainWindow(QFrame):
                     count += 1
             except Exception as err:
                 print("creat sub dev error:{}, {}".format(err, item))
+
     def onSettingPushButtonClicked(self):
-        # todo get data from server
-        self.settingDialog.showFullScreen()
-        self.settingDialog.exec_()
-    def onSettingDevPushButtonClicked(self):
-        settingDev = SettingDevDialog(self.subDevList)
-        settingDev.showFullScreen()
-        settingDev.exec_()
-        self.singleCtrlWidget.showAllDev(self.subDevList)
+        self.paraSetting.showFullScreen()
+        self.paraSetting.exec_()
+
     def onUserKeysPushButtonClicked(self):
         try:
             userKeys = UserKyesDialog(self.allDevList, self.userKeysList)
@@ -155,25 +162,29 @@ class MainWindow(QFrame):
         except Exception as e:
             print(str(e))
     def onAllSubDevPushButtonClicked(self):
-        button = self.sender()
-        activeWin = QApplication.activeWindow()
-        if isinstance(activeWin, ForbidDevDialog):
-            if button.isChecked():
-                button.isUsed = False
-                button.setToolTip(self.tr("设备已禁用"))
-                print(button.text(), "设备已禁用")
+        try:
+            button = self.sender()
+            activeWin = QApplication.activeWindow()
+            if isinstance(activeWin, ForbidDevDialog):
+                if button.isChecked():
+                    button.isUsed = False
+                    button.setToolTip(self.tr("设备已禁用"))
+                else:
+                    button.isUsed = True
+                    button.setToolTip(self.tr("设备已启用"))
             else:
-                button.isUsed = True
-                button.setToolTip(self.tr("设备已启用"))
-                print(button.text(), "设备已启用")
-        else:
-            if button.isChecked():pass
-                # print(button.text(), "设备已选中 key = ", button.devKey)
-            else:
-                if button.isPartialCircuit:
-                    button.isPartialCircuit = False # 取消旁路设备
-                    print(button.text(), "设备旁路已取消")
-                print(button.text(), "设备已取消")
+                if button.isChecked():pass
+                    # print(button.text(), "设备已选中 key = ", button.devKey)
+                else:
+                    promot = ""
+                    if button.isPartialCircuit:
+                        button.isPartialCircuit = False # 取消旁路设备
+                        self.devOperationDict[SettingDevDialog.PartialOperation] = self.checkPartialDevice()
+                        self.pushDeviceState()
+                        promot = "旁路已取消, "
+                    print(button.text(), promot+"设备已取消")
+        except Exception as e:
+            print("onAllSubDevPushButtonClicked", str(e))
     def onTcpState(self, s):
         try:
             if s == QTcpSocket.ConnectedState:
@@ -184,11 +195,23 @@ class MainWindow(QFrame):
                 self.mainWindow.internetLabel.setText(self.tr("网络已断开"))
         except Exception as e:
             print(str(e))
-    def onForbidDevDialog(self):
+
+    def onSettingDevPushButtonClicked(self): # 设备设定
+        settingDev = SettingDevDialog(self.subDevList)
+        settingDev.showFullScreen()
+        settingDev.exec_()
+        self.devOperationDict[SettingDevDialog.PartialOperation] = self.checkPartialDevice()
+        self.pushDeviceState()
+        self.singleCtrlWidget.showAllDev(self.subDevList)
+
+    def onForbidDevDialog(self): # 设备禁用
         forbidDevDialog = ForbidDevDialog(self.subDevList)
         forbidDevDialog.showFullScreen()
         forbidDevDialog.exec_()
+        self.devOperationDict[ForbidDevDialog.ForbiddenOperation] = self.checkForbiddenDevice()
+        self.pushDeviceState()
         self.singleCtrlWidget.showAllDev(self.subDevList)
+
     def onAccountManagement(self):
         login = AccountLogin()
         try:
@@ -223,3 +246,45 @@ class MainWindow(QFrame):
     #     for button in self.userKeysList:
     #         button.move(rect.x() + 300 + count*120, 0)
     #         count += 1
+
+    def checkForbiddenDevice(self):
+        devList = []
+        for subDev in self.subDevList:
+            for dev in subDev:
+                if not dev.isUsed:
+                    devList.append(dev)
+        return devList
+
+    def checkPartialDevice(self):
+        devList = []
+        for subDev in self.subDevList:
+            for dev in subDev:
+                if dev.isPartialCircuit:
+                    devList.append(dev)
+        return devList
+
+    def pushDeviceState(self):
+        devInfoList = []
+        for state, devList in self.devOperationDict.items():
+            for dev in devList:
+                devInfoList.append([dev.text(), state, dev.ctrlWord])
+        self.sendDataToTcpSocket.emit(TcpSocket.Call,
+                                      TcpSocket.DeviceStateChanged,
+                                      {"Device": devInfoList})
+
+    def onOperationPushButtonPressed(self):
+        button = self.sender()
+        if not isinstance(button, QPushButton):
+            return
+        if not button.isDown():
+            return
+        s = 0
+        if button.objectName() == "raisePushButton":
+            s = 1
+        elif button.objectName() == "dropPushButton":
+            s = -1
+        elif button.objectName() == "stopPushButton":
+            s = 0
+        self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.OperationalCtrl, {"State":s})
+    def onSpeedSetSliderValueChanged(self, value):
+        self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SpeedSet, {"Value": value})

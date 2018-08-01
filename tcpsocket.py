@@ -16,6 +16,9 @@ class TcpSocket(QObject):
     CallResult = 3
     CallError = 4
     DeviceStateChanged = "DeviceStateChanged"
+    ParaSetting = "ParaSetting"
+    OperationalCtrl = "OperationalCtrl"
+    SpeedSet = "SpeedSet"
     MonitorId = "MonitorId"
     MonitorDevice = "MonitorDevice"
     MonitorDeviceCount = "MonitorDeviceCount"

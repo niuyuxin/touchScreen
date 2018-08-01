@@ -39,6 +39,7 @@ class SettingDevUnit(QWidget):
             self.setLayout(self.layout)
 
 class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
+    PartialOperation = 1<<2
     def __init__(self, subDevList):
         super().__init__()
         self.setupUi(self)
@@ -58,8 +59,9 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
                 if item.isChecked() and not item.isPartialCircuit:
                     item.setChecked(False)
                     self.holdSelectedDev.append(item)
-                elif item.isPartialCircuit: pass
-                    # item.setChecked(True)
+                elif item.isPartialCircuit:
+                    item.setChecked(True)
+                    item.isPartialCircuit = False
                 buttonGroup.addButton(item)
                 self.buttonGroup.addButton(QPushButton())
                 if item.isUpLimited or item.isDownLimited:
@@ -105,23 +107,27 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
         self.doneSomthing(False)
         self.done(False)
     def doneSomthing(self, retValue):
-        partialDevSelected = self.buttonGroup.checkedButton()
-        del self.buttonGroup
-        if partialDevSelected is None:
-            for item in self.holdSelectedDev:
-                item.setChecked(True)
-            return
-        if retValue:
-            for item in self.holdSelectedDev:
-                item.clicked.emit(False)
-            partialDevSelected.isPartialCircuit = True
-            print(partialDevSelected.text(), "设备旁路已选中 id = ", partialDevSelected.devKey)
-        else: # 选中， 未确认
-            partialDevSelected.setChecked(False)
-            partialDevSelected.clicked.emit(False)
-            # partialDevSelected.animateClick()
-            for item in self.holdSelectedDev:
-                item.setChecked(True)
+        try:
+            partialDevSelected = self.buttonGroup.checkedButton()
+            del self.buttonGroup
+            if partialDevSelected is None:
+                for item in self.holdSelectedDev:
+                    item.setChecked(True)
+                return
+            if retValue:
+                for item in self.holdSelectedDev: # Todo: 旁路设备是否应该禁用已经选中设备？
+                    # item.clicked.emit(False)
+                    item.setChecked(True)
+                partialDevSelected.isPartialCircuit = True
+                print(partialDevSelected.text(), "设备旁路已选中 id = ", partialDevSelected.devKey)
+            else: # 选中， 未确认
+                partialDevSelected.isPartialCircuit = False
+                partialDevSelected.setChecked(False)
+                # partialDevSelected.clicked.emit(False)
+                for item in self.holdSelectedDev:
+                    item.setChecked(True)
+        except Exception as e:
+            print("doneSomthing", str(e))
 
 
 
