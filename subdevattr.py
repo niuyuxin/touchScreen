@@ -18,15 +18,16 @@ class SubDevAttr(QPushButton):
     CW_Downturning = (1<<5)
     CW_Start = (1<<4)
     CW_Stop = (1<<3)
+    valueChanged = pyqtSignal()
     def __init__(self, p = 0, id = 0, key = None, parent = None):
         super(SubDevAttr, self).__init__(parent)
         self.currentPos = p
         self.devId = id
         self.devKey = key
         self.ctrlWord = 0
-        self.upLimitedPos = 1000
+        self.upLimitedPos = 0
         self.downLimitedPos = 0
-        self.calPos = 123
+        self.targetPos = 0
         self.zeroPos = 0
         self.isUsed = True
         self.isUpLimited = False

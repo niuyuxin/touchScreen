@@ -12,6 +12,7 @@ import copy
 class TcpSocket(QObject):
     tcpState=pyqtSignal(int)
     tcpGetOrder = pyqtSignal(str, dict)
+    paraSetting = pyqtSignal(list)
     Call = 2
     CallResult = 3
     CallError = 4
@@ -83,6 +84,7 @@ class TcpSocket(QObject):
                 if order == TcpSocket.BootNotification:
                     self.updateDev()
                 elif order == TcpSocket.UpdateDevice:
+                    self.paraSetting.emit(dataJson[3]["Device"])
                     self.updateDev()
 
         except Exception as e:

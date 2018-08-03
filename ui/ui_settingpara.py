@@ -87,6 +87,6 @@ class Ui_SettingPara(object):
         self.label_5.setText(_translate("SettingPara", "零位："))
         self.devNameLabel.setText(_translate("SettingPara", "TextLabel"))
         self.actualPosLabel.setText(_translate("SettingPara", "0"))
-        self.label_6.setText(_translate("SettingPara", "校准位置："))
+        self.label_6.setText(_translate("SettingPara", "设定位置："))
         self.zeroPosLabel.setText(_translate("SettingPara", "0"))
 

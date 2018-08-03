@@ -102,7 +102,7 @@
    <item row="2" column="0">
     <widget class="QLabel" name="label_6">
      <property name="text">
-      <string>校准位置：</string>
+      <string>设定位置：</string>
      </property>
     </widget>
    </item>

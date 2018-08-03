@@ -74,6 +74,7 @@ class MainWindow(QFrame):
         self.tcpSocketManagement.connect(self.tcpSocket.onTcpSocketManagement)
         self.tcpSocket.tcpState.connect(self.onTcpState)
         self.tcpSocket.tcpGetOrder.connect(self.mainWindowOrder)
+        self.tcpSocket.paraSetting.connect(self.onTcpSocketParaSetting)
         self.tcpSocketThread.started.connect(self.tcpSocket.tcpSocketInit)
         self.tcpSocketThread.start()
         # print("Tcp socket thread = ", self.tcpSocketThread, "current thread = ", self.thread())
@@ -288,3 +289,22 @@ class MainWindow(QFrame):
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.OperationalCtrl, {"State":s})
     def onSpeedSetSliderValueChanged(self, value):
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SpeedSet, {"Value": value})
+
+    def onTcpSocketParaSetting(self, value):
+        try:
+            for info in value:
+                if len(info) <= 4:
+                    continue
+                name = info[0]
+                dev = None
+                for d in self.allDevList:
+                    if d.text() == name:
+                        dev = d
+                        break
+                if dev != None:
+                    dev.targetPos = info[1]
+                    dev.upLimitedPos = info[2]
+                    dev.downLimitedPos = info[3]
+                    dev.valueChanged.emit()
+        except Exception as e:
+            print("onTcpSocketParaSetting", str(e))

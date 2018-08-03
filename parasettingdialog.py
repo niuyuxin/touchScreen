@@ -16,9 +16,10 @@ class SettingParaWidget(QWidget, ui_settingpara.Ui_SettingPara):
         super().__init__(parent)
         self.setupUi(self)
         self.device = dev
+        self.device.valueChanged.connect(self.onDevValueChanged)
         self.devNameLabel.setText(dev.text())
         self.actualPosLabel.setText(str(dev.currentPos))
-        self.calPosSpinBox.setValue(dev.calPos)
+        self.calPosSpinBox.setValue(dev.targetPos)
         self.upLimittedPosSpinBox.setValue(dev.upLimitedPos)
         self.downLimittedPosSpinBox.setValue(dev.downLimitedPos)
         self.zeroPosLabel.setText(str(dev.zeroPos))
@@ -26,16 +27,26 @@ class SettingParaWidget(QWidget, ui_settingpara.Ui_SettingPara):
         self.settingParaButtonBox.rejected.connect(self.reject)
 
     def accept(self):
-        self.device.calPos = self.calPosSpinBox.value()
+        self.device.targetPos = self.calPosSpinBox.value()
         self.device.upLimitedPos = self.upLimittedPosSpinBox.value()
         self.device.downLimitedPos = self.downLimittedPosSpinBox.value()
         self.doneSetting.emit(True)
     def reject(self):
-        self.calPosSpinBox.setValue(self.device.calPos)
+        self.calPosSpinBox.setValue(self.device.targetPos)
         self.upLimittedPosSpinBox.setValue(self.device.upLimitedPos)
         self.downLimittedPosSpinBox.setValue(self.device.downLimitedPos)
         self.doneSetting.emit(False)
 
+    def onDevValueChanged(self):
+        dev = self.sender()
+        if not isinstance(dev, SubDevAttr):
+            return
+        self.actualPosLabel.setText(str(dev.currentPos))
+        self.calPosSpinBox.setValue(dev.targetPos)
+        self.upLimittedPosSpinBox.setValue(dev.upLimitedPos)
+        self.downLimittedPosSpinBox.setValue(dev.downLimitedPos)
+        self.zeroPosLabel.setText(str(dev.zeroPos))
+        pass
 class ParaSetting(QDialog):
     """
         参数设定界面
@@ -58,11 +69,11 @@ class ParaSetting(QDialog):
         allList = allDevList
         for dev in allList:
             devList.append(dev)
-            if not count%15:
+            if not count%21:
                 devListGroup.append(devList)
                 devList = []
             count += 1
-        devListGroup.append(devList) # 追加不足 15 个元素的数据为一组
+        devListGroup.append(devList) # 追加不足 18 个元素的数据为一组
         for groupItem in devListGroup:
             vCount = 0
             hCount = 0
@@ -73,7 +84,7 @@ class ParaSetting(QDialog):
                 sp.doneSetting.connect(self.somthingChanged)
                 gridLayout.addWidget(sp, hCount, vCount)
                 vCount += 1
-                if vCount >= 5:
+                if vCount >= 7:
                     vCount = 0
                     hCount += 1
             widget.setLayout(gridLayout)
@@ -85,7 +96,8 @@ class ParaSetting(QDialog):
             return
         print("{} is setting...".format(spw.device.text()))
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.ParaSetting,
-                                      {"CalPos":spw.device.calPos,
+                                      {"DevId":spw.device.devId,
+                                        "targetPos":spw.device.targetPos,
                                        "UpLimited":spw.device.upLimitedPos,
                                        "DownLimited":spw.device.downLimitedPos
                                        })
