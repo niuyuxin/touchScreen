@@ -20,6 +20,7 @@ class MainWindow(QFrame):
     sendDataToTcpSocket = pyqtSignal(int, str, dict)
     tcpSocketManagement = pyqtSignal(int)
     mainWindowOrder = pyqtSignal(str, dict)
+    runningState = pyqtSignal(int)
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         Config()
@@ -77,7 +78,6 @@ class MainWindow(QFrame):
         self.tcpSocket.paraSetting.connect(self.onTcpSocketParaSetting)
         self.tcpSocketThread.started.connect(self.tcpSocket.tcpSocketInit)
         self.tcpSocketThread.start()
-        # print("Tcp socket thread = ", self.tcpSocketThread, "current thread = ", self.thread())
         # setting dev dialog
         self.mainWindow.settingDevPushButton.clicked.connect(self.onSettingDevPushButtonClicked)
         # user keys
@@ -174,9 +174,7 @@ class MainWindow(QFrame):
                     button.isUsed = True
                     button.setToolTip(self.tr("设备已启用"))
             else:
-                if button.isChecked():pass
-                    # print(button.text(), "设备已选中 key = ", button.devKey)
-                else:
+                if not button.isChecked():
                     promot = ""
                     if button.isPartialCircuit:
                         button.isPartialCircuit = False # 取消旁路设备
@@ -286,7 +284,11 @@ class MainWindow(QFrame):
             s = -1
         elif button.objectName() == "stopPushButton":
             s = 0
+
+        value = self.mainWindow.speedSetSlider.value()
+        self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SpeedSet, {"Value": value})
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.OperationalCtrl, {"State":s})
+
     def onSpeedSetSliderValueChanged(self, value):
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SpeedSet, {"Value": value})
 

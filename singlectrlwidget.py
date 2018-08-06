@@ -44,7 +44,9 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
             self.subDownDevScrollArea.show()
 
     def showAllDev(self, subDevList):
-        """show all device in up-stage and down-stage form """
+        """
+            添加台上台下设备
+        """
         allSelectedDev = []
         for sec, devList in self.deviceStateList.items():
             if sec != Config.monitorId:
