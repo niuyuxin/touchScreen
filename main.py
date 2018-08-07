@@ -4,7 +4,7 @@
 import sys
 from PyQt5.QtWidgets import *
 import mainwindow
-import platform
+from keyboard import *
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -18,6 +18,8 @@ if __name__ == "__main__":
                             "Warning",
                             "Maybe you lost style sheet file for this Application",
                             QMessageBox.Ok)
+    keyboard = KeyBoard()
+    keyboard.hide()
     form = mainwindow.MainWindow()
     form.show()
     app.exec_()

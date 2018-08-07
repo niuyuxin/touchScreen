@@ -31,6 +31,7 @@ class SettingParaWidget(QWidget, ui_settingpara.Ui_SettingPara):
         self.device.upLimitedPos = self.upLimittedPosSpinBox.value()
         self.device.downLimitedPos = self.downLimittedPosSpinBox.value()
         self.doneSetting.emit(True)
+
     def reject(self):
         self.calPosSpinBox.setValue(self.device.targetPos)
         self.upLimittedPosSpinBox.setValue(self.device.upLimitedPos)
@@ -56,8 +57,10 @@ class ParaSetting(QDialog):
         super().__init__(parent)
         self.context = ui_settingdialog.Ui_SettingDialog()
         self.context.setupUi(self)
+        self.context.cancelPushButton.setDefault(True)
         self.setWindowTitle("Setting Device Parameter")
         self.readyAllSettingItems(allDev)
+        self.setFocusPolicy(Qt.WheelFocus)
 
     def readyAllSettingItems(self, allDevList):
         """ set TabWidget items, each tabWidget 15 items
