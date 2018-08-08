@@ -5,6 +5,7 @@ import sys
 from PyQt5.QtWidgets import *
 import mainwindow
 from keyboard import *
+from rcc import rc_touchscreenresource
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -1,0 +1,16 @@
+<RCC>
+  <qresource prefix="images">
+    <file>images/dirpic.jpg</file>
+    <file>images/opendirpic.jpg</file>
+    <file>images/database.jpg</file>
+    <file>images/inverter.png</file>
+    <file>images/steeve.jpg</file>
+    <file>images/login-background.png</file>
+    <file>images/login-account.png</file>
+    <file>images/login-password.png</file>
+    <file>images/login-pushbutton-background.png</file>
+    <file>images/title.png</file>
+    <file>images/settingbuttonup.png</file>
+    <file>images/settingbuttondown.png</file>
+  </qresource>
+</RCC>

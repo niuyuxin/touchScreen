@@ -1,15 +1,108 @@
 
-QTabWidget#tabWidget::pane{
+
+SingleCtrlWidget {
+    background-color: #0b0e19
+}
+QFrame#singleCtrlFrame {
+    background-color: #1b1f2b
+}
+
+QFrame#devGroupSelectFrame {
+    background-color: blue
+}
+
+QScrollBar {
+    background-color: transparent
+}
+MainWindow {
+    background-color: black
+}
+
+QScrollArea#subUpDevScrollArea::corner {
+    background-color: transparent
+}
+QScrollArea#subDownDevScrollArea::corner {
+    background-color: transparent
+}
+QTabWidget#tabWidget::pane {
     border-top: 2px solid #C2C7CB;
 }
 
 SystemManagement {
     background-color: green
 }
-
-QPushButton:hover{ background-color: white }
-
- QTabBar::tab {
+QGroupBox#setting, QGroupBox#analogControlGroupBox {
+    border:none;
+    background-color: #0b0e19
+}
+QPushButton#raisePushButton, QPushButton#stopPushButton, QPushButton#dropPushButton {
+    color: white;
+    height:50px;
+    min-width:200px;
+    background-color: blue;
+    font-size: 15px;
+    border:2px solid;
+    border-top-left-radius:8px;
+    border-top-right-radius:8px;
+    border-bottom-left-radius:8px;
+    border-bottom-right-radius:8px
+}
+QPushButton#raisePushButton:checked,
+QPushButton#stopPushButton:checked,
+QPushButton#dropPushButton:checked {
+    background-color: transparent;
+}
+QPushButton#singleCtrlPushButton, QPushButton#settingDataPushButton,
+QPushButton#userKeysPushButton, QPushButton#forbidDevPushButton,
+QPushButton#settingDevPushButton, QPushButton#settingDevPushButton,
+QPushButton#accountPushButton
+{
+    border-image:url(:/images/images/settingbuttonup.png);
+    color:white;
+    height: 60px;
+    width: 80px;
+}
+QPushButton#singleCtrlPushButton:pressed, QPushButton#settingDataPushButton:pressed,
+QPushButton#userKeysPushButton:pressed, QPushButton#forbidDevPushButton:pressed,
+QPushButton#settingDevPushButton:pressed, QPushButton#settingDevPushButton:pressed,
+QPushButton#accountPushButton:pressed
+{
+    border-image:url(:/images/images/settingbuttondown.png);
+}
+QPushButton#singleCtrlPushButton:hover, QPushButton#settingDataPushButton:hover,
+QPushButton#userKeysPushButton:hover, QPushButton#forbidDevPushButton:hover,
+QPushButton#settingDevPushButton:hover, QPushButton#settingDevPushButton:hover,
+QPushButton#accountPushButton:hover
+{
+    border-image:url(:/images/images/settingbuttondown.png);
+}
+QLabel#settingTextLabel {
+    color: white;
+    font-size:15px;
+    min-height: 60px;
+    min-width: 80px;
+}
+QPushButton#resetInverterPushButton, QPushButton#clearFaultPushButton {
+    height:40px;
+    width:80px;
+    color:blue;
+    border:2px solid blue;
+    border-top-left-radius:8px;
+    border-top-right-radius:8px;
+    border-bottom-left-radius:8px;
+    border-bottom-right-radius:8px
+}
+QPushButton#exitBushButton {
+    height:40px;
+    width:80px;
+    color:orange;
+    border:2px solid orange;
+    border-top-left-radius:8px;
+    border-top-right-radius:8px;
+    border-bottom-left-radius:8px;
+    border-bottom-right-radius:8px
+}
+QTabBar::tab {
      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                  stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
                                  stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
@@ -27,4 +120,41 @@ QPushButton:hover{ background-color: white }
                                  stop: 0 #fafafa, stop: 0.4 #f4f4f4,
                                  stop: 0.5 #e7e7e7, stop: 1.0 #fafafa);
  }
+QLabel#tipsLabel {
+    color: white
+}
+QPushButton#subUpDevPushButton, QPushButton#subDownDevPushButton{
+    border: hidden;
+    color: white;
+    font: bold;
+    height: 60;
+    width: 100;
+}
+QPushButton#subUpDevPushButton:checked, QPushButton#subDownDevPushButton:checked {
+    background-color: #1b1f2b
+}
+QPushButton#confirmPushButton, QPushButton#cancelPushButton {
+    color: white;
+    font-size:15px;
+    height: 50;
+    width: 120;
+    background-color: rgb(50, 50, 50)
+}
+QFrame#titleFrame {
+    border-image:url(:/images/images/title.png);
+}
+QLabel#versionLabel, QLabel#internetLabel, QLabel#timeLabel{
+    color:white;
+    font: bold;
+    font-size: 14px;
+}
+QFrame {
+    background-color: transparent
+}
+QPushButton {
+    font-size: 15px;
+}
+QPushButton:checked{
+    background-color:#1b1f2b;
 
+}

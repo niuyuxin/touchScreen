@@ -3,6 +3,7 @@
 import sys
 from math import *
 from PyQt5 import QtCore
+from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtNetwork import *
 from ui import ui_mainwindow
@@ -29,6 +30,7 @@ class MainWindow(QFrame):
         self.rtc.start(1000)
         self.mainWindow = ui_mainwindow.Ui_mainWindow()
         self.mainWindow.setupUi(self)
+        print(QFile("/images/images/title.png").exists())
         self.mainWindow.versionLabel.setText(self.getVersion())
         self.setWindowTitle("TouchScreen({})".format(Config.monitorId))
         self.operationButtonGroup = QButtonGroup()
@@ -56,6 +58,7 @@ class MainWindow(QFrame):
         self.mainWindowOrder.connect(self.singleCtrlWidget.onHandleExternOrder)
         self.contextLayout = QHBoxLayout()
         self.contextLayout.addWidget(self.singleCtrlWidget)
+        self.contextLayout.setContentsMargins(0,0,0,0)
         self.mainWindow.contextFrame.setLayout(self.contextLayout)
         self.mainWindow.singleCtrlPushButton.clicked.connect(self.onSingleCtrlPushButton)
         self.mainWindow.singleCtrlPushButton.animateClick()
@@ -103,7 +106,7 @@ class MainWindow(QFrame):
         self.singleCtrlWidget.show()
     def rtcTimeout(self):
         # real time
-        self.mainWindow.timeLabel.setText(QDateTime.currentDateTime().toString("yyyy-MM-dd hh:mm:ss"))
+        self.mainWindow.timeLabel.setText(QDateTime.currentDateTime().toString("yyyy/MM/dd dddd hh:mm:ss"))
     def getVersion(self):
         return "PyQt Version {}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
     def creatUserKeys(self, userKeys = [], allDevList = []):
@@ -290,6 +293,7 @@ class MainWindow(QFrame):
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.OperationalCtrl, {"State":s})
 
     def onSpeedSetSliderValueChanged(self, value):
+        self.mainWindow.lcdNumber.display(value)
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SpeedSet, {"Value": value})
 
     def onTcpSocketParaSetting(self, value):

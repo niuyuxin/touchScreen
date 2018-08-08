@@ -4,6 +4,7 @@
 from ui import ui_singlectrlwidget
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from PyQt5.Qt import *
 from config import *
 
 class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
@@ -54,10 +55,10 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
                     allSelectedDev.append(dev)
         for i in range(len(subDevList)):
             count = 0
-            widget = QWidget()
+            devFrame = QFrame()
             gridLayout = QGridLayout()
             gridLayout.setSpacing(10)
-            widget.setLayout(gridLayout)
+            devFrame.setLayout(gridLayout)
             for subDev in subDevList[i]:
                 self.devButtonGroup.addButton(subDev)
                 subDev.setFixedSize(100, 100)
@@ -70,9 +71,9 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
                     subDev.setToolTip("")
                     subDev.setEnabled(True)
                 if i == 0:
-                    self.subUpDevScrollArea.setWidget(widget)
+                    self.subUpDevScrollArea.setWidget(devFrame)
                 else:
-                    self.subDownDevScrollArea.setWidget(widget)
+                    self.subDownDevScrollArea.setWidget(devFrame)
                 gridLayout.addWidget(subDev, count/10, count%10)
                 count += 1
     def onCancelPushButtonClicked(self):
@@ -137,3 +138,8 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
                 if name == subDev.text():
                     return subDev
 
+    def paintEvent(self, QPaintEvent):
+        opt = QStyleOption()
+        opt.initFrom(self)
+        p = QPainter(self)
+        self.style().drawPrimitive(QStyle.PE_Widget, opt, p, self)

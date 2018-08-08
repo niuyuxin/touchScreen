@@ -23,8 +23,13 @@ class KeyBoard(QWidget):
         for key in keyStr:
             btn = QPushButton(key)
             btn.setFocusPolicy(Qt.NoFocus)
-            btn.clicked.connect(self.onButtonClicked)
+            font = btn.font()
+            font.setPointSize(15)
+            font.setBold(True)
+            btn.setFont(font)
+            # btn.setStyleSheet("color:pink; font-weight: bold;")
             btn.setFixedSize(70, 70)
+            btn.clicked.connect(self.onButtonClicked)
             if count != 0 and count%3 == 0:
                 row += 1
             self.gridLayout.addWidget(btn, row, count%3)
@@ -34,16 +39,17 @@ class KeyBoard(QWidget):
     def focusChanged(self, old, new):
         try:
             if new is not None and not self.isAncestorOf(new):
-                if new.inherits("QSpinBox"):
+                if new.inherits("QLineEdit"):
                     self.focusWidget = new
                     width = qApp.desktop().screenGeometry().width()
                     height = qApp.desktop().screenGeometry().height()
-                    moveWidth = QCursor.pos().x()
-                    moveHeight = QCursor.pos().y()
+                    globalPos = self.focusWidget.mapToGlobal(QPoint(0, 0))
+                    moveWidth = globalPos.x() + self.focusWidget.geometry().width() # QCursor.pos().x()
+                    moveHeight = globalPos.y() + self.focusWidget.geometry().height()# QCursor.pos().y()
                     if moveWidth + self.frameGeometry().width() > width:
-                        moveWidth = moveWidth - self.frameGeometry().width()
+                        moveWidth = moveWidth - self.frameGeometry().width()-self.focusWidget.geometry().width()
                     if moveHeight + self.frameGeometry().height() > height:
-                        moveHeight = moveHeight - self.frameGeometry().height()
+                        moveHeight = moveHeight - self.frameGeometry().height()-self.focusWidget.geometry().height()
                     self.move(moveWidth, moveHeight)
                     self.setVisible(True)
                 else:
@@ -58,15 +64,15 @@ class KeyBoard(QWidget):
 
     def onButtonClicked(self):
         try:
-            keyValue =  self.sender().text()
+            btn = self.sender()
+            if not isinstance(btn, QPushButton): return
+            keyValue =  btn.text()
             if keyValue in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]:
-                value = self.focusWidget.value()
-                self.focusWidget.setValue(value*10 + int(keyValue))
+                self.focusWidget.insert(keyValue)
                 # tabKey = QKeyEvent(QEvent.KeyPress, Qt.Key_2, Qt.NoModifier)
                 # QCoreApplication.sendEvent(self, tabKey)
             elif keyValue == "删除":
-                value = self.focusWidget.value()
-                self.focusWidget.setValue(value // 10)
+                self.focusWidget.backspace()
                 # tabKey = QKeyEvent(QEvent.KeyPress, Qt.Key_Backspace, Qt.NoModifier)
                 # QCoreApplication.sendEvent(self, tabKey)
             else:

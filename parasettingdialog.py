@@ -2,7 +2,7 @@
 # -*- coding:utf8 -*-
 
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import *
 from config import Config
 from ui import ui_settingpara
 from ui import ui_settingdialog
@@ -19,35 +19,50 @@ class SettingParaWidget(QWidget, ui_settingpara.Ui_SettingPara):
         self.device.valueChanged.connect(self.onDevValueChanged)
         self.devNameLabel.setText(dev.text())
         self.actualPosLabel.setText(str(dev.currentPos))
-        self.calPosSpinBox.setValue(dev.targetPos)
-        self.upLimittedPosSpinBox.setValue(dev.upLimitedPos)
-        self.downLimittedPosSpinBox.setValue(dev.downLimitedPos)
+        regExp = QRegExp("[0-9]{0,6}")
+        validator = QRegExpValidator(regExp)
+        self.targetPosLineEdit.setText(str(dev.targetPos))
+        self.targetPosLineEdit.setValidator(validator)
+        self.upperLimitPosLineEdit.setText(str(dev.upLimitedPos))
+        self.upperLimitPosLineEdit.setValidator(validator)
+        self.lowerLimitPosLineEdit.setText(str(dev.downLimitedPos))
+        self.lowerLimitPosLineEdit.setValidator(validator)
         self.zeroPosLabel.setText(str(dev.zeroPos))
         self.settingParaButtonBox.accepted.connect(self.accept)
         self.settingParaButtonBox.rejected.connect(self.reject)
 
     def accept(self):
-        self.device.targetPos = self.calPosSpinBox.value()
-        self.device.upLimitedPos = self.upLimittedPosSpinBox.value()
-        self.device.downLimitedPos = self.downLimittedPosSpinBox.value()
-        self.doneSetting.emit(True)
+        try:
+            targetPos = int(self.targetPosLineEdit.text())
+            upperLimitPos = int(self.upperLimitPosLineEdit.text())
+            lowerLimitPos = int(self.lowerLimitPosLineEdit.text())
+            if targetPos not in range(lowerLimitPos, upperLimitPos) or \
+                lowerLimitPos > upperLimitPos:
+                self.reject()
+                return
+            self.device.targetPos = targetPos
+            self.device.upLimitedPos = upperLimitPos
+            self.device.downLimitedPos = lowerLimitPos
+            self.doneSetting.emit(True)
+        except:pass
 
     def reject(self):
-        self.calPosSpinBox.setValue(self.device.targetPos)
-        self.upLimittedPosSpinBox.setValue(self.device.upLimitedPos)
-        self.downLimittedPosSpinBox.setValue(self.device.downLimitedPos)
+        self.targetPosLineEdit.setText(str(self.device.targetPos))
+        self.upperLimitPosLineEdit.setText(str(self.device.upLimitedPos))
+        self.lowerLimitPosLineEdit.setText(str(self.device.downLimitedPos))
         self.doneSetting.emit(False)
 
     def onDevValueChanged(self):
-        dev = self.sender()
-        if not isinstance(dev, SubDevAttr):
-            return
-        self.actualPosLabel.setText(str(dev.currentPos))
-        self.calPosSpinBox.setValue(dev.targetPos)
-        self.upLimittedPosSpinBox.setValue(dev.upLimitedPos)
-        self.downLimittedPosSpinBox.setValue(dev.downLimitedPos)
-        self.zeroPosLabel.setText(str(dev.zeroPos))
-        pass
+        try:
+            dev = self.sender()
+            if not isinstance(dev, SubDevAttr):
+                return
+            self.actualPosLabel.setText(str(dev.currentPos))
+            self.targetPosLineEdit.setText(str(dev.targetPos))
+            self.upperLimitPosLineEdit.setText(str(dev.upLimitedPos))
+            self.lowerLimitPosLineEdit.setText(str(dev.downLimitedPos))
+            self.zeroPosLabel.setText(str(dev.zeroPos))
+        except: pass
 class ParaSetting(QDialog):
     """
         参数设定界面
