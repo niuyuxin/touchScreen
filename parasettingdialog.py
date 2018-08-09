@@ -16,6 +16,7 @@ class SettingParaWidget(QWidget, ui_settingpara.Ui_SettingPara):
         super().__init__(parent)
         self.setupUi(self)
         self.device = dev
+        self.setFixedSize(self.sizeHint())
         self.device.valueChanged.connect(self.onDevValueChanged)
         self.devNameLabel.setText(dev.text())
         self.actualPosLabel.setText(str(dev.currentPos))
@@ -28,8 +29,10 @@ class SettingParaWidget(QWidget, ui_settingpara.Ui_SettingPara):
         self.lowerLimitPosLineEdit.setText(str(dev.downLimitedPos))
         self.lowerLimitPosLineEdit.setValidator(validator)
         self.zeroPosLabel.setText(str(dev.zeroPos))
-        self.settingParaButtonBox.accepted.connect(self.accept)
-        self.settingParaButtonBox.rejected.connect(self.reject)
+        self.okPushButton.clicked.connect(self.accept)
+        self.okPushButton.setFocusPolicy(Qt.NoFocus)
+        self.cancelButton.clicked.connect(self.reject)
+        self.cancelButton.setFocusPolicy(Qt.NoFocus)
 
     def accept(self):
         try:
@@ -72,7 +75,7 @@ class ParaSetting(QDialog):
         super().__init__(parent)
         self.context = ui_settingdialog.Ui_SettingDialog()
         self.context.setupUi(self)
-        self.context.cancelPushButton.setDefault(True)
+        self.setWindowState(Qt.WindowMaximized)
         self.setWindowTitle("Setting Device Parameter")
         self.readyAllSettingItems(allDev)
         self.setFocusPolicy(Qt.WheelFocus)
@@ -87,7 +90,7 @@ class ParaSetting(QDialog):
         allList = allDevList
         for dev in allList:
             devList.append(dev)
-            if not count%21:
+            if not count%24:
                 devListGroup.append(devList)
                 devList = []
             count += 1
@@ -102,7 +105,7 @@ class ParaSetting(QDialog):
                 sp.doneSetting.connect(self.somthingChanged)
                 gridLayout.addWidget(sp, hCount, vCount)
                 vCount += 1
-                if vCount >= 7:
+                if vCount >= 6:
                     vCount = 0
                     hCount += 1
             widget.setLayout(gridLayout)

@@ -156,5 +156,7 @@ QPushButton {
 }
 QPushButton:checked{
     background-color:#1b1f2b;
-
+}
+QLabel#modelTextLabel {
+    color: white
 }

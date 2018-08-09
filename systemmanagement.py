@@ -51,6 +51,7 @@ class SystemManagement(QDialog, ui_systemmanagementwidget.Ui_SystemManagementWid
         super().__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("账号管理")
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
         regExp = QRegExp(r"((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)")
         self.serverIpLineEdit.setValidator(QRegExpValidator(regExp))
         self.serverIpLineEdit.setText(Config.value(ConfigKeys.serverIp))

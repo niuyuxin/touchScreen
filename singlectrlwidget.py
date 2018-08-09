@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.Qt import *
 from config import *
+from tcpsocket import *
 
 class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
     selectedList = pyqtSignal(int, list)
@@ -104,9 +105,9 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
     @pyqtSlot(str, dict)
     def onHandleExternOrder(self, o, info):
         try:
-            if o == "ForbiddenDevice":
+            if o == TcpSocket.ForbiddenDevice:
                 self.setEnabled(not info["Enable"])
-            elif o == "DeviceStateChanged":
+            elif o == TcpSocket.DeviceStateChanged:
                 sec = info["Section"]
                 deviceList = info["Device"]
                 if sec in self.deviceStateList.keys():

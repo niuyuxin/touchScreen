@@ -7,6 +7,7 @@ from PyQt5.QtCore import *
 class KeyBoard(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setWindowModality(Qt.WindowModal)
         self.setFocusPolicy(Qt.NoFocus)
         self.setWindowTitle("Keyboard")
         self.setWindowFlags(Qt.Tool | Qt.WindowStaysOnTopHint | Qt.WindowDoesNotAcceptFocus)
@@ -17,7 +18,7 @@ class KeyBoard(QWidget):
 
     def initKeyWidget(self):
         self.gridLayout = QGridLayout()
-        keyStr = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "删除","退出"]
+        keyStr = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ".", "回车", "删除","退出"]
         row = 0
         count = 0
         for key in keyStr:
@@ -30,16 +31,16 @@ class KeyBoard(QWidget):
             # btn.setStyleSheet("color:pink; font-weight: bold;")
             btn.setFixedSize(70, 70)
             btn.clicked.connect(self.onButtonClicked)
-            if count != 0 and count%3 == 0:
+            if count != 0 and count%4 == 0:
                 row += 1
-            self.gridLayout.addWidget(btn, row, count%3)
+            self.gridLayout.addWidget(btn, row, count%4)
             count += 1
         self.setLayout(self.gridLayout)
 
     def focusChanged(self, old, new):
         try:
             if new is not None and not self.isAncestorOf(new):
-                if new.inherits("QLineEdit"):
+                if new.inherits("QLineEdit") or new.inherits("QSpinBox"):
                     self.focusWidget = new
                     width = qApp.desktop().screenGeometry().width()
                     height = qApp.desktop().screenGeometry().height()
@@ -67,14 +68,15 @@ class KeyBoard(QWidget):
             btn = self.sender()
             if not isinstance(btn, QPushButton): return
             keyValue =  btn.text()
-            if keyValue in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]:
-                self.focusWidget.insert(keyValue)
-                # tabKey = QKeyEvent(QEvent.KeyPress, Qt.Key_2, Qt.NoModifier)
-                # QCoreApplication.sendEvent(self, tabKey)
+            if keyValue in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."]:
+                tabKey = QKeyEvent(QEvent.KeyPress, Qt.Key_2, Qt.NoModifier, keyValue)
+                QApplication.sendEvent(self.focusWidget, tabKey)
             elif keyValue == "删除":
-                self.focusWidget.backspace()
-                # tabKey = QKeyEvent(QEvent.KeyPress, Qt.Key_Backspace, Qt.NoModifier)
-                # QCoreApplication.sendEvent(self, tabKey)
+                tabKey = QKeyEvent(QEvent.KeyPress, Qt.Key_Backspace, Qt.NoModifier, "backspace")
+                QCoreApplication.sendEvent(self.focusWidget, tabKey)
+            elif keyValue == "回车":
+                tabKey = QKeyEvent(QEvent.KeyPress, Qt.Key_Enter, Qt.NoModifier, "enter")
+                QCoreApplication.sendEvent(self.focusWidget, tabKey)
             else:
                 self.close()
         except Exception as e:

@@ -30,7 +30,6 @@ class MainWindow(QFrame):
         self.rtc.start(1000)
         self.mainWindow = ui_mainwindow.Ui_mainWindow()
         self.mainWindow.setupUi(self)
-        print(QFile("/images/images/title.png").exists())
         self.mainWindow.versionLabel.setText(self.getVersion())
         self.setWindowTitle("TouchScreen({})".format(Config.monitorId))
         self.operationButtonGroup = QButtonGroup()
@@ -63,13 +62,15 @@ class MainWindow(QFrame):
         self.mainWindow.singleCtrlPushButton.clicked.connect(self.onSingleCtrlPushButton)
         self.mainWindow.singleCtrlPushButton.animateClick()
         # setting dialog
-        self.paraSetting = ParaSetting(self.allDevList)
         self.mainWindow.settingDataPushButton.clicked.connect(self.onSettingPushButtonClicked)
+        self.paraSetting = ParaSetting(self.allDevList)
         self.paraSetting.sendDataToTcpSocket.connect(self.sendDataToTcpSocket)
         # Forbidded dev dialog signals
         self.mainWindow.forbidDevPushButton.clicked.connect(self.onForbidDevDialog)
         # account setting dialog
         self.mainWindow.accountPushButton.clicked.connect(self.onAccountManagement)
+        self.systemManagement = SystemManagement()
+        self.systemManagement.somthingChanged.connect(self.onSystemManagementSomthingChanged)
         # Tcp socket, creat alone thread
         self.tcpSocket = TcpSocket(self.allDevList)
         self.tcpSocketThread = QThread()
@@ -78,6 +79,7 @@ class MainWindow(QFrame):
         self.tcpSocketManagement.connect(self.tcpSocket.onTcpSocketManagement)
         self.tcpSocket.tcpState.connect(self.onTcpState)
         self.tcpSocket.tcpGetOrder.connect(self.mainWindowOrder)
+        self.tcpSocket.tcpGetOrder.connect(self.onTcpsocketTcpGetOrder)
         self.tcpSocket.paraSetting.connect(self.onTcpSocketParaSetting)
         self.tcpSocketThread.started.connect(self.tcpSocket.tcpSocketInit)
         self.tcpSocketThread.start()
@@ -101,14 +103,15 @@ class MainWindow(QFrame):
                 self.pushDeviceState()
         except Exception as e:
             print("onDevOperated", str(e))
+
     def onSingleCtrlPushButton(self):
-        self.mainWindow.modelLabel.setText(self.sender().text())
         self.singleCtrlWidget.show()
+
     def rtcTimeout(self):
         # real time
         self.mainWindow.timeLabel.setText(QDateTime.currentDateTime().toString("yyyy/MM/dd dddd hh:mm:ss"))
     def getVersion(self):
-        return "PyQt Version {}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
+        return "Version {}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
     def creatUserKeys(self, userKeys = [], allDevList = []):
         for item in Config.getGroupValue(ConfigKeys.userKeys): # all button for user
             try:
@@ -155,7 +158,6 @@ class MainWindow(QFrame):
                 print("creat sub dev error:{}, {}".format(err, item))
 
     def onSettingPushButtonClicked(self):
-        self.paraSetting.showFullScreen()
         self.paraSetting.exec_()
 
     def onUserKeysPushButtonClicked(self):
@@ -218,9 +220,7 @@ class MainWindow(QFrame):
         login = AccountLogin()
         try:
             if login.exec_():
-                a = SystemManagement()
-                a.somthingChanged.connect(self.onSystemManagementSomthingChanged)
-                a.exec_()
+                self.systemManagement.exec_()
             else:
                 return
         except Exception as e:
@@ -314,3 +314,15 @@ class MainWindow(QFrame):
                     dev.valueChanged.emit()
         except Exception as e:
             print("onTcpSocketParaSetting", str(e))
+
+    def onTcpsocketTcpGetOrder(self, action, info):
+        try:
+            if action == TcpSocket.ForbiddenDevice:
+                enable = info["Enable"]
+                self.mainWindow.analogControlGroupBox.setEnabled(not enable)
+                if enable:
+                    self.mainWindow.modelTextLabel.setText(self.tr("程控模式"))
+                else:
+                    self.mainWindow.modelTextLabel.setText(self.tr("单控模式"))
+        except Exception as e:
+            print("onTcpsocketTcpGetOrder", str(e))

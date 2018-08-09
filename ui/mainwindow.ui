@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>952</width>
-    <height>823</height>
+    <width>854</width>
+    <height>396</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -117,7 +117,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <property name="spacing">
-         <number>0</number>
+         <number>6</number>
         </property>
         <item>
          <widget class="QLabel" name="settingTextLabel">
@@ -395,7 +395,7 @@ font: 14pt &quot;Arial&quot;;</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="modelLabel">
+           <widget class="QLabel" name="modelTextLabel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -415,7 +415,7 @@ font: 14pt &quot;Arial&quot;;</string>
              <enum>QFrame::Raised</enum>
             </property>
             <property name="text">
-             <string>TextLabel</string>
+             <string>单控模式</string>
             </property>
            </widget>
           </item>

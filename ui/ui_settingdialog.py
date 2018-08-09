@@ -26,6 +26,7 @@ class Ui_SettingDialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.cancelPushButton.sizePolicy().hasHeightForWidth())
         self.cancelPushButton.setSizePolicy(sizePolicy)
+        self.cancelPushButton.setAutoDefault(False)
         self.cancelPushButton.setObjectName("cancelPushButton")
         self.verticalLayout.addWidget(self.cancelPushButton)
 

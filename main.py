@@ -21,6 +21,7 @@ if __name__ == "__main__":
                             QMessageBox.Ok)
     keyboard = KeyBoard()
     keyboard.hide()
+
     form = mainwindow.MainWindow()
     form.show()
     app.exec_()
