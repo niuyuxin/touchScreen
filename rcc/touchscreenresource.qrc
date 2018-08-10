@@ -1,5 +1,5 @@
 <RCC>
-  <qresource prefix="images">
+  <qresource>
     <file>images/dirpic.jpg</file>
     <file>images/opendirpic.jpg</file>
     <file>images/database.jpg</file>
@@ -12,5 +12,6 @@
     <file>images/title.png</file>
     <file>images/settingbuttonup.png</file>
     <file>images/settingbuttondown.png</file>
+    <file>qss/touchscreen.qss</file>
   </qresource>
 </RCC>

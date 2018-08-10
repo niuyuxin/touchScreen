@@ -57,7 +57,7 @@ QPushButton#userKeysPushButton, QPushButton#forbidDevPushButton,
 QPushButton#settingDevPushButton, QPushButton#settingDevPushButton,
 QPushButton#accountPushButton
 {
-    border-image:url(:/images/images/settingbuttonup.png);
+    border-image:url(:/images/settingbuttonup.png);
     color:white;
     height: 60px;
     width: 80px;
@@ -67,14 +67,14 @@ QPushButton#userKeysPushButton:pressed, QPushButton#forbidDevPushButton:pressed,
 QPushButton#settingDevPushButton:pressed, QPushButton#settingDevPushButton:pressed,
 QPushButton#accountPushButton:pressed
 {
-    border-image:url(:/images/images/settingbuttondown.png);
+    border-image:url(:/images/settingbuttondown.png);
 }
 QPushButton#singleCtrlPushButton:hover, QPushButton#settingDataPushButton:hover,
 QPushButton#userKeysPushButton:hover, QPushButton#forbidDevPushButton:hover,
 QPushButton#settingDevPushButton:hover, QPushButton#settingDevPushButton:hover,
 QPushButton#accountPushButton:hover
 {
-    border-image:url(:/images/images/settingbuttondown.png);
+    border-image:url(:/images/settingbuttondown.png);
 }
 QLabel#settingTextLabel {
     color: white;
@@ -141,7 +141,7 @@ QPushButton#confirmPushButton, QPushButton#cancelPushButton {
     background-color: rgb(50, 50, 50)
 }
 QFrame#titleFrame {
-    border-image:url(:/images/images/title.png);
+    border-image:url(:/images/title.png);
 }
 QLabel#versionLabel, QLabel#internetLabel, QLabel#timeLabel{
     color:white;

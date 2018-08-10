@@ -10,11 +10,11 @@ from rcc import rc_touchscreenresource
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     try:
-        with open("touchscreen.qss", 'r') as qssFile:
-            styleSheet = qssFile.readlines()
-        qApp.setStyleSheet("".join(styleSheet))
+        qssFile = QFile(":/qss/touchscreen.qss")
+        qssFile.open(QFile.ReadOnly)
+        qApp.setStyleSheet(str(qssFile.readAll(), encoding='utf-8'))
     except Exception as e:
-        print(str(e))
+        print("Qss file error:", str(e))
         QMessageBox.warning(None,
                             "Warning",
                             "Maybe you lost style sheet file for this Application",
