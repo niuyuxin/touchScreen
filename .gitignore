@@ -4,3 +4,4 @@ ui/__pycache__/*
 *.ini
 .idea/*
 ./ui_*.py
+./rcc/__pycache__/*

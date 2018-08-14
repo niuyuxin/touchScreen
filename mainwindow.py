@@ -53,6 +53,7 @@ class MainWindow(QFrame):
         self.analogDetection = AnalogDetection()
         self.analogDetectionThread = QThread()
         self.analogDetection.moveToThread(self.analogDetectionThread)
+        self.analogDetection.ADValueChanged.connect(self.onSpeedSetSliderValueChanged)
         self.analogDetectionThread.started.connect(self.analogDetection.init)
         self.analogDetectionThread.start()
         self.init_mainWindow()
@@ -301,6 +302,8 @@ class MainWindow(QFrame):
     def onSpeedSetSliderValueChanged(self, value):
         self.mainWindow.lcdNumber.display(value)
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SpeedSet, {"Value": value})
+    def onAnalogDetectionADValueChanged(self, port, value):
+        self.mainWindow.speedSetSlider.setValue(value)
 
     def onTcpSocketParaSetting(self, value):
         try:
