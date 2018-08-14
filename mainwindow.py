@@ -53,7 +53,7 @@ class MainWindow(QFrame):
         self.analogDetection = AnalogDetection()
         self.analogDetectionThread = QThread()
         self.analogDetection.moveToThread(self.analogDetectionThread)
-        self.analogDetection.ADValueChanged.connect(self.onSpeedSetSliderValueChanged)
+        self.analogDetection.ADValueChanged.connect(self.onAnalogDetectionADValueChanged)
         self.analogDetectionThread.started.connect(self.analogDetection.init)
         self.analogDetectionThread.start()
         self.init_mainWindow()
