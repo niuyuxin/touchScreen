@@ -7,15 +7,16 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtNetwork import *
 from ui import ui_mainwindow
-from config import  Config
+from config import Config
 from parasettingdialog import ParaSetting
 from subdevattr import SubDevAttr
 from forbiddevdialog import *
 from singlectrlwidget import *
 from systemmanagement import *
-from tcpsocket import  TcpSocket
-from settingdev import  SettingDevDialog
-from userkeys import  *
+from tcpsocket import TcpSocket
+from settingdev import SettingDevDialog
+from userkeys import *
+from analogdetection import *
 
 class MainWindow(QFrame):
     sendDataToTcpSocket = pyqtSignal(int, str, dict)
@@ -49,6 +50,11 @@ class MainWindow(QFrame):
         self.allDevList.extend(self.subDevList[0])
         self.allDevList.extend(self.subDevList[1])
         self.creatUserKeys(self.userKeysList, self.allDevList)
+        self.analogDetection = AnalogDetection()
+        self.analogDetectionThread = QThread()
+        self.analogDetection.moveToThread(self.analogDetectionThread)
+        self.analogDetectionThread.started.connect(self.analogDetection.init)
+        self.analogDetectionThread.start()
         self.init_mainWindow()
     def init_mainWindow(self):
         # independent control widget
