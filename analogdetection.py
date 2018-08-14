@@ -4,7 +4,7 @@ import platform
 from PyQt5.QtCore import *
 if platform.machine() == "armv7l" and platform.node() == "raspberrypi":
     import RPi.GPIO as GPIO
-
+import PCF8591 as ADC
 
 class AnalogDetection(QObject):
     GPIO_RAISE = 5
@@ -30,6 +30,7 @@ class AnalogDetection(QObject):
     @pyqtSlot()
     def init(self):
         if not self.isRaspberryPi: return
+        # key gpio
         self.keyGpio = {AnalogDetection.GPIO_RAISE:[],
                           AnalogDetection.GPIO_STOP:[],
                           AnalogDetection.GPIO_DROP:[],
@@ -37,15 +38,19 @@ class AnalogDetection(QObject):
                           AnalogDetection.GPIO_USER_KEY1: [],
                           AnalogDetection.GPIO_USER_KEY2: [],
                           AnalogDetection.GPIO_USER_KEY3: []}
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
         for key in self.keyGpio.keys():
             GPIO.setup(key, GPIO.IN, pull_up_down=GPIO.PUD_UP)
             GPIO.add_event_detect(key, GPIO.FALLING, callback=self.keyDetected, bouncetime=30)
-        # self.keyTimer = QTimer(self)
-        # self.keyTimer.timeout.connect(self.onKeyTimerTimeout)
-        # self.keyTimer.start(10)
+        # AD
+        ADC.setup(0x48)
+        self.keyTimer = QTimer(self)
+        self.keyTimer.timeout.connect(self.onKeyTimerTimeout)
+        self.keyTimer.start(1000)
 
     def onKeyTimerTimeout(self):
-        pass
+        print(ADC.read(0))
 
     def keyDetected(self, key):
         print(key, "Pressed")
