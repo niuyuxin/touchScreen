@@ -118,10 +118,10 @@ if __name__ == '__main__':
 class AnalogDetection(QObject):
     GPIO_RAISE = 5
     GPIO_STOP = 6
-    GPIO_DROP = 7
-    GPIO_RAISE_LED = 3
-    GPIO_STOP_LED = 4
-    GPIO_DROP_LED = 5
+    GPIO_DROP = 13
+    GPIO_RAISE_LED = 16
+    GPIO_STOP_LED = 20
+    GPIO_DROP_LED = 21
     SPEED_ANALOG_IN = 6
     GPIO_PWM = 7
     GPIO_USER_KEY0 = 17
@@ -147,11 +147,16 @@ class AnalogDetection(QObject):
                           AnalogDetection.GPIO_USER_KEY1: [],
                           AnalogDetection.GPIO_USER_KEY2: [],
                           AnalogDetection.GPIO_USER_KEY3: []}
+        self.ledGpio = {AnalogDetection.GPIO_RAISE_LED:AnalogDetection.GPIO_RAISE,
+                        AnalogDetection.GPIO_STOP_LED:AnalogDetection.GPIO_STOP,
+                        AnalogDetection.GPIO_DROP_LED:AnalogDetection.GPIO_DROP}
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         for key in self.keyGpio.keys():
             GPIO.setup(key, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-            GPIO.add_event_detect(key, GPIO.FALLING, callback=self.keyDetected, bouncetime=30)
+            GPIO.add_event_detect(key, GPIO.FALLING, callback=self.keyDetected, bouncetime=200)
+        for led in self.ledGpio.keys():
+            GPIO.setup(led, GPIO.OUT)
         # AD
         ADC.setup(0x48)
         self.adBuf = []
@@ -185,5 +190,11 @@ class AnalogDetection(QObject):
         self.strip.show()
     def keyDetected(self, key):
         print(key, "Pressed")
+        if key in [AnalogDetection.GPIO_DROP, AnalogDetection.GPIO_STOP, AnalogDetection.GPIO_RAISE]:
+            for led in self.ledGpio.keys():
+                if self.ledGpio[led] != key:
+                    GPIO.output(led, GPIO.LOW)
+                else:
+                    GPIO.output(led, GPIO.HIGH)
 
 

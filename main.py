@@ -1,6 +1,7 @@
 #!/usr/bin/evn python
 # -*- coding -*-
 
+import os
 import sys
 from PyQt5.QtWidgets import *
 import mainwindow
@@ -8,6 +9,9 @@ from keyboard import *
 from rcc import rc_touchscreenresource
 
 if __name__ == "__main__":
+    if os.geteuid():
+        args = [sys.executable] + sys.argv
+        os.execlp('sudo', 'sudo', *args)
     app = QApplication(sys.argv)
     try:
         qssFile = QFile(":/qss/touchscreen.qss")
