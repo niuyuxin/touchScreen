@@ -22,6 +22,7 @@ class MainWindow(QFrame):
     sendDataToTcpSocket = pyqtSignal(int, str, dict)
     tcpSocketManagement = pyqtSignal(int)
     mainWindowOrder = pyqtSignal(str, dict)
+    userKeySelected = pyqtSignal(dict)
     runningState = pyqtSignal(int)
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -54,6 +55,7 @@ class MainWindow(QFrame):
         self.analogDetectionThread = QThread()
         self.analogDetection.moveToThread(self.analogDetectionThread)
         self.analogDetection.ADValueChanged.connect(self.onAnalogDetectionADValueChanged)
+        self.userKeySelected.connect(self.analogDetection.onUserKeySelected)
         self.analogDetectionThread.started.connect(self.analogDetection.init)
         self.analogDetectionThread.start()
         self.init_mainWindow()
@@ -138,17 +140,23 @@ class MainWindow(QFrame):
                     userKeys.append(button)
             except Exception as err:
                 print(str(err))
+
     def showUserKeys(self, userKeysList, parent):
+        """show all seleted user keys"""
         for w in userKeysList:
             w.setParent(parent)
+        keyValue = {}
         count = 0
-        for button in self.userKeysList:
+        for button in userKeysList:
             button.move(400 + count * 200, 0)
-            count += 1
             if button.indexOfDev == -1:
                 button.hide()
             else:
                 button.show()
+            keyValue[count] = button.indexOfDev
+            count += 1
+        self.userKeySelected.emit(keyValue)
+
     def creatSubDev(self, subDevList, whichGroup):
         count = 0
         for item in Config.getGroupValue(whichGroup):
