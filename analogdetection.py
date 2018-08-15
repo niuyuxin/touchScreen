@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     # Create NeoPixel object with appropriate configuration.
     strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-    # Intialize the library (must be called once before other functions).
+    # Intialize the library (must be called once before other functionst).
     strip.begin()
 
     print ('Press Ctrl-C to quit.')
@@ -119,8 +119,8 @@ class AnalogDetection(QObject):
     # pwm = 8, AD = 2,3
     KEY_UP = 1
     KEY_DOWN = 0
-    LED_ON  = GPIO.HIGH
-    LED_OFF = GPIO.LOW
+    LED_ON  = 1 # GPIO.HIGH
+    LED_OFF = 0 # GPIO.LOW
     GPIO_RAISE = 5
     GPIO_STOP = 6
     GPIO_DROP = 13
@@ -148,6 +148,7 @@ class AnalogDetection(QObject):
     @pyqtSlot()
     def init(self):
         if not self.isRaspberryPi: return
+        GPIO.setmode(GPIO.BCM)
         # key gpio
         self.keyGpio = {AnalogDetection.GPIO_RAISE:[],
                           AnalogDetection.GPIO_STOP:[],
@@ -163,10 +164,10 @@ class AnalogDetection(QObject):
                         3:AnalogDetection.GPIO_USER_KEY3
                         }
         self.userKeyWithLed = {
-                        0:AnalogDetection.GPIO_USER_LED0,
-                        1:AnalogDetection.GPIO_USER_LED1,
-                        2:AnalogDetection.GPIO_USER_LED2,
-                        3:AnalogDetection.GPIO_USER_LED3
+                        0:[AnalogDetection.GPIO_USER_LED0,0],
+                        1:[AnalogDetection.GPIO_USER_LED1,0],
+                        2:[AnalogDetection.GPIO_USER_LED2,0],
+                        3:[AnalogDetection.GPIO_USER_LED3,0]
         }
         self.ledGpio = {AnalogDetection.GPIO_RAISE_LED: AnalogDetection.GPIO_RAISE,
                         AnalogDetection.GPIO_STOP_LED: AnalogDetection.GPIO_STOP,
@@ -212,28 +213,28 @@ class AnalogDetection(QObject):
                 self.strip.setPixelColor(i, Color(value, 0, 0))
                 self.strip.show()
         # key read
-        for key in self.keyGpio.keys():
-            value = GPIO.input(key)
-            if len(self.keyGpio[key]) < 4:
-                self.self.keyGpio[key].append(value)
+        for item in self.keyGpio.items():
+            gpio = item[0]
+            values = item[1]
+            value = GPIO.input(gpio)
+            if len(self.keyGpio[gpio]) < 4:
+                self.keyGpio[gpio].append(value)
             else:
-                self.self.keyGpio[key].pop(0)
-                self.self.keyGpio[key].append(value)
-            for item in self.keyGpio[key].items(): # down
-                if item[1] == [AnalogDetection.KEY_UP,
-                               AnalogDetection.KEY_DOWN,
-                               AnalogDetection.KEY_DOWN,
-                               AnalogDetection.KEY_DOWN]:
-                    self.keyDetected(item[0], True)
-                    self.GPIOState.emit(item[0], True)
-                if item[1] == [AnalogDetection.KEY_DOWN,
-                               AnalogDetection.KEY_UP,
-                               AnalogDetection.KEY_UP,
-                               AnalogDetection.KEY_UP]:
-                    self.keyDetected(item[0], False)
+                self.keyGpio[gpio].pop(0)
+                self.keyGpio[gpio].append(value)
+            if values == [AnalogDetection.KEY_UP,
+                           AnalogDetection.KEY_DOWN,
+                           AnalogDetection.KEY_DOWN,
+                           AnalogDetection.KEY_DOWN]:
+                self.keyDetected(gpio, True)
+                self.GPIOState.emit(gpio, True)
+            if values == [AnalogDetection.KEY_DOWN,
+                           AnalogDetection.KEY_UP,
+                           AnalogDetection.KEY_UP,
+                           AnalogDetection.KEY_UP]:
+                self.keyDetected(gpio, False)
         self.userKeyLedSparking()
     def keyDetected(self, key, state):
-        print(key, state)
         if key in [AnalogDetection.GPIO_DROP,
                     AnalogDetection.GPIO_STOP,
                     AnalogDetection.GPIO_RAISE]:
@@ -254,9 +255,20 @@ class AnalogDetection(QObject):
     def userKeyLedSparking(self): # per 10ms
         for sKey in self.selectedUserKey.keys():
             if self.selectedUserKey[sKey] < 0:
-                GPIO.output(self.userKeyWithLed[sKey], AnalogDetection.LED_OFF)
-            elif self.userKeyLightMethod[self.userKeyWithGpio[sKey]] == True:
-                GPIO.output(self.userKeyWithLed[sKey], AnalogDetection.LED_ON)
+                GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.LED_OFF)
+            else:
+                if self.userKeyWithGpio[sKey] in self.userKeyLightMethod.keys() and \
+                    self.userKeyLightMethod[self.userKeyWithGpio[sKey]] == True:
+                    GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.LED_ON)
+                else:
+                    if self.userKeyWithLed[sKey][1] < 195:
+                        GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.LED_OFF)
+                    elif self.userKeyWithLed[sKey][1] >= 195:
+                        GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.LED_ON)
+                    if self.userKeyWithLed[sKey][1] >= 200:
+                        self.userKeyWithLed[sKey][1] = 0
+                    else:
+                        self.userKeyWithLed[sKey][1] += 1
 
 
 

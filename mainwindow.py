@@ -56,6 +56,7 @@ class MainWindow(QFrame):
         self.analogDetection.moveToThread(self.analogDetectionThread)
         self.analogDetection.ADValueChanged.connect(self.onAnalogDetectionADValueChanged)
         self.userKeySelected.connect(self.analogDetection.onUserKeySelected)
+        self.analogDetection.GPIOState.connect(self.onPhysicalKeyClicked)
         self.analogDetectionThread.started.connect(self.analogDetection.init)
         self.analogDetectionThread.start()
         self.init_mainWindow()
@@ -343,3 +344,11 @@ class MainWindow(QFrame):
                     self.mainWindow.modelTextLabel.setText(self.tr("单控模式"))
         except Exception as e:
             print("onTcpsocketTcpGetOrder", str(e))
+    def onPhysicalKeyClicked(self, key, state):
+        if key == AnalogDetection.GPIO_RAISE:
+            self.mainWindow.raisePushButton.animateClick()
+        elif key == AnalogDetection.GPIO_STOP:
+            self.mainWindow.stopPushButton.animateClick()
+        elif key == AnalogDetection.GPIO_DROP:
+            self.mainWindow.dropPushButton.animateClick()
+
