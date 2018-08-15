@@ -294,6 +294,12 @@ class MainWindow(QFrame):
         button = self.sender()
         if not isinstance(button, QPushButton):
             return
+        if SingleCtrlWidget.SelectedOperation in self.devOperationDict.keys() and\
+            len(self.devOperationDict[SingleCtrlWidget.SelectedOperation]) == 0:
+            if self.isActiveWindow():
+                QMessageBox.warning(self,"..", self.tr("please select device first!"), QMessageBox.Ok)
+            button.setChecked(False)
+            return
         if not button.isDown():
             return
         s = 0
@@ -345,6 +351,11 @@ class MainWindow(QFrame):
         except Exception as e:
             print("onTcpsocketTcpGetOrder", str(e))
     def onPhysicalKeyClicked(self, key, state):
+        if SingleCtrlWidget.SelectedOperation in self.devOperationDict.keys() and\
+            len(self.devOperationDict[SingleCtrlWidget.SelectedOperation]) == 0:
+            if self.isActiveWindow():
+                QMessageBox.warning(self,"..", self.tr("please select device first!"), QMessageBox.Ok)
+            return
         if key == AnalogDetection.GPIO_RAISE:
             self.mainWindow.raisePushButton.animateClick()
         elif key == AnalogDetection.GPIO_STOP:

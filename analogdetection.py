@@ -209,7 +209,7 @@ class AnalogDetection(QObject):
         if self.adValue > value + 2 or self.adValue < value - 2:
             self.adValue = value
             self.ADValueChanged.emit(0, value*100//255)
-            for i in range(16):
+            for i in range(8):
                 self.strip.setPixelColor(i, Color(value, 0, 0))
                 self.strip.show()
         # key read
