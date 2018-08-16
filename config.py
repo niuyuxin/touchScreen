@@ -20,7 +20,7 @@ class Config(object):
     monitorId = 0
     def __init__(self):
         set = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
-        set.setIniCodec(QTextCodec.codecForName("UTF-8"));
+        set.setIniCodec(QTextCodec.codecForName("UTF-8"))
         if Config.version != str(set.value(ConfigKeys.version)):
             set.clear()
             set.setValue("Version", Config.version)
@@ -38,18 +38,18 @@ class Config(object):
     @staticmethod
     def setValue(k, v):
         set = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
-        set.setIniCodec(QTextCodec.codecForName("UTF-8"));
+        set.setIniCodec(QTextCodec.codecForName("UTF-8"))
         set.setValue(k, v)
         set.sync()
     @staticmethod
     def value(k):
         set  = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
-        set.setIniCodec(QTextCodec.codecForName("UTF-8"));
+        set.setIniCodec(QTextCodec.codecForName("UTF-8"))
         return set.value(k)
     @staticmethod
     def getGroupValue(gname):
         set  = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
-        set.setIniCodec(QTextCodec.codecForName("UTF-8"));
+        set.setIniCodec(QTextCodec.codecForName("UTF-8"))
         set.beginGroup(gname)
         kvList = []
         count = 0
