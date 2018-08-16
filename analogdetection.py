@@ -150,6 +150,7 @@ class AnalogDetection(QObject):
     @pyqtSlot()
     def init(self):
         if not self.isRaspberryPi: return
+        GPIO.cleanup()
         GPIO.setmode(GPIO.BCM)
         # key gpio
         self.keyGpio = {AnalogDetection.GPIO_RAISE:[],
