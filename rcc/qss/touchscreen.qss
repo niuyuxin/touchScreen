@@ -15,7 +15,7 @@ QScrollBar {
     background-color: transparent
 }
 QScrollBar:vertical {
-    width: 30px;
+    width: 50px;
 }
 MainWindow {
     background-color: black
