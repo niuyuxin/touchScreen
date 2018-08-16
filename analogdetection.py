@@ -127,7 +127,7 @@ class AnalogDetection(QObject):
     GPIO_RAISE_LED = 16
     GPIO_STOP_LED = 20
     GPIO_DROP_LED = 21
-    GPIO_USER_KEY0 = 7 # Fixme: error gpio
+    GPIO_USER_KEY0 = 10 # Fixme: error gpio
     GPIO_USER_KEY1 = 23
     GPIO_USER_KEY2 = 24
     GPIO_USER_KEY3 = 25
