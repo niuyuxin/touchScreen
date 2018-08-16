@@ -141,16 +141,19 @@ class AnalogDetection(QObject):
     GPIOState = pyqtSignal(int, int)
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.count = 0
         if platform.machine() == "armv7l" and platform.node() == "raspberrypi":
             self.isRaspberryPi = True
         else:
             self.isRaspberryPi = False
         self.selectedUserKey = {}
         self.userKeyLightMethod = {}
+    def __del__(self):
+        if self.isRaspberryPi:
+            GPIO.cleanup()
     @pyqtSlot()
     def init(self):
         if not self.isRaspberryPi: return
-        GPIO.cleanup()
         GPIO.setmode(GPIO.BCM)
         # key gpio
         self.keyGpio = {AnalogDetection.GPIO_RAISE:[],
@@ -201,6 +204,8 @@ class AnalogDetection(QObject):
 
     def onKeyTimerTimeout(self):
         # ad read
+        self.count += 1
+        ADC.write(self.count%255)
         temp = ADC.read(0)
         if len(self.adBuf) >= 20:
             self.adBuf.pop(0)
