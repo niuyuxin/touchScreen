@@ -121,6 +121,8 @@ class AnalogDetection(QObject):
     KEY_DOWN = 0
     LED_ON  = 1 # GPIO.HIGH
     LED_OFF = 0 # GPIO.LOW
+    USER_LED_ON = 0
+    USER_LED_OFF = 1
     GPIO_RAISE = 5
     GPIO_STOP = 6
     GPIO_DROP = 13
@@ -131,10 +133,10 @@ class AnalogDetection(QObject):
     GPIO_USER_KEY2 = 23
     GPIO_USER_KEY1 = 24
     GPIO_USER_KEY0 = 25
-    GPIO_USER_LED0 = 4
-    GPIO_USER_LED1 = 17
-    GPIO_USER_LED2 = 27
-    GPIO_USER_LED3 = 22
+    GPIO_USER_LED3 = 4
+    GPIO_USER_LED2 = 17
+    GPIO_USER_LED1 = 27
+    GPIO_USER_LED0 = 22
     ADValueChanged = pyqtSignal(int, int)
     GPIOState = pyqtSignal(int, int)
     def __init__(self, parent=None):
@@ -255,16 +257,16 @@ class AnalogDetection(QObject):
     def userKeyLedSparking(self): # per 10ms
         for sKey in self.selectedUserKey.keys():
             if self.selectedUserKey[sKey] < 0:
-                GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.LED_OFF)
+                GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.USER_LED_OFF)
             else:
                 if self.userKeyWithGpio[sKey] in self.userKeyLightMethod.keys() and \
                     self.userKeyLightMethod[self.userKeyWithGpio[sKey]] == True:
-                    GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.LED_ON)
+                    GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.USER_LED_ON)
                 else:
                     if self.userKeyWithLed[sKey][1] < 195:
-                        GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.LED_OFF)
+                        GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.USER_LED_OFF)
                     elif self.userKeyWithLed[sKey][1] >= 195:
-                        GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.LED_ON)
+                        GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.USER_LED_ON)
                     if self.userKeyWithLed[sKey][1] >= 200:
                         self.userKeyWithLed[sKey][1] = 0
                     else:
