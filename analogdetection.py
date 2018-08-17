@@ -298,7 +298,17 @@ class AnalogDetection(QObject):
                     AnalogDetection.GPIO_ROCKER_DROP,
                     AnalogDetection.GPIO_ROCKER_RAISE
                     ]:
-            self.rockerKeyBuf[key] = state
+            if self.isRocker:
+                self.rockerKeyBuf[key] = state
+                if self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_ENTER] == AnalogDetection.KEY_DOWN:
+                    if self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_DROP] == AnalogDetection.KEY_DOWN:
+                        self.GPIOState.emit(AnalogDetection.GPIO_DROP, AnalogDetection.KEY_DOWN)
+                        self.ADValueChanged.emit(0, self.rockerCount * 100 // 255)
+                    elif self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_RAISE] == AnalogDetection.KEY_DOWN:
+                        self.GPIOState.emit(AnalogDetection.GPIO_RAISE, AnalogDetection.KEY_DOWN)
+                        self.ADValueChanged.emit(0, self.rockerCount * 100 // 255)
+                    else:
+                        self.GPIOState.emit(AnalogDetection.GPIO_STOP, AnalogDetection.KEY_DOWN)
         elif key in [AnalogDetection.GPIO_USER_KEY0,
                     AnalogDetection.GPIO_USER_KEY1,
                     AnalogDetection.GPIO_USER_KEY2,
@@ -307,21 +317,14 @@ class AnalogDetection(QObject):
 
     def onPerSecondTimerTimeout(self):
         if self.isRocker:
-            if self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_ENTER] == AnalogDetection.KEY_DOWN:
-                if self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_DROP] == AnalogDetection.KEY_DOWN:
-                    self.GPIOState.emit(AnalogDetection.GPIO_DROP, True)
-                    self.ADValueChanged.emit(0, self.rockerCount % 255)
-                elif self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_RAISE] == AnalogDetection.KEY_DOWN:
-                    self.GPIOState.emit(AnalogDetection.GPIO_RAISE, True)
-                    self.ADValueChanged.emit(0, self.rockerCount % 255)
-                else:
-                    self.GPIOState.emit(AnalogDetection.GPIO_STOP, True)
             if self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_DROP] == AnalogDetection.KEY_DOWN:
-                if self.rockerCount > 0:
-                    self.rockerCount -= 1
+                if self.rockerCount > 7:
+                    self.rockerCount -= 7
+                else:
+                    self.rockerCount = 0
             elif self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_RAISE] == AnalogDetection.KEY_DOWN:
                 if self.rockerCount < 255:
-                    self.rockerCount += 1
+                    self.rockerCount += 8
             self.ADWrite(self.rockerCount)
 
 
