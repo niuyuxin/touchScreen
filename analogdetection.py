@@ -133,6 +133,7 @@ class AnalogDetection(QObject):
     GPIO_RAISE_LED = 16
     GPIO_STOP_LED = 20
     GPIO_DROP_LED = 21
+    GPIO_RUNNING_LED = 11
     GPIO_USER_KEY3 = 10 # Fixme: error gpio
     GPIO_USER_KEY2 = 23
     GPIO_USER_KEY1 = 24
@@ -156,6 +157,8 @@ class AnalogDetection(QObject):
         self.userKeyLightMethod = {}
     def __del__(self):
         if self.isRaspberryPi:
+            for led in self.ledGpio.keys():
+                GPIO.output(led, AnalogDetection.LED_OFF)
             GPIO.cleanup()
     @pyqtSlot()
     def init(self):
@@ -185,6 +188,7 @@ class AnalogDetection(QObject):
         self.ledGpio = {AnalogDetection.GPIO_RAISE_LED: AnalogDetection.GPIO_RAISE,
                         AnalogDetection.GPIO_STOP_LED: AnalogDetection.GPIO_STOP,
                         AnalogDetection.GPIO_DROP_LED: AnalogDetection.GPIO_DROP,
+                        AnalogDetection.GPIO_RUNNING_LED: -1,
                         AnalogDetection.GPIO_USER_LED0: AnalogDetection.GPIO_USER_KEY0,
                         AnalogDetection.GPIO_USER_LED1: AnalogDetection.GPIO_USER_KEY1,
                         AnalogDetection.GPIO_USER_LED2: AnalogDetection.GPIO_USER_KEY2,
@@ -200,6 +204,7 @@ class AnalogDetection(QObject):
             # GPIO.add_event_detect(key, GPIO.FALLING, callback=self.keyDetected, bouncetime=200)
         for led in self.ledGpio.keys():
             GPIO.setup(led, GPIO.OUT)
+        GPIO.output(AnalogDetection.GPIO_RUNNING_LED, AnalogDetection.LED_ON)
         # AD GPIO2, GPIO3 i2c
         self.ADInit()
         # pwd led
@@ -289,11 +294,13 @@ class AnalogDetection(QObject):
         if key in [AnalogDetection.GPIO_DROP,
                     AnalogDetection.GPIO_STOP,
                     AnalogDetection.GPIO_RAISE]:
-            for led in self.ledGpio.keys():
+            for led in [AnalogDetection.GPIO_RAISE_LED,
+                        AnalogDetection.GPIO_STOP_LED,
+                        AnalogDetection.GPIO_DROP_LED]:
                 if self.ledGpio[led] != key:
-                    GPIO.output(led, GPIO.LOW)
+                    GPIO.output(led, AnalogDetection.LED_OFF)
                 else:
-                    GPIO.output(led, GPIO.HIGH)
+                    GPIO.output(led, AnalogDetection.LED_ON)
         elif key in [AnalogDetection.GPIO_ROCKER_ENTER,
                     AnalogDetection.GPIO_ROCKER_DROP,
                     AnalogDetection.GPIO_ROCKER_RAISE
