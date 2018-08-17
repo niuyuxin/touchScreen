@@ -323,8 +323,10 @@ class AnalogDetection(QObject):
                 else:
                     self.rockerCount = 0
             elif self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_RAISE] == AnalogDetection.KEY_DOWN:
-                if self.rockerCount < 255:
+                if self.rockerCount < 255-8:
                     self.rockerCount += 8
+                else:
+                    self.rockerCount = 255
             self.ADWrite(self.rockerCount)
 
 

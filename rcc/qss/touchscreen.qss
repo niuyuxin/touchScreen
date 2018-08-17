@@ -105,6 +105,9 @@ QPushButton#exitBushButton {
     border-bottom-left-radius:8px;
     border-bottom-right-radius:8px
 }
+QPushButton#cancelPushButton:checked, QPushButton#confirmPushButton:checked {
+    background-color: #3a006f;
+}
 QTabBar::tab {
      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                  stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
