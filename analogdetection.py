@@ -165,7 +165,7 @@ class AnalogDetection(QObject):
         self.keyGpio = {AnalogDetection.GPIO_RAISE: [],
                         AnalogDetection.GPIO_STOP: [],
                         AnalogDetection.GPIO_DROP: [],
-                        AnalogDetection.GPIO_ROCKER_DOWN: [],
+                        AnalogDetection.GPIO_ROCKER_RAISE: [],
                         AnalogDetection.GPIO_ROCKER_DROP: [],
                         AnalogDetection.GPIO_ROCKER_ENTER: [],
                         AnalogDetection.GPIO_USER_KEY0:[],
@@ -210,7 +210,7 @@ class AnalogDetection(QObject):
         self.keyTimer = QTimer(self)
         self.keyTimer.timeout.connect(self.onKeyTimerTimeout)
         self.keyTimer.start(10)
-        self.perSecondTimer = QTime(self)
+        self.perSecondTimer = QTimer(self)
         self.perSecondTimer.timeout.connect(self.onPerSecondTimerTimeout)
         self.perSecondTimer.start(1000)
 
@@ -229,7 +229,7 @@ class AnalogDetection(QObject):
                 GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.USER_LED_OFF)
             else:
                 if self.userKeyWithGpio[sKey] in self.userKeyLightMethod.keys() and \
-                    self.userKeyLightMethod[self.userKeyWithGpio[sKey]] == True:
+                    self.userKeyLightMethod[self.userKeyWithGpio[sKey]] == AnalogDetection.KEY_DOWN:
                     GPIO.output(self.userKeyWithLed[sKey][0], AnalogDetection.USER_LED_ON)
                 else:
                     if self.userKeyWithLed[sKey][1] < 195:
@@ -277,13 +277,13 @@ class AnalogDetection(QObject):
                            AnalogDetection.KEY_DOWN,
                            AnalogDetection.KEY_DOWN,
                            AnalogDetection.KEY_DOWN]:
-                self.keyDetected(gpio, True)
-                self.GPIOState.emit(gpio, True)
+                self.keyDetected(gpio, AnalogDetection.KEY_DOWN)
+                self.GPIOState.emit(gpio, AnalogDetection.KEY_DOWN)
             if values == [AnalogDetection.KEY_DOWN, # up
                            AnalogDetection.KEY_UP,
                            AnalogDetection.KEY_UP,
                            AnalogDetection.KEY_UP]:
-                self.keyDetected(gpio, False)
+                self.keyDetected(gpio, AnalogDetection.KEY_UP)
 
     def keyDetected(self, key, state):
         if key in [AnalogDetection.GPIO_DROP,
