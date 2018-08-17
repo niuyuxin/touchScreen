@@ -16,9 +16,11 @@ class ConfigKeys():
     offStageButtonName = "OffStageButtonName"
     monitorName = "MonitorName"
 class Config(object):
-    version = "18.07.08.1"
+    version = "18.07.08.2"
     monitorId = 0
-    def __init__(self):
+    def __init__(self, fileDir):
+        ConfigKeys.settingFileName = fileDir + '/' + ConfigKeys.settingFileName
+        print(ConfigKeys.settingFileName)
         set = QSettings(ConfigKeys.settingFileName, QSettings.IniFormat)
         set.setIniCodec(QTextCodec.codecForName("UTF-8"))
         if Config.version != str(set.value(ConfigKeys.version)):
@@ -26,6 +28,7 @@ class Config(object):
             set.setValue("Version", Config.version)
             set.setValue(ConfigKeys.monitorId, 0)
             set.setValue("Password", "123")
+            set.setValue("Rocker", 0)
             for item in range(100):
                 set.setValue("{}/{}{}".format(ConfigKeys.onStageDev, ConfigKeys.onStageButtonName, item), "18062000{}:设备{}:".format(item,item))
             for item in range(99):

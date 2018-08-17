@@ -26,7 +26,6 @@ class MainWindow(QFrame):
     runningState = pyqtSignal(int)
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
-        Config()
         self.rtc = QTimer()
         self.rtc.timeout.connect(self.rtcTimeout)
         self.rtc.start(1000)

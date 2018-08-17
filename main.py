@@ -8,6 +8,7 @@ import mainwindow
 from keyboard import *
 from rcc import rc_touchscreenresource
 import platform
+from config import Config
 
 if __name__ == "__main__":
     try:
@@ -28,7 +29,7 @@ if __name__ == "__main__":
                                 QMessageBox.Ok)
         keyboard = KeyBoard()
         keyboard.hide()
-
+        Config(QFileInfo(sys.argv[0]).absoluteDir().absolutePath())
         form = mainwindow.MainWindow()
         form.show()
         app.exec_()

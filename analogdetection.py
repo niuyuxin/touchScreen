@@ -2,6 +2,7 @@
 
 import platform
 from PyQt5.QtCore import *
+from config import *
 if platform.machine() == "armv7l" and platform.node() == "raspberrypi":
     import RPi.GPIO as GPIO
     import PCF8591 as ADC
@@ -126,6 +127,9 @@ class AnalogDetection(QObject):
     GPIO_RAISE = 5
     GPIO_STOP = 6
     GPIO_DROP = 13
+    GPIO_ROCKER_RAISE = 19
+    GPIO_ROCKER_DROP = 26
+    GPIO_ROCKER_ENTER = 12
     GPIO_RAISE_LED = 16
     GPIO_STOP_LED = 20
     GPIO_DROP_LED = 21
@@ -142,6 +146,8 @@ class AnalogDetection(QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.count = 0
+        self.isRocker = int(Config.value("Rocker"))
+        self.rockerCount = 0
         if platform.machine() == "armv7l" and platform.node() == "raspberrypi":
             self.isRaspberryPi = True
         else:
@@ -156,32 +162,37 @@ class AnalogDetection(QObject):
         if not self.isRaspberryPi: return
         GPIO.setmode(GPIO.BCM)
         # key gpio
-        self.keyGpio = {AnalogDetection.GPIO_RAISE:[],
-                          AnalogDetection.GPIO_STOP:[],
-                          AnalogDetection.GPIO_DROP:[],
-                          AnalogDetection.GPIO_USER_KEY0:[],
-                          AnalogDetection.GPIO_USER_KEY1: [],
-                          AnalogDetection.GPIO_USER_KEY2: [],
-                          AnalogDetection.GPIO_USER_KEY3: []}
+        self.keyGpio = {AnalogDetection.GPIO_RAISE: [],
+                        AnalogDetection.GPIO_STOP: [],
+                        AnalogDetection.GPIO_DROP: [],
+                        AnalogDetection.GPIO_ROCKER_DOWN: [],
+                        AnalogDetection.GPIO_ROCKER_DROP: [],
+                        AnalogDetection.GPIO_ROCKER_ENTER: [],
+                        AnalogDetection.GPIO_USER_KEY0:[],
+                        AnalogDetection.GPIO_USER_KEY1: [],
+                        AnalogDetection.GPIO_USER_KEY2: [],
+                        AnalogDetection.GPIO_USER_KEY3: []}
         self.userKeyWithGpio = {
                         0:AnalogDetection.GPIO_USER_KEY0,
                         1:AnalogDetection.GPIO_USER_KEY1,
                         2:AnalogDetection.GPIO_USER_KEY2,
-                        3:AnalogDetection.GPIO_USER_KEY3
-                        }
+                        3:AnalogDetection.GPIO_USER_KEY3}
         self.userKeyWithLed = {
                         0:[AnalogDetection.GPIO_USER_LED0,0],
                         1:[AnalogDetection.GPIO_USER_LED1,0],
                         2:[AnalogDetection.GPIO_USER_LED2,0],
-                        3:[AnalogDetection.GPIO_USER_LED3,0]
-        }
+                        3:[AnalogDetection.GPIO_USER_LED3,0]}
         self.ledGpio = {AnalogDetection.GPIO_RAISE_LED: AnalogDetection.GPIO_RAISE,
                         AnalogDetection.GPIO_STOP_LED: AnalogDetection.GPIO_STOP,
                         AnalogDetection.GPIO_DROP_LED: AnalogDetection.GPIO_DROP,
                         AnalogDetection.GPIO_USER_LED0: AnalogDetection.GPIO_USER_KEY0,
                         AnalogDetection.GPIO_USER_LED1: AnalogDetection.GPIO_USER_KEY1,
                         AnalogDetection.GPIO_USER_LED2: AnalogDetection.GPIO_USER_KEY2,
-                        AnalogDetection.GPIO_USER_LED3: AnalogDetection.GPIO_USER_KEY3
+                        AnalogDetection.GPIO_USER_LED3: AnalogDetection.GPIO_USER_KEY3}
+        self.rockerKeyBuf = {
+                        AnalogDetection.GPIO_ROCKER_RAISE: AnalogDetection.KEY_UP,
+                        AnalogDetection.GPIO_ROCKER_DROP: AnalogDetection.KEY_UP,
+                        AnalogDetection.GPIO_ROCKER_ENTER: AnalogDetection.KEY_UP
                         }
         GPIO.setwarnings(False)
         for key in self.keyGpio.keys():
@@ -190,9 +201,7 @@ class AnalogDetection(QObject):
         for led in self.ledGpio.keys():
             GPIO.setup(led, GPIO.OUT)
         # AD GPIO2, GPIO3 i2c
-        ADC.setup(0x48)
-        self.adBuf = []
-        self.adValue = 0
+        self.ADInit()
         # pwd led
         self.pixel = 0
         self.strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
@@ -201,61 +210,15 @@ class AnalogDetection(QObject):
         self.keyTimer = QTimer(self)
         self.keyTimer.timeout.connect(self.onKeyTimerTimeout)
         self.keyTimer.start(10)
+        self.perSecondTimer = QTime(self)
+        self.perSecondTimer.timeout.connect(self.onPerSecondTimerTimeout)
+        self.perSecondTimer.start(1000)
 
     def onKeyTimerTimeout(self):
-        # ad read
-        self.count += 1
-        ADC.write(self.count%255)
-        temp = ADC.read(0)
-        if len(self.adBuf) >= 20:
-            self.adBuf.pop(0)
-        self.adBuf.append(temp)
-        value = 0
-        for ad in self.adBuf:
-            value += ad
-        value = value//len(self.adBuf)
-        if self.adValue > value + 2 or self.adValue < value - 2:
-            self.adValue = value
-            self.ADValueChanged.emit(0, value*100//255)
-            for i in range(8):
-                self.strip.setPixelColor(i, Color(value, 0, 0))
-                self.strip.show()
-        # key read
-        for item in self.keyGpio.items():
-            gpio = item[0]
-            values = item[1]
-            value = GPIO.input(gpio)
-            if len(self.keyGpio[gpio]) < 4:
-                self.keyGpio[gpio].append(value)
-            else:
-                self.keyGpio[gpio].pop(0)
-                self.keyGpio[gpio].append(value)
-            if values == [AnalogDetection.KEY_UP,
-                           AnalogDetection.KEY_DOWN,
-                           AnalogDetection.KEY_DOWN,
-                           AnalogDetection.KEY_DOWN]:
-                self.keyDetected(gpio, True)
-                self.GPIOState.emit(gpio, True)
-            if values == [AnalogDetection.KEY_DOWN,
-                           AnalogDetection.KEY_UP,
-                           AnalogDetection.KEY_UP,
-                           AnalogDetection.KEY_UP]:
-                self.keyDetected(gpio, False)
+        if not self.isRocker:
+            self.ADRead()
+        self.keyRead()
         self.userKeyLedSparking()
-    def keyDetected(self, key, state):
-        if key in [AnalogDetection.GPIO_DROP,
-                    AnalogDetection.GPIO_STOP,
-                    AnalogDetection.GPIO_RAISE]:
-            for led in self.ledGpio.keys():
-                if self.ledGpio[led] != key:
-                    GPIO.output(led, GPIO.LOW)
-                else:
-                    GPIO.output(led, GPIO.HIGH)
-        elif key in [AnalogDetection.GPIO_USER_KEY0,
-                    AnalogDetection.GPIO_USER_KEY1,
-                    AnalogDetection.GPIO_USER_KEY2,
-                    AnalogDetection.GPIO_USER_KEY3]:
-            self.userKeyLightMethod[key] = state
 
     def onUserKeySelected(self, key): # in userkeys.py selected
         self.selectedUserKey = key
@@ -277,6 +240,90 @@ class AnalogDetection(QObject):
                         self.userKeyWithLed[sKey][1] = 0
                     else:
                         self.userKeyWithLed[sKey][1] += 1
+    def ADInit(self):
+        ADC.setup(0x48)
+        self.adBuf = []
+        self.adValue = 0
+    def ADRead(self, port=0):
+        temp = ADC.read(port)
+        if len(self.adBuf) >= 20:
+            self.adBuf.pop(0)
+        self.adBuf.append(temp)
+        value = 0
+        for ad in self.adBuf:
+            value += ad
+        value = value//len(self.adBuf)
+        if self.adValue > value + 2 or self.adValue < value - 2:
+            self.adValue = value
+            self.ADValueChanged.emit(0, value*100//255)
+            for i in range(8):
+                self.strip.setPixelColor(i, Color(value, 0, 0))
+                self.strip.show()
+
+    def ADWrite(self, value):
+        ADC.write(value)
+
+    def keyRead(self):
+        for item in self.keyGpio.items():
+            gpio = item[0]
+            values = item[1]
+            value = GPIO.input(gpio)
+            if len(self.keyGpio[gpio]) < 4:
+                self.keyGpio[gpio].append(value)
+            else:
+                self.keyGpio[gpio].pop(0)
+                self.keyGpio[gpio].append(value)
+            if values == [AnalogDetection.KEY_UP, # down
+                           AnalogDetection.KEY_DOWN,
+                           AnalogDetection.KEY_DOWN,
+                           AnalogDetection.KEY_DOWN]:
+                self.keyDetected(gpio, True)
+                self.GPIOState.emit(gpio, True)
+            if values == [AnalogDetection.KEY_DOWN, # up
+                           AnalogDetection.KEY_UP,
+                           AnalogDetection.KEY_UP,
+                           AnalogDetection.KEY_UP]:
+                self.keyDetected(gpio, False)
+
+    def keyDetected(self, key, state):
+        if key in [AnalogDetection.GPIO_DROP,
+                    AnalogDetection.GPIO_STOP,
+                    AnalogDetection.GPIO_RAISE]:
+            for led in self.ledGpio.keys():
+                if self.ledGpio[led] != key:
+                    GPIO.output(led, GPIO.LOW)
+                else:
+                    GPIO.output(led, GPIO.HIGH)
+        elif key in [AnalogDetection.GPIO_ROCKER_ENTER,
+                    AnalogDetection.GPIO_ROCKER_DROP,
+                    AnalogDetection.GPIO_ROCKER_RAISE
+                    ]:
+            self.rockerKeyBuf[key] = state
+        elif key in [AnalogDetection.GPIO_USER_KEY0,
+                    AnalogDetection.GPIO_USER_KEY1,
+                    AnalogDetection.GPIO_USER_KEY2,
+                    AnalogDetection.GPIO_USER_KEY3]:
+            self.userKeyLightMethod[key] = state
+
+    def onPerSecondTimerTimeout(self):
+        if self.isRocker:
+            if self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_ENTER] == AnalogDetection.KEY_DOWN:
+                if self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_DROP] == AnalogDetection.KEY_DOWN:
+                    self.GPIOState.emit(AnalogDetection.GPIO_DROP, True)
+                    self.ADValueChanged.emit(0, self.rockerCount % 255)
+                elif self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_RAISE] == AnalogDetection.KEY_DOWN:
+                    self.GPIOState.emit(AnalogDetection.GPIO_RAISE, True)
+                    self.ADValueChanged.emit(0, self.rockerCount % 255)
+                else:
+                    self.GPIOState.emit(AnalogDetection.GPIO_STOP, True)
+            if self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_DROP] == AnalogDetection.KEY_DOWN:
+                if self.rockerCount > 0:
+                    self.rockerCount -= 1
+            elif self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_RAISE] == AnalogDetection.KEY_DOWN:
+                if self.rockerCount < 255:
+                    self.rockerCount += 1
+            self.ADWrite(self.rockerCount)
+
 
 
 
