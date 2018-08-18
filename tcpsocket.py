@@ -86,6 +86,9 @@ class TcpSocket(QObject):
                 if order == TcpSocket.BootNotification:
                     if isinstance(dataJson[3], dict) and "time" in dataJson[3].keys():
                         self.updateSystemTime(dataJson[3]["time"])
+                        mode = True if dataJson[3]["OperationMode"] == 2 else False
+                        dummyInfo = {"Enable": mode}
+                        self.tcpGetOrder.emit(TcpSocket.ForbiddenDevice, dummyInfo)
                     self.updateDev()
                 elif order == TcpSocket.UpdateDevice:
                     self.paraSetting.emit(dataJson[3]["Device"])
@@ -145,4 +148,4 @@ class TcpSocket(QObject):
             di = {TcpSocket.MonitorDevice:devList}
             self.onDataToSend(TcpSocket.Call, TcpSocket.UpdateDevice, di)
     def updateSystemTime(self, dateTime):
-        print(os.system("date -s '{}'".format(dateTime)))
+        os.system("date -s '{}'".format(dateTime))
