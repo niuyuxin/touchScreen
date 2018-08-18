@@ -85,7 +85,6 @@ class TcpSocket(QObject):
                 order = dataJson[2]
                 if order == TcpSocket.BootNotification:
                     if isinstance(dataJson[3], dict) and "time" in dataJson[3].keys():
-                        print(dataJson[3])
                         self.updateSystemTime(dataJson[3]["time"])
                     self.updateDev()
                 elif order == TcpSocket.UpdateDevice:
@@ -147,4 +146,3 @@ class TcpSocket(QObject):
             self.onDataToSend(TcpSocket.Call, TcpSocket.UpdateDevice, di)
     def updateSystemTime(self, dateTime):
         print(os.system("date -s '{}'".format(dateTime)))
-        print(os.system("hwclock -w"))
