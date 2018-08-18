@@ -8,6 +8,7 @@ import  json
 import random
 import json
 import copy
+import os
 
 class TcpSocket(QObject):
     tcpState=pyqtSignal(int)
@@ -83,6 +84,9 @@ class TcpSocket(QObject):
             elif len(dataJson) == 4 and dataJson[0] == 3: # 服务器callreturn
                 order = dataJson[2]
                 if order == TcpSocket.BootNotification:
+                    if isinstance(dataJson[3], dict) and "time" in dataJson[3].keys():
+                        print(dataJson[3])
+                        self.updateSystemTime(dataJson[3]["time"])
                     self.updateDev()
                 elif order == TcpSocket.UpdateDevice:
                     self.paraSetting.emit(dataJson[3]["Device"])
@@ -141,3 +145,6 @@ class TcpSocket(QObject):
         if devList:
             di = {TcpSocket.MonitorDevice:devList}
             self.onDataToSend(TcpSocket.Call, TcpSocket.UpdateDevice, di)
+    def updateSystemTime(self, dateTime):
+        print(os.system("date -s '{}'".format(dateTime)))
+        print(os.system("hwclock -w"))
