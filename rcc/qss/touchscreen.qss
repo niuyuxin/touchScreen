@@ -171,10 +171,11 @@ QLabel#modelTextLabel {
     color: white
 }
 QLabel{
-    color: #2e4465
+    color: #2e4465;
+    font-size: 20px;
 }
 QLineEdit{
     background-color: #2e4465;
     min-height: 30px;
-    font-size: 25;
+    font-size: 20px;
 }

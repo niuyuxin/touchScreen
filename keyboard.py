@@ -13,7 +13,7 @@ class KeyBoard(QWidget):
         self.setWindowFlags(Qt.Tool | Qt.WindowStaysOnTopHint | Qt.WindowDoesNotAcceptFocus)
         self.focusWidget = None
         self.initKeyWidget()
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setFixedSize(self.sizeHint())
         qApp.focusChanged.connect(self.focusChanged)
 
     def initKeyWidget(self):
