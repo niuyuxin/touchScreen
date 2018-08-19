@@ -37,11 +37,11 @@ class KeyBoard(QWidget):
             count += 1
         self.setLayout(self.gridLayout)
 
-    def focusChanged(self, old, new):
+    def focusChanged(self, oldWidget, newWidget):
         try:
-            if new is not None and not self.isAncestorOf(new):
-                if new.inherits("QLineEdit") or new.inherits("QSpinBox"):
-                    self.focusWidget = new
+            if newWidget is not None and not self.isAncestorOf(newWidget):
+                if newWidget.inherits("QLineEdit") or newWidget.inherits("QSpinBox"):
+                    self.focusWidget = newWidget
                     width = qApp.desktop().screenGeometry().width()
                     height = qApp.desktop().screenGeometry().height()
                     globalPos = self.focusWidget.mapToGlobal(QPoint(0, 0))
@@ -55,11 +55,14 @@ class KeyBoard(QWidget):
                     self.setVisible(True)
                 else:
                     self.setVisible(False)
+            elif self.focusWidget is not None:
+                qApp.setActiveWindow(self.focusWidget)
         except Exception as e:
             print(str(e))
     def closeEvent(self, QCloseEvent):
         try:
             self.focusWidget.clearFocus()
+            self.focusWidget = None
         except Exception as e:
             print(str(e))
 

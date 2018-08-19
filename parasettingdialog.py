@@ -10,13 +10,14 @@ from PyQt5.QtCore import *
 from subdevattr import  *
 from tcpsocket import *
 
-class SettingParaWidget(QWidget, ui_settingpara.Ui_SettingPara):
+class SettingParaWidget(QFrame, ui_settingpara.Ui_SettingPara):
     doneSetting = pyqtSignal(bool)
     def __init__(self, dev, parent = None):
         super().__init__(parent)
         self.setupUi(self)
         self.device = dev
         self.setFixedSize(self.sizeHint())
+        self.setFrameShape(QFrame.Box)
         self.device.valueChanged.connect(self.onDevValueChanged)
         self.devNameLabel.setText(dev.text())
         self.actualPosLabel.setText(str(dev.currentPos))
@@ -75,7 +76,8 @@ class ParaSetting(QDialog):
         super().__init__(parent)
         self.context = ui_settingdialog.Ui_SettingDialog()
         self.context.setupUi(self)
-        self.setWindowState(Qt.WindowMaximized)
+        self.setWindowFlags(self.windowFlags()&(~Qt.WindowMaximizeButtonHint))
+        # self.setWindowState(Qt.WindowMaximized)
         self.setWindowTitle("Setting Device Parameter")
         self.readyAllSettingItems(allDev)
         self.setFocusPolicy(Qt.WheelFocus)
@@ -90,7 +92,7 @@ class ParaSetting(QDialog):
         allList = allDevList
         for dev in allList:
             devList.append(dev)
-            if not count%24:
+            if not count%18:
                 devListGroup.append(devList)
                 devList = []
             count += 1

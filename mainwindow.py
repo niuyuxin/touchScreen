@@ -78,8 +78,8 @@ class MainWindow(QFrame):
         self.mainWindow.forbidDevPushButton.clicked.connect(self.onForbidDevDialog)
         # account setting dialog
         self.mainWindow.accountPushButton.clicked.connect(self.onAccountManagement)
-        self.systemManagement = SystemManagement()
-        self.systemManagement.somthingChanged.connect(self.onSystemManagementSomthingChanged)
+        # self.systemManagement = SystemManagement()
+        # self.systemManagement.somthingChanged.connect(self.onSystemManagementSomthingChanged)
         # Tcp socket, creat alone thread
         self.tcpSocket = TcpSocket(self.allDevList)
         self.tcpSocketThread = QThread()
@@ -236,7 +236,9 @@ class MainWindow(QFrame):
         login = AccountLogin()
         try:
             if login.exec_():
-                self.systemManagement.exec_()
+                systemManagement = SystemManagement()
+                systemManagement.somthingChanged.connect(self.onSystemManagementSomthingChanged)
+                systemManagement.exec_()
             else:
                 return
         except Exception as e:
