@@ -30,9 +30,6 @@ QTabWidget#tabWidget::pane {
 ParaSetting {
     background-color: #1b1f2b
 }
-SystemManagement {
-    background-color: green
-}
 QGroupBox#setting, QGroupBox#analogControlGroupBox {
     border:none;
     background-color: #0b0e19
@@ -131,6 +128,7 @@ QTabBar::tab {
                                  stop: 0 #fafafa, stop: 0.4 #f4f4f4,
                                  stop: 0.5 #e7e7e7, stop: 1.0 #fafafa); */
      color:white;
+     font-size:20px;
      background-color:#1b1f2b;
  }
 QPushButton#subUpDevPushButton, QPushButton#subDownDevPushButton{
@@ -145,7 +143,7 @@ QPushButton#subUpDevPushButton:checked, QPushButton#subDownDevPushButton:checked
 }
 QPushButton#confirmPushButton, QPushButton#cancelPushButton {
     color: white;
-    font-size:15px;
+    font-size:20px;
     height: 50;
     width: 120;
     background-color: rgb(50, 50, 50)
@@ -171,11 +169,47 @@ QLabel#modelTextLabel {
     color: white
 }
 QLabel{
-    color: #2e4465;
-    font-size: 20px;
+    color: #7f8b9d;
+    font-size: 18px;
 }
-QLineEdit{
-    background-color: #2e4465;
+QLineEdit, QSpinBox, QComboBox{
+    background-color: white;
     min-height: 30px;
     font-size: 20px;
+}
+UserKeysDialog {
+    min-width:650px;
+    min-height:500px;
+    max-width:650px;
+    max-height:500px;
+    background-color: #1b1f2b
+}
+QPushButton#UserKeysUnit,
+QPushButton#userKeysExitPushButton
+{
+    min-height: 40px;
+    background-color: #2d4464;
+    color:white;
+}
+QPushButton#userKeysApplyPushButton,
+QPushButton#userKeysCancelPushButton
+{
+    min-height: 40px;
+    background-color: #3c81b8;
+    color:white;
+}
+QLabel#userKeysTipsLabel{
+    color: #3c81b8
+}
+ForbidDevDialog, SettingDevDialog, SystemManagement {
+    background-color: #1b1f2b
+}
+QPushButton#forbidDevExitPushButton,
+QPushButton#previousPushButton,
+QPushButton#nextPushButton,
+QPushButton#exitPushButton
+{
+    min-width: 100px;
+    min-height: 50px;
+    background-color: #1b1f2b;
 }

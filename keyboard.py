@@ -10,7 +10,7 @@ class KeyBoard(QWidget):
         self.setWindowModality(Qt.WindowModal)
         self.setFocusPolicy(Qt.NoFocus)
         self.setWindowTitle("Keyboard")
-        self.setWindowFlags(Qt.Tool | Qt.WindowStaysOnTopHint | Qt.WindowDoesNotAcceptFocus)
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.WindowSystemMenuHint| Qt.WindowDoesNotAcceptFocus|Qt.FramelessWindowHint)
         self.focusWidget = None
         self.initKeyWidget()
         self.setFixedSize(self.sizeHint())
@@ -53,6 +53,8 @@ class KeyBoard(QWidget):
                         moveHeight = moveHeight - self.frameGeometry().height()-self.focusWidget.geometry().height()
                     self.move(moveWidth, moveHeight)
                     self.setVisible(True)
+                    self.repaint()
+                    self.raise_()
                 else:
                     self.setVisible(False)
             elif self.focusWidget is not None:
@@ -65,7 +67,6 @@ class KeyBoard(QWidget):
             self.focusWidget = None
         except Exception as e:
             print(str(e))
-
     def onButtonClicked(self):
         try:
             btn = self.sender()

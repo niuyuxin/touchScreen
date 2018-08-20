@@ -7,6 +7,7 @@ from config import *
 class UserKeysUnit(QPushButton):
     def __init__(self, name, key, specKey, iod, speed, parent = None):
         super().__init__(parent)
+        self.setObjectName("UserKeysUnit")
         self.indexOfDev = iod
         self.name = name
         self.selfKey = key
@@ -22,14 +23,16 @@ class UserKeysUnit(QPushButton):
         self.setText(name)
 
 
-class UserKyesDialog(QDialog):
+class UserKeysDialog(QDialog):
     def __init__(self, allDevList, userKeysList):
         super().__init__()
+        self.setWindowFlags(self.windowFlags()|Qt.FramelessWindowHint)
+        self.setFocusPolicy(Qt.WheelFocus)
         self.currentUserkey = None
         self.subDevList = allDevList
         self.userKeysList = userKeysList
         # create attribute widget
-        self.keysAttrGroupBox = QGroupBox(self.tr("属性"))
+        self.keysAttrGroupBox = QGroupBox()
         self.keysAttrGroupBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.keysAttrLayout = QGridLayout()
         self.renameLabel = QLabel(self.tr("按键重命名："))
@@ -76,14 +79,16 @@ class UserKyesDialog(QDialog):
         self.keysAttrLayout.addWidget(self.zeroPosSpinBox, 7, 1, 1, 2)
         self.keysAttrGroupBox.setLayout(self.keysAttrLayout)
         self.applyPushButton = QPushButton(self.tr("应用"))
+        self.applyPushButton.setObjectName("userKeysApplyPushButton")
         self.cancelPushButton = QPushButton(self.tr("取消"))
+        self.cancelPushButton.setObjectName("userKeysCancelPushButton")
         self.keysAttrLayout.addWidget(self.applyPushButton, 8, 1)
         self.keysAttrLayout.addWidget(self.cancelPushButton, 8, 2)
         self.applyPushButton.clicked.connect(self.onApplyPushButtonClicked)
         self.cancelPushButton.clicked.connect(self.onCancelPushButtonClicked)
         # create button group
         self.setWindowTitle(self.tr("按键自定义"))
-        self.buttonGroupBox = QGroupBox(self.tr("按键"))
+        self.buttonGroupBox = QGroupBox()
         self.keysLayout = QVBoxLayout(self.buttonGroupBox)
         self.userButtonGroup = QButtonGroup()
         self.userButtonGroup.buttonPressed.connect(self.onUserButtonGroupButtonPressed)
@@ -100,8 +105,16 @@ class UserKyesDialog(QDialog):
         self.secondaryLayout.addWidget(self.buttonGroupBox)
         self.secondaryLayout.addWidget(self.keysAttrGroupBox)
         self.mainLayout = QVBoxLayout(self)
-        self.mainLayout.addWidget(QLabel(self.tr("请先选择按键， 再更改属性")))
+        self.userKeysTipsLabel = QLabel(self.tr("请先选择按键， 再更改属性"))
+        self.userKeysTipsLabel.setAlignment(Qt.AlignHCenter)
+        self.setObjectName("userKeysTipsLabel")
+        self.mainLayout.addWidget(self.userKeysTipsLabel)
+
         self.mainLayout.addLayout(self.secondaryLayout)
+        self.exitPushButton = QPushButton("退出")
+        self.exitPushButton.setObjectName("userKeysExitPushButton")
+        self.exitPushButton.clicked.connect(self.close)
+        self.mainLayout.addWidget(self.exitPushButton)
         # self.setLayout(self.mainLayout)
         self.cancelPushButton.setDefault(True)
     def onUserButtonGroupButtonPressed(self, button):
@@ -125,9 +138,9 @@ class UserKyesDialog(QDialog):
                 self.accept()
         else:
             self.applyUserSelected(self.devAssignedComboBox.currentIndex()-1) # plus None item
-            self.accept()
     def onCancelPushButtonClicked(self):
-        self.reject()
+        if self.currentUserkey is not None:
+            self.currentUserkey.animateClick()
     def onDevAssignedComboBoxCurrentIndexChanged(self, index):
         if index != 0:
             dev = self.subDevList[index-1] # first item is None,

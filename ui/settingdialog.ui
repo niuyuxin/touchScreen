@@ -16,9 +16,14 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="label">
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
      <property name="text">
-      <string>参数设置， 应用设置点击&quot;ok&quot;按钮， 取消点击&quot;Cancel&quot;
- 单位xxx</string>
+      <string>参数设置， 应用设置点击&quot;ok&quot;按钮， 取消点击&quot;Cancel&quot;</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -38,7 +43,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Exit</string>
+      <string>退出</string>
      </property>
      <property name="autoDefault">
       <bool>false</bool>

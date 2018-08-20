@@ -43,6 +43,7 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
     def __init__(self, subDevList):
         super().__init__()
         self.setupUi(self)
+        self.setWindowFlags(self.windowFlags()|Qt.FramelessWindowHint)
         self.vLayout = QVBoxLayout()
         self.contentFrame.setLayout(self.vLayout)
         self.holdSelectedDev = []
@@ -50,7 +51,7 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
         self.buttonGroup = QButtonGroup()
         self.createAllWidget(self.buttonGroup, subDevList, self.widgetNumber)
         self.nextPushButton.clicked.connect(self.onNextPushButtonClicked)
-        self.prevPushButton.clicked.connect(self.onPreviousPushButtonClicked)
+        self.previousPushButton.clicked.connect(self.onPreviousPushButtonClicked)
     def createAllWidget(self, buttonGroup, subDevList, num = 0):
         count = 0
         self.widgetList = []
@@ -98,7 +99,7 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
             self.widgetNumber = len(self.widgetList) - 1
         self.showSubWidget(self.widgetNumber % len(self.widgetList))
     def closeEvent(self, QCloseEvent):
-        self.doneSomthing()
+        self.doneSomthing(False)
         QCloseEvent.accept()
     def accept(self):
         self.doneSomthing(True)

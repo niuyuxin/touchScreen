@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'settingdialog.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -15,6 +15,8 @@ class Ui_SettingDialog(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(SettingDialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.label = QtWidgets.QLabel(SettingDialog)
+        self.label.setFrameShape(QtWidgets.QFrame.Box)
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
         self.tabWidget = QtWidgets.QTabWidget(SettingDialog)
@@ -38,7 +40,6 @@ class Ui_SettingDialog(object):
     def retranslateUi(self, SettingDialog):
         _translate = QtCore.QCoreApplication.translate
         SettingDialog.setWindowTitle(_translate("SettingDialog", "Dialog"))
-        self.label.setText(_translate("SettingDialog", "参数设置， 应用设置点击\"ok\"按钮， 取消点击\"Cancel\"\n"
-" 单位xxx"))
-        self.cancelPushButton.setText(_translate("SettingDialog", "Exit"))
+        self.label.setText(_translate("SettingDialog", "参数设置， 应用设置点击\"ok\"按钮， 取消点击\"Cancel\""))
+        self.cancelPushButton.setText(_translate("SettingDialog", "退出"))
 

@@ -19,30 +19,13 @@
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>旁路设定，当前只允许选中单个设备
- “ok”选择生效 “cancel”放弃选择</string>
+        <string>旁路设定
+当前只允许选中单个设备,“ok”选择生效 “cancel”放弃选择</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_3">
-       <property name="text">
-        <string>旁路</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>
@@ -77,7 +60,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="prevPushButton">
+         <widget class="QPushButton" name="previousPushButton">
           <property name="text">
            <string>上一页</string>
           </property>

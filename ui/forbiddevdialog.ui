@@ -31,12 +31,15 @@
      <property name="text">
       <string>请点击禁用设备</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
     </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <property name="spacing">
-      <number>0</number>
+      <number>20</number>
      </property>
      <item>
       <spacer name="horizontalSpacer">
@@ -60,7 +63,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Previous</string>
+        <string>上一页</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -79,7 +82,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Next</string>
+        <string>下一页</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -125,7 +128,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="forbidDevExitPushButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -151,7 +154,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton</sender>
+   <sender>forbidDevExitPushButton</sender>
    <signal>clicked()</signal>
    <receiver>ForbidDevDialog</receiver>
    <slot>close()</slot>

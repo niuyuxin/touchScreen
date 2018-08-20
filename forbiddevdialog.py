@@ -9,7 +9,7 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
     ForbiddenOperation = 1<<1
     def __init__(self, subDevList):
         super().__init__()
-        # self.setWindowFlags(Qt.WindowMinimizeButtonHint)
+        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
         self.setupUi(self)
         self.buttonGroup = QButtonGroup()
         self.buttonGroup.addButton(self.previousPushButton)

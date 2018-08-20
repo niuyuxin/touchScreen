@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'forbiddevdialog.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -25,10 +25,11 @@ class Ui_ForbidDevDialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tipsLabel.sizePolicy().hasHeightForWidth())
         self.tipsLabel.setSizePolicy(sizePolicy)
+        self.tipsLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.tipsLabel.setObjectName("tipsLabel")
         self.verticalLayout.addWidget(self.tipsLabel)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setSpacing(0)
+        self.horizontalLayout.setSpacing(20)
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
@@ -69,26 +70,26 @@ class Ui_ForbidDevDialog(object):
         self.forbidDevFrame.setSizePolicy(sizePolicy)
         self.forbidDevFrame.setObjectName("forbidDevFrame")
         self.verticalLayout.addWidget(self.forbidDevFrame)
-        self.pushButton = QtWidgets.QPushButton(ForbidDevDialog)
+        self.forbidDevExitPushButton = QtWidgets.QPushButton(ForbidDevDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
-        self.pushButton.setSizePolicy(sizePolicy)
-        self.pushButton.setMinimumSize(QtCore.QSize(0, 40))
-        self.pushButton.setDefault(True)
-        self.pushButton.setObjectName("pushButton")
-        self.verticalLayout.addWidget(self.pushButton)
+        sizePolicy.setHeightForWidth(self.forbidDevExitPushButton.sizePolicy().hasHeightForWidth())
+        self.forbidDevExitPushButton.setSizePolicy(sizePolicy)
+        self.forbidDevExitPushButton.setMinimumSize(QtCore.QSize(0, 40))
+        self.forbidDevExitPushButton.setDefault(True)
+        self.forbidDevExitPushButton.setObjectName("forbidDevExitPushButton")
+        self.verticalLayout.addWidget(self.forbidDevExitPushButton)
 
         self.retranslateUi(ForbidDevDialog)
-        self.pushButton.clicked.connect(ForbidDevDialog.close)
+        self.forbidDevExitPushButton.clicked.connect(ForbidDevDialog.close)
         QtCore.QMetaObject.connectSlotsByName(ForbidDevDialog)
 
     def retranslateUi(self, ForbidDevDialog):
         _translate = QtCore.QCoreApplication.translate
         ForbidDevDialog.setWindowTitle(_translate("ForbidDevDialog", "禁用设备列表"))
         self.tipsLabel.setText(_translate("ForbidDevDialog", "请点击禁用设备"))
-        self.previousPushButton.setText(_translate("ForbidDevDialog", "Previous"))
-        self.nextPushButton.setText(_translate("ForbidDevDialog", "Next"))
-        self.pushButton.setText(_translate("ForbidDevDialog", "exit"))
+        self.previousPushButton.setText(_translate("ForbidDevDialog", "上一页"))
+        self.nextPushButton.setText(_translate("ForbidDevDialog", "下一页"))
+        self.forbidDevExitPushButton.setText(_translate("ForbidDevDialog", "exit"))
 
