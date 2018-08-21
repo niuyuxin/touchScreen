@@ -43,7 +43,7 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
     def __init__(self, subDevList):
         super().__init__()
         self.setupUi(self)
-        self.setWindowFlags(Qt.Dialog|Qt.FramelessWindowHint)
+        self.setWindowFlags(self.windowFlags()|Qt.FramelessWindowHint)
         self.vLayout = QVBoxLayout()
         self.contentFrame.setLayout(self.vLayout)
         self.holdSelectedDev = []
@@ -87,7 +87,7 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
             self.widgetList[i].setVisible(False)
         self.widgetList[num].setVisible(True)
         self.indexLabel.setText("{}/{}".format(num+1, len(self.widgetList)))
-        self.adjustSize()
+        self.repaint()
     def onNextPushButtonClicked(self):
         self.widgetNumber += 1
         self.showSubWidget(self.widgetNumber % len(self.widgetList))

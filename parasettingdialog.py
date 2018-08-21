@@ -111,7 +111,7 @@ class ParaSetting(QDialog):
                     hCount += 1
             widget.setLayout(gridLayout)
             self.context.tabWidget.addTab(widget, " 第 {} 页".format(devListGroup.index(groupItem)+1))
-        self.adjustSize()
+        self.repaint()
     def somthingChanged(self, s):
         spw = self.sender()
         if spw is None or not isinstance(spw, SettingParaWidget):
