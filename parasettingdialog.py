@@ -76,7 +76,6 @@ class ParaSetting(QDialog):
         super().__init__(parent)
         self.context = ui_settingdialog.Ui_SettingDialog()
         self.context.setupUi(self)
-        self.setWindowModality(Qt.WindowModal)
         # self.setWindowState(Qt.WindowMaximized)
         self.setWindowFlags(self.windowFlags()|Qt.FramelessWindowHint)
         self.setWindowTitle("Setting Device Parameter")
@@ -112,7 +111,7 @@ class ParaSetting(QDialog):
                     hCount += 1
             widget.setLayout(gridLayout)
             self.context.tabWidget.addTab(widget, " 第 {} 页".format(devListGroup.index(groupItem)+1))
-        self.setFixedSize(self.sizeHint())
+        self.adjustSize()
     def somthingChanged(self, s):
         spw = self.sender()
         if spw is None or not isinstance(spw, SettingParaWidget):

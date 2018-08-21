@@ -52,7 +52,7 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         for i in range(len(self.widgetList)):
             self.widgetList[i].setVisible(False)
         self.widgetList[num].setVisible(True)
-        self.repaint()
+        self.adjustSize()
 
     def onNextPushButtonClicked(self):
         self.widgetNumber += 1
