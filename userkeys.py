@@ -220,3 +220,6 @@ class UserKeysDialog(QDialog):
             self.userButtonGroup.removeButton(button)
             button.setChecked(False)
             button.setEnabled(False)
+    def showEvent(self, QShowEvent):
+        self.move((qApp.desktop().width() - self.width()) // 2,
+                  (qApp.desktop().height() - self.height())//2)

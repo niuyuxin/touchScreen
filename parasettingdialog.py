@@ -111,7 +111,6 @@ class ParaSetting(QDialog):
                     hCount += 1
             widget.setLayout(gridLayout)
             self.context.tabWidget.addTab(widget, " 第 {} 页".format(devListGroup.index(groupItem)+1))
-        self.repaint()
     def somthingChanged(self, s):
         spw = self.sender()
         if spw is None or not isinstance(spw, SettingParaWidget):
@@ -123,3 +122,6 @@ class ParaSetting(QDialog):
                                        "UpLimited":spw.device.upLimitedPos,
                                        "DownLimited":spw.device.downLimitedPos
                                        })
+    def showEvent(self, QShowEvent):
+        self.move((qApp.desktop().width() - self.width()) // 2,
+                  (qApp.desktop().height() - self.height())//2)

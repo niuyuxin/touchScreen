@@ -89,7 +89,6 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
             self.widgetList[i].setVisible(False)
         self.widgetList[num].setVisible(True)
         self.indexLabel.setText("{}/{}".format(num+1, len(self.widgetList)))
-        self.repaint()
     def onNextPushButtonClicked(self):
         self.widgetNumber += 1
         self.showSubWidget(self.widgetNumber % len(self.widgetList))
@@ -131,6 +130,8 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
                     item.setChecked(True)
         except Exception as e:
             print("doneSomthing", str(e))
-
+    def showEvent(self, QShowEvent):
+        self.move((qApp.desktop().width() - self.width()) // 2,
+                  (qApp.desktop().height() - self.height())//2)
 
 

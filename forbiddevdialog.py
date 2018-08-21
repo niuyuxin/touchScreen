@@ -24,6 +24,9 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
     def createAllWidget(self, subDevList, num = 0):
         count = 0
         self.widgetList = []
+        while self.vLayout.itemAt(0) != None:
+            w = self.vLayout.takeAt(0)
+            w.widget().setParent(None)
         for subList in subDevList:
             for item in subList:
                 if item.isChecked() and item.isUsed:
@@ -51,7 +54,6 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         for i in range(len(self.widgetList)):
             self.widgetList[i].setVisible(False)
         self.widgetList[num].setVisible(True)
-        self.repaint()
 
     def onNextPushButtonClicked(self):
         self.widgetNumber += 1
@@ -62,3 +64,6 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         else:
             self.widgetNumber = len(self.widgetList)-1
         self.showSubWidget(self.widgetNumber % len(self.widgetList))
+    def showEvent(self, QShowEvent):
+        self.move((qApp.desktop().width() - self.width()) // 2,
+                  (qApp.desktop().height() - self.height())//2)
