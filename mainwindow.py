@@ -62,6 +62,7 @@ class MainWindow(QFrame):
         self.analogDetectionThread.start()
         self.mouseMoveTimer = QTimer(self)
         self.mouseMoveTimer.timeout.connect(self.onMouseMoveTimer)
+        self.mouseMoveTimer.start(60 * 1000)
         self.workingState = 0
         self.init_mainWindow()
     def init_mainWindow(self):

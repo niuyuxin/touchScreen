@@ -31,7 +31,7 @@ if __name__ == "__main__":
         keyboard.hide()
         Config(QFileInfo(sys.argv[0]).absoluteDir().absolutePath())
         form = mainwindow.MainWindow()
-        form.show()
+        form.showFullScreen()
         app.exec_()
     except KeyboardInterrupt as k:
         print(k)
