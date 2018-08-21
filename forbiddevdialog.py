@@ -9,8 +9,9 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
     ForbiddenOperation = 1<<1
     def __init__(self, subDevList):
         super().__init__()
-        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
         self.setupUi(self)
+        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
+        self.setWindowModality(Qt.WindowModal)
         self.buttonGroup = QButtonGroup()
         self.buttonGroup.addButton(self.previousPushButton)
         self.buttonGroup.addButton(self.nextPushButton)
@@ -51,9 +52,8 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         for i in range(len(self.widgetList)):
             self.widgetList[i].setVisible(False)
         self.widgetList[num].setVisible(True)
-        self.setVisible(True)
         self.repaint()
-        
+
     def onNextPushButtonClicked(self):
         self.widgetNumber += 1
         self.showSubWidget(self.widgetNumber%len(self.widgetList))

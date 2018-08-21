@@ -76,7 +76,7 @@ class ParaSetting(QDialog):
         super().__init__(parent)
         self.context = ui_settingdialog.Ui_SettingDialog()
         self.context.setupUi(self)
-        # self.setWindowModality(Qt.WindowModal)
+        self.setWindowModality(Qt.WindowModal)
         # self.setWindowState(Qt.WindowMaximized)
         self.setWindowFlags(self.windowFlags()|Qt.FramelessWindowHint)
         self.setWindowTitle("Setting Device Parameter")
