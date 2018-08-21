@@ -16,7 +16,7 @@ class ConfigKeys():
     offStageButtonName = "OffStageButtonName"
     monitorName = "MonitorName"
 class Config(object):
-    version = "18.07.08.5"
+    version = "18.07.08.6"
     monitorId = 0
     def __init__(self, fileDir):
         ConfigKeys.settingFileName = fileDir + '/' + ConfigKeys.settingFileName
@@ -49,7 +49,7 @@ class Config(object):
                 set.sync()
                 count += 1
             for item in range(4):
-                set.setValue("UserKeys/UserKey{}".format(item), "18063000{}:自定义{}:{}:".format(item, item, item+100))
+                set.setValue("UserKeys/UserKey{}".format(item), "18063000{}:自定义{}:{}:".format(item, item+1, item+100))
             set.setValue(ConfigKeys.monitorName, "TouchScreen")
             set.sync()
         Config.monitorId = int(Config.value(ConfigKeys.monitorId))
