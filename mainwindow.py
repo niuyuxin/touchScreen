@@ -218,18 +218,17 @@ class MainWindow(QFrame):
             print(str(e))
 
     def onSettingDevPushButtonClicked(self): # 设备设定
-
-        settingDev = SettingDevDialog(self.subDevList)
         # settingDev.showFullScreen()
-        settingDev.exec_()
+        self.settingDev = SettingDevDialog(self.subDevList)
+        self.settingDev.exec_()
         self.devOperationDict[SettingDevDialog.PartialOperation] = self.checkPartialDevice()
         self.pushDeviceState()
         self.singleCtrlWidget.showAllDev(self.subDevList)
 
     def onForbidDevDialog(self): # 设备禁用
-        forbidDevDialog = ForbidDevDialog(self.subDevList)
+        self.forbidDevDialog = ForbidDevDialog(self.subDevList)
         # forbidDevDialog.showFullScreen()
-        forbidDevDialog.exec_()
+        self.forbidDevDialog.exec_()
         self.devOperationDict[ForbidDevDialog.ForbiddenOperation] = self.checkForbiddenDevice()
         self.pushDeviceState()
         self.singleCtrlWidget.showAllDev(self.subDevList)
