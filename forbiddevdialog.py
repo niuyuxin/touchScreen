@@ -21,6 +21,8 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         # self.createAllWidget(subDevList, self.widgetNumber)
         self.nextPushButton.clicked.connect(self.onNextPushButtonClicked)
         self.previousPushButton.clicked.connect(self.onPreviousPushButtonClicked)
+        self.move((qApp.desktop().width() - self.width()),
+                  (qApp.desktop().height() - self.height()))
     def createAllWidget(self, subDevList, num = 0):
         count = 0
         self.widgetList = []
@@ -50,6 +52,9 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
                     hCount += 1
                 count += 1
         self.showSubWidget(num)
+        self.move((qApp.desktop().width() - self.width()) // 2,
+                  (qApp.desktop().height() - self.height())//2)
+
     def showSubWidget(self, num):
         for i in range(len(self.widgetList)):
             self.widgetList[i].setVisible(False)
@@ -64,6 +69,6 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         else:
             self.widgetNumber = len(self.widgetList)-1
         self.showSubWidget(self.widgetNumber % len(self.widgetList))
-    def showEvent(self, QShowEvent):
-        self.move((qApp.desktop().width() - self.width()) // 2,
-                  (qApp.desktop().height() - self.height())//2)
+    # def showEvent(self, QShowEvent):
+    #     self.move((qApp.desktop().width() - self.width()) // 2,
+    #               (qApp.desktop().height() - self.height())//2)

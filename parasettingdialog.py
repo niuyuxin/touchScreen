@@ -81,6 +81,8 @@ class ParaSetting(QDialog):
         self.setWindowTitle("Setting Device Parameter")
         self.readyAllSettingItems(allDev)
         self.setFocusPolicy(Qt.WheelFocus)
+        self.move((qApp.desktop().width() - self.width()) // 2,
+                  (qApp.desktop().height() - self.height()) // 2)
     def readyAllSettingItems(self, allDevList):
         """ set TabWidget items, each tabWidget 15 items
             allDevList include on the stage and off the stage device
@@ -111,6 +113,8 @@ class ParaSetting(QDialog):
                     hCount += 1
             widget.setLayout(gridLayout)
             self.context.tabWidget.addTab(widget, " 第 {} 页".format(devListGroup.index(groupItem)+1))
+            self.move((qApp.desktop().width() - self.width()) // 2,
+                      (qApp.desktop().height() - self.height())//2)
     def somthingChanged(self, s):
         spw = self.sender()
         if spw is None or not isinstance(spw, SettingParaWidget):
@@ -122,6 +126,6 @@ class ParaSetting(QDialog):
                                        "UpLimited":spw.device.upLimitedPos,
                                        "DownLimited":spw.device.downLimitedPos
                                        })
-    def showEvent(self, QShowEvent):
-        self.move((qApp.desktop().width() - self.width()) // 2,
-                  (qApp.desktop().height() - self.height())//2)
+    # def showEvent(self, QShowEvent):
+    #     self.move((qApp.desktop().width() - self.width()) // 2,
+    #               (qApp.desktop().height() - self.height())//2)

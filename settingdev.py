@@ -84,6 +84,8 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
                     hCount += 1
                 count += 1
         self.showSubWidget(num)
+        self.move((qApp.desktop().width() - self.width()) // 2,
+                  (qApp.desktop().height() - self.height()) // 2)
     def showSubWidget(self, num):
         for i in range(len(self.widgetList)):
             self.widgetList[i].setVisible(False)
@@ -130,8 +132,8 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
                     item.setChecked(True)
         except Exception as e:
             print("doneSomthing", str(e))
-    def showEvent(self, QShowEvent):
-        self.move((qApp.desktop().width() - self.width()) // 2,
-                  (qApp.desktop().height() - self.height())//2)
+    # def showEvent(self, QShowEvent):
+    #     self.move((qApp.desktop().width() - self.width()) // 2,
+    #               (qApp.desktop().height() - self.height())//2)
 
 

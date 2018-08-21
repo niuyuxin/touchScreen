@@ -57,7 +57,6 @@ class SystemManagement(QDialog, ui_systemmanagementwidget.Ui_SystemManagementWid
         self.serverIpLineEdit.setValidator(QRegExpValidator(regExp))
         self.serverIpLineEdit.setText(Config.value(ConfigKeys.serverIp))
         self.serverIpLineEdit.returnPressed.connect(self.onServerIpLineEditingReturnPressed)
-        self.repaint()
 
     def onServerIpLineEditingReturnPressed(self):
         serverIpText = self.sender().text()
