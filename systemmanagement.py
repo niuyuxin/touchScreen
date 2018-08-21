@@ -63,5 +63,4 @@ class SystemManagement(QDialog, ui_systemmanagementwidget.Ui_SystemManagementWid
         Config.setValue(ConfigKeys.serverIp, serverIpText)
         self.somthingChanged.emit(ConfigKeys.serverIp, serverIpText)
     def showEvent(self, QShowEvent):
-        self.move((qApp.desktop().width() - self.width()) // 2,
-                  (qApp.desktop().height() - self.height())//2)
+        self.move(self.pos())

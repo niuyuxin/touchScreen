@@ -50,8 +50,7 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
                     hCount += 1
                 count += 1
         self.showSubWidget(num)
-        self.move((qApp.desktop().width() - self.width()) // 2,
-                  (qApp.desktop().height() - self.height())//2)
+        self.move(self.pos())
 
     def showSubWidget(self, num):
         for i in range(len(self.widgetList)):
