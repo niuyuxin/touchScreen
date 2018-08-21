@@ -76,6 +76,8 @@ class MainWindow(QFrame):
         self.paraSetting.sendDataToTcpSocket.connect(self.sendDataToTcpSocket)
         # Forbidded dev dialog signals
         self.mainWindow.forbidDevPushButton.clicked.connect(self.onForbidDevDialog)
+        self.forbidDevDialog = ForbidDevDialog(self.subDevList)
+        self.settingDev = SettingDevDialog(self.subDevList)
         # account setting dialog
         self.mainWindow.accountPushButton.clicked.connect(self.onAccountManagement)
         self.systemManagement = SystemManagement()
@@ -219,16 +221,16 @@ class MainWindow(QFrame):
 
     def onSettingDevPushButtonClicked(self): # 设备设定
         # settingDev.showFullScreen()
-        settingDev = SettingDevDialog(self.subDevList)
-        settingDev.exec_()
+        self.settingDev.createAllWidget(self.settingDev.buttonGroup, self.subDevList)
+        self.settingDev.exec_()
         self.devOperationDict[SettingDevDialog.PartialOperation] = self.checkPartialDevice()
         self.pushDeviceState()
         self.singleCtrlWidget.showAllDev(self.subDevList)
 
     def onForbidDevDialog(self): # 设备禁用
-        forbidDevDialog = ForbidDevDialog(self.subDevList)
         # forbidDevDialog.showFullScreen()
-        forbidDevDialog.exec_()
+        self.forbidDevDialog.createAllWidget(self.subDevList)
+        self.forbidDevDialog.exec_()
         self.devOperationDict[ForbidDevDialog.ForbiddenOperation] = self.checkForbiddenDevice()
         self.pushDeviceState()
         self.singleCtrlWidget.showAllDev(self.subDevList)

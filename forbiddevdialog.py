@@ -19,7 +19,7 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         self.vLayout = QVBoxLayout()
         self.forbidDevFrame.setLayout(self.vLayout)
         self.widgetNumber = 0
-        self.createAllWidget(subDevList, self.widgetNumber)
+        # self.createAllWidget(subDevList, self.widgetNumber)
         self.nextPushButton.clicked.connect(self.onNextPushButtonClicked)
         self.previousPushButton.clicked.connect(self.onPreviousPushButtonClicked)
     def createAllWidget(self, subDevList, num = 0):

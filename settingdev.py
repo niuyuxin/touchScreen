@@ -49,7 +49,7 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
         self.holdSelectedDev = []
         self.widgetNumber = 0
         self.buttonGroup = QButtonGroup()
-        self.createAllWidget(self.buttonGroup, subDevList, self.widgetNumber)
+        # self.createAllWidget(self.buttonGroup, subDevList, self.widgetNumber)
         self.nextPushButton.clicked.connect(self.onNextPushButtonClicked)
         self.previousPushButton.clicked.connect(self.onPreviousPushButtonClicked)
     def createAllWidget(self, buttonGroup, subDevList, num = 0):
