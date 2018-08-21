@@ -39,7 +39,7 @@ QPushButton#raisePushButton, QPushButton#stopPushButton, QPushButton#dropPushBut
     height:50px;
     min-width:200px;
     background-color: #2e4465;
-    font-size: 15px;
+    font-size: 20px;
     border:2px solid;
     border-top-left-radius:8px;
     border-top-right-radius:8px;
@@ -89,7 +89,12 @@ QPushButton#resetInverterPushButton, QPushButton#clearFaultPushButton {
     border-top-left-radius:8px;
     border-top-right-radius:8px;
     border-bottom-left-radius:8px;
-    border-bottom-right-radius:8px
+    border-bottom-right-radius:8px;
+    background-color: gray;
+}
+QPushButton#resetInverterPushButton:pressed, QPushButton#clearFaultPushButton:pressed {
+    background-color: green;
+    color: white;
 }
 QPushButton#exitBushButton {
     height:40px;
@@ -99,7 +104,7 @@ QPushButton#exitBushButton {
     border-top-left-radius:8px;
     border-top-right-radius:8px;
     border-bottom-left-radius:8px;
-    border-bottom-right-radius:8px
+    border-bottom-right-radius:8px;
 }
 QPushButton#cancelPushButton:checked, QPushButton#confirmPushButton:checked {
     background-color: #3a006f;
@@ -176,6 +181,9 @@ QLineEdit, QSpinBox, QComboBox{
     background-color: white;
     min-height: 30px;
     font-size: 20px;
+}
+QLineEdit#serverIpLineEdit {
+    min-width: 100px;
 }
 UserKeysDialog {
     min-width:650px;

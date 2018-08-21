@@ -249,7 +249,6 @@ class MainWindow(QFrame):
         self.tcpSocketManagement.emit(1)
 
     def closeEvent(self, event):
-        return
         reply = QMessageBox.question(self,
                                      "quit application",
                                      "Don't you want to quit application",
@@ -257,9 +256,13 @@ class MainWindow(QFrame):
         if reply == QMessageBox.No:
             event.ignore()
         else:
-            self.tcpSocketThread.quit()
-            self.tcpSocketThread.wait()
-            event.accept()
+            login = AccountLogin()
+            if login.exec_():
+                self.tcpSocketThread.quit()
+                self.tcpSocketThread.wait()
+                event.accept()
+            else:
+                event.ignore()
     # def resizeEvent(self, QResizeEvent):
     #     rect = self.pos()
     #     print(rect)

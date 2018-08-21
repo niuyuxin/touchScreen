@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_SystemManagementWidget(object):
     def setupUi(self, SystemManagementWidget):
         SystemManagementWidget.setObjectName("SystemManagementWidget")
-        SystemManagementWidget.resize(478, 232)
+        SystemManagementWidget.resize(478, 234)
         self.verticalLayout = QtWidgets.QVBoxLayout(SystemManagementWidget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.label = QtWidgets.QLabel(SystemManagementWidget)
@@ -73,8 +73,8 @@ class Ui_SystemManagementWidget(object):
         self.horizontalLayout.addItem(spacerItem)
         self.exitPushButton = QtWidgets.QPushButton(SystemManagementWidget)
         self.exitPushButton.setFocusPolicy(QtCore.Qt.WheelFocus)
-        self.exitPushButton.setAutoDefault(True)
-        self.exitPushButton.setDefault(True)
+        self.exitPushButton.setAutoDefault(False)
+        self.exitPushButton.setDefault(False)
         self.exitPushButton.setObjectName("exitPushButton")
         self.horizontalLayout.addWidget(self.exitPushButton)
         self.verticalLayout.addLayout(self.horizontalLayout)

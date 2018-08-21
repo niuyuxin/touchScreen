@@ -217,7 +217,7 @@ class Ui_mainWindow(object):
         self.settingDevPushButton.setText(_translate("mainWindow", "设备设定"))
         self.accountPushButton.setText(_translate("mainWindow", "账号管理"))
         self.resetInverterPushButton.setText(_translate("mainWindow", "变频器复位"))
-        self.clearFaultPushButton.setText(_translate("mainWindow", "清除故障信息"))
+        self.clearFaultPushButton.setText(_translate("mainWindow", "清除故障"))
         self.exitBushButton.setText(_translate("mainWindow", "退出"))
         self.label_2.setText(_translate("mainWindow", "速度设置:"))
         self.label.setText(_translate("mainWindow", "速度(%):"))
