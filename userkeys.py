@@ -114,7 +114,7 @@ class UserKeysDialog(QDialog):
         self.exitPushButton = QPushButton("退出")
         self.exitPushButton.setObjectName("userKeysExitPushButton")
         self.exitPushButton.clicked.connect(self.close)
-        self.mainLayout.addWidget(self.exitPushButton)
+        self.mainLayout.addWidget(self.exitPushButton, 0, Qt.AlignRight)
         # self.setLayout(self.mainLayout)
         self.cancelPushButton.setDefault(True)
     def onUserButtonGroupButtonPressed(self, button):

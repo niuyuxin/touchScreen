@@ -39,9 +39,10 @@ class KeyBoard(QWidget):
 
     def focusChanged(self, oldWidget, newWidget):
         try:
-            if newWidget is not None and not self.isAncestorOf(newWidget):
+            if newWidget is not None and newWidget.isVisible():
                 if newWidget.inherits("QLineEdit") or newWidget.inherits("QSpinBox"):
                     self.focusWidget = newWidget
+                    print(self.focusWidget.objectName())
                     width = qApp.desktop().screenGeometry().width()
                     height = qApp.desktop().screenGeometry().height()
                     globalPos = self.focusWidget.mapToGlobal(QPoint(0, 0))
@@ -58,7 +59,9 @@ class KeyBoard(QWidget):
                 else:
                     self.setVisible(False)
             elif self.focusWidget is not None:
-                qApp.setActiveWindow(self.focusWidget)
+                    qApp.setActiveWindow(self.focusWidget)
+            else:
+                self.setVisible(False)
         except Exception as e:
             print(str(e))
     def closeEvent(self, QCloseEvent):

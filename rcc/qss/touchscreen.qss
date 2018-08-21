@@ -188,6 +188,7 @@ QPushButton#UserKeysUnit,
 QPushButton#userKeysExitPushButton
 {
     min-height: 40px;
+    min-width: 200px;
     background-color: #2d4464;
     color:white;
 }
@@ -211,5 +212,7 @@ QPushButton#exitPushButton
 {
     min-width: 100px;
     min-height: 50px;
+    max-width: 200px;
     background-color: #1b1f2b;
+    color: white;
 }
