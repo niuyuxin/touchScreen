@@ -62,6 +62,7 @@ class MainWindow(QFrame):
         self.analogDetectionThread.start()
         self.mouseMoveTimer = QTimer(self)
         self.mouseMoveTimer.timeout.connect(self.onMouseMoveTimer)
+        self.workingState = 0
         self.init_mainWindow()
     def init_mainWindow(self):
         # independent control widget
@@ -314,24 +315,17 @@ class MainWindow(QFrame):
             return
         if not button.isDown():
             return
-        s = 0
         if button.objectName() == "raisePushButton":
-            s = 1
+            self.workingState = 1
         elif button.objectName() == "dropPushButton":
-            s = -1
+            self.workingState = -1
         elif button.objectName() == "stopPushButton":
-            s = 0
+            self.workingState = 0
 
         value = self.mainWindow.speedSetSlider.value()
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SpeedSet, {"Value": value})
-        self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.OperationalCtrl, {"State":s})
-        if s == 0:
-            if len(self.devOperationDict[1]) > 0:
-                self.pcf8591Mode.emit(AnalogDetection.PCF8591_SELECTED)
-            else:
-                self.pcf8591Mode.emit(AnalogDetection.PCF8591_NOSELECTED)
-        else:
-            self.pcf8591Mode.emit(AnalogDetection.PCF8591_RUNNING)
+        self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.OperationalCtrl, {"State":self.workingState})
+        self.pcf8591Lights()
 
     def onSpeedSetSliderValueChanged(self, value):
         self.mainWindow.lcdNumber.display(value)
@@ -382,8 +376,19 @@ class MainWindow(QFrame):
                 self.mainWindow.stopPushButton.animateClick()
             elif key == AnalogDetection.GPIO_DROP:
                 self.mainWindow.dropPushButton.animateClick()
-    def mouseMoveEvent(self, QMouseEvent):
-        self.mouseMoveTimer.start(1000)
+
+    def mousePressEvent(self, QMouseEvent):
+        self.mouseMoveTimer.start(60*1000)
+        self.pcf8591Lights()
 
     def onMouseMoveTimer(self):
         self.pcf8591Mode.emit(AnalogDetection.PCF8591_IDEL)
+
+    def pcf8591Lights(self):
+        if self.workingState == 0:
+            if len(self.devOperationDict[1]) > 0:
+                self.pcf8591Mode.emit(AnalogDetection.PCF8591_SELECTED)
+            else:
+                self.pcf8591Mode.emit(AnalogDetection.PCF8591_NOSELECTED)
+        else:
+            self.pcf8591Mode.emit(AnalogDetection.PCF8591_RUNNING)
