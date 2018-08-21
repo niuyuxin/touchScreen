@@ -24,6 +24,7 @@ class MainWindow(QFrame):
     mainWindowOrder = pyqtSignal(str, dict)
     userKeySelected = pyqtSignal(dict)
     runningState = pyqtSignal(int)
+    pcf8591Mode = pyqtSignal(int)
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.rtc = QTimer()
@@ -57,6 +58,7 @@ class MainWindow(QFrame):
         self.userKeySelected.connect(self.analogDetection.onUserKeySelected)
         self.analogDetection.GPIOState.connect(self.onPhysicalKeyClicked)
         self.analogDetectionThread.started.connect(self.analogDetection.init)
+        self.pcf8591Mode.connect(self.analogDetection.pcf8591LedMode)
         self.analogDetectionThread.start()
         self.init_mainWindow()
     def init_mainWindow(self):
@@ -110,7 +112,9 @@ class MainWindow(QFrame):
                 print(self.tr("选择了以下设备："), devInfoList)
                 self.devOperationDict[state] = selectedDev
                 self.pushDeviceState()
+                self.pcf8591Mode.emit(AnalogDetection.PCF8591_SELECTED)
             else: # 取消旁路设备
+                self.pcf8591Mode.emit(AnalogDetection.PCF8591_NOSELECTED)
                 self.devOperationDict[SettingDevDialog.PartialOperation] = []
                 self.devOperationDict[state] = []
                 self.pushDeviceState()
@@ -303,7 +307,7 @@ class MainWindow(QFrame):
         if SingleCtrlWidget.SelectedOperation in self.devOperationDict.keys() and\
             len(self.devOperationDict[SingleCtrlWidget.SelectedOperation]) == 0:
             if self.isActiveWindow():
-                QMessageBox.warning(self,"..", self.tr("please select device first!"), QMessageBox.Ok)
+                QMessageBox.warning(self,"警告", self.tr("请先选择设备， 然后进行操作！"), QMessageBox.Ok)
             button.setChecked(False)
             return
         if not button.isDown():
@@ -361,7 +365,7 @@ class MainWindow(QFrame):
             if SingleCtrlWidget.SelectedOperation in self.devOperationDict.keys() and\
                 len(self.devOperationDict[SingleCtrlWidget.SelectedOperation]) == 0:
                 if self.isActiveWindow():
-                    QMessageBox.warning(self,"..", self.tr("please select device first!"), QMessageBox.Ok)
+                    QMessageBox.warning(self,"警告", self.tr("请先选择设备， 然后进行操作！"), QMessageBox.Ok)
                 return
             if key == AnalogDetection.GPIO_RAISE:
                 self.mainWindow.raisePushButton.animateClick()

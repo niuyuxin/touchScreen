@@ -62,7 +62,7 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
             devFrame.setLayout(gridLayout)
             for subDev in subDevList[i]:
                 self.devButtonGroup.addButton(subDev)
-                subDev.setFixedSize(100, 100)
+                subDev.setFixedSize(120, 120)
                 if not subDev.isUsed:
                     subDev.setEnabled(False)
                 elif subDev.text() in allSelectedDev:

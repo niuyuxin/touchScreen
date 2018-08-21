@@ -142,6 +142,10 @@ class AnalogDetection(QObject):
     GPIO_USER_LED2 = 17
     GPIO_USER_LED1 = 27
     GPIO_USER_LED0 = 22
+    PCF8591_SELECTED = 0
+    PCF8591_IDEL = 1
+    PCF8591_NOSELECTED = 2
+    PCF8591_RUNNING = 3
     ADValueChanged = pyqtSignal(int, int)
     GPIOState = pyqtSignal(int, int)
     def __init__(self, parent=None):
@@ -149,6 +153,9 @@ class AnalogDetection(QObject):
         self.count = 0
         self.isRocker = int(Config.value("Rocker"))
         self.rockerCount = 0
+        self.pcf8591LedMode = AnalogDetection.PCF8591_NOSELECTED
+        self.pcf8591BreathCount = 0
+        self.pcf8591BreathDir = 0
         if platform.machine() == "armv7l" and platform.node() == "raspberrypi":
             self.isRaspberryPi = True
         else:
@@ -245,6 +252,8 @@ class AnalogDetection(QObject):
                         self.userKeyWithLed[sKey][1] = 0
                     else:
                         self.userKeyWithLed[sKey][1] += 1
+        self.pcf8591Breath()
+
     def ADInit(self):
         ADC.setup(0x48)
         self.adBuf = []
@@ -261,8 +270,34 @@ class AnalogDetection(QObject):
         if self.adValue > value + 2 or self.adValue < value - 2:
             self.adValue = value
             self.ADValueChanged.emit(0, value*100//255)
+
+    def onPcf8591Mode(self, mode):
+        self.pcf8591LedMode = mode
+        if mode == AnalogDetection.PCF8591_NOSELECTED:
             for i in range(8):
-                self.strip.setPixelColor(i, Color(value, 0, 0))
+                self.strip.setPixelColor(i, Color(0, 0, 255))
+                self.strip.show()
+        elif mode == AnalogDetection.PCF8591_SELECTED:
+            for i in range(8):
+                self.strip.setPixelColor(i, Color(0, 255, 0))
+                self.strip.show()
+        elif mode == AnalogDetection.PCF8591_RUNNING:
+            for i in range(8):
+                self.strip.setPixelColor(i, Color(255, 0, 0))
+                self.strip.show()
+    def pcf8591Breath(self):
+        if self.pcf8591LedMode == AnalogDetection.PCF8591_IDEL:
+            if self.pcf8591BreathDir == 0:
+                self.pcf8591BreathCount += 1
+                if self.pcf8591BreathCount%255 >= 254:
+                    self.pcf8591BreathDir = 1
+            else:
+                if self.pcf8591BreathCount > 0:
+                    self.pcf8591BreathCount -= 1
+                    if self.pcf8591BreathCount == 0:
+                        self.pcf8591BreathDir = 0
+            for i in range(8):
+                self.strip.setPixelColor(i, Color(0, 0, self.pcf8591BreathCount%255))
                 self.strip.show()
 
     def ADWrite(self, value):
