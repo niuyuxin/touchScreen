@@ -221,7 +221,7 @@ class MainWindow(QFrame):
 
     def onSettingDevPushButtonClicked(self): # 设备设定
         # settingDev.showFullScreen()
-        self.settingDev.createAllWidget(self.settingDev.buttonGroup, self.subDevList)
+        self.settingDev.createAllWidget(self.subDevList)
         self.settingDev.exec_()
         self.devOperationDict[SettingDevDialog.PartialOperation] = self.checkPartialDevice()
         self.pushDeviceState()

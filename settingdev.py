@@ -52,7 +52,7 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
         # self.createAllWidget(self.buttonGroup, subDevList, self.widgetNumber)
         self.nextPushButton.clicked.connect(self.onNextPushButtonClicked)
         self.previousPushButton.clicked.connect(self.onPreviousPushButtonClicked)
-    def createAllWidget(self, buttonGroup, subDevList, num = 0):
+    def createAllWidget(self, subDevList, num = 0):
         count = 0
         self.widgetList = []
         for subList in subDevList:
@@ -63,8 +63,7 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
                 elif item.isPartialCircuit:
                     item.setChecked(True)
                     item.isPartialCircuit = False
-                buttonGroup.addButton(item)
-                self.buttonGroup.addButton(QPushButton())
+                self.buttonGroup.addButton(item)
                 if item.isUpLimited or item.isDownLimited:
                     item.setEnabled(False)
                 if count%28 == 0:

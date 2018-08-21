@@ -11,7 +11,6 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         super().__init__()
         self.setupUi(self)
         self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
-        self.setWindowModality(Qt.WindowModal)
         self.buttonGroup = QButtonGroup()
         self.buttonGroup.addButton(self.previousPushButton)
         self.buttonGroup.addButton(self.nextPushButton)
