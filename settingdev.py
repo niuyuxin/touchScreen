@@ -109,7 +109,8 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
     def doneSomthing(self, retValue):
         try:
             partialDevSelected = self.buttonGroup.checkedButton()
-            del self.buttonGroup
+            for button in self.buttonGroup.buttons():
+                self.buttonGroup.removeButton(button)
             if partialDevSelected is None:
                 for item in self.holdSelectedDev:
                     item.setChecked(True)
