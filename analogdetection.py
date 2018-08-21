@@ -162,16 +162,6 @@ class AnalogDetection(QObject):
             self.isRaspberryPi = False
         self.selectedUserKey = {}
         self.userKeyLightMethod = {}
-    def __del__(self):
-        if self.isRaspberryPi:
-            for led in self.ledGpio.keys():
-                GPIO.output(led, AnalogDetection.LED_OFF)
-            GPIO.cleanup()
-    @pyqtSlot()
-    def init(self):
-        if not self.isRaspberryPi: return
-        GPIO.setmode(GPIO.BCM)
-        # key gpio
         self.keyGpio = {AnalogDetection.GPIO_RAISE: [],
                         AnalogDetection.GPIO_STOP: [],
                         AnalogDetection.GPIO_DROP: [],
@@ -205,6 +195,15 @@ class AnalogDetection(QObject):
                         AnalogDetection.GPIO_ROCKER_DROP: AnalogDetection.KEY_UP,
                         AnalogDetection.GPIO_ROCKER_ENTER: AnalogDetection.KEY_UP
                         }
+    def __del__(self):
+        if self.isRaspberryPi:
+            for led in self.ledGpio.keys():
+                GPIO.output(led, AnalogDetection.LED_OFF)
+            GPIO.cleanup()
+    @pyqtSlot()
+    def init(self):
+        if not self.isRaspberryPi: return
+        GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         for key in self.keyGpio.keys():
             GPIO.setup(key, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -225,6 +224,7 @@ class AnalogDetection(QObject):
         self.perSecondTimer = QTimer(self)
         self.perSecondTimer.timeout.connect(self.onPerSecondTimerTimeout)
         self.perSecondTimer.start(1000)
+        self.onPcf8591Mode(AnalogDetection.PCF8591_NOSELECTED)
 
     def onKeyTimerTimeout(self):
         if not self.isRocker:

@@ -58,8 +58,10 @@ class MainWindow(QFrame):
         self.userKeySelected.connect(self.analogDetection.onUserKeySelected)
         self.analogDetection.GPIOState.connect(self.onPhysicalKeyClicked)
         self.analogDetectionThread.started.connect(self.analogDetection.init)
-        self.pcf8591Mode.connect(self.analogDetection.pcf8591LedMode)
+        self.pcf8591Mode.connect(self.analogDetection.onPcf8591Mode)
         self.analogDetectionThread.start()
+        self.mouseMoveTimer = QTimer(self)
+        self.mouseMoveTimer.timeout.connect(self.onMouseMoveTimer)
         self.init_mainWindow()
     def init_mainWindow(self):
         # independent control widget
@@ -323,6 +325,13 @@ class MainWindow(QFrame):
         value = self.mainWindow.speedSetSlider.value()
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SpeedSet, {"Value": value})
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.OperationalCtrl, {"State":s})
+        if s == 0:
+            if len(self.devOperationDict[1]) > 0:
+                self.pcf8591Mode.emit(AnalogDetection.PCF8591_SELECTED)
+            else:
+                self.pcf8591Mode.emit(AnalogDetection.PCF8591_NOSELECTED)
+        else:
+            self.pcf8591Mode.emit(AnalogDetection.PCF8591_RUNNING)
 
     def onSpeedSetSliderValueChanged(self, value):
         self.mainWindow.lcdNumber.display(value)
@@ -373,4 +382,8 @@ class MainWindow(QFrame):
                 self.mainWindow.stopPushButton.animateClick()
             elif key == AnalogDetection.GPIO_DROP:
                 self.mainWindow.dropPushButton.animateClick()
+    def mouseMoveEvent(self, QMouseEvent):
+        self.mouseMoveTimer.start(1000)
 
+    def onMouseMoveTimer(self):
+        self.pcf8591Mode.emit(AnalogDetection.PCF8591_IDEL)
