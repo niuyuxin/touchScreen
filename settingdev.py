@@ -48,13 +48,16 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
         self.contentFrame.setLayout(self.vLayout)
         self.holdSelectedDev = []
         self.widgetNumber = 0
-        self.buttonGroup = QButtonGroup()
         # self.createAllWidget(self.buttonGroup, subDevList, self.widgetNumber)
         self.nextPushButton.clicked.connect(self.onNextPushButtonClicked)
         self.previousPushButton.clicked.connect(self.onPreviousPushButtonClicked)
     def createAllWidget(self, subDevList, num = 0):
         count = 0
         self.widgetList = []
+        while self.vLayout.itemAt(0) != None:
+            w = self.vLayout.takeAt(0)
+            w.widget().setParent(None)
+        self.buttonGroup = QButtonGroup()
         for subList in subDevList:
             for item in subList:
                 if item.isChecked() and not item.isPartialCircuit:
@@ -109,8 +112,7 @@ class SettingDevDialog(QDialog, ui_settingdev.Ui_SettingDevDialog):
     def doneSomthing(self, retValue):
         try:
             partialDevSelected = self.buttonGroup.checkedButton()
-            for button in self.buttonGroup.buttons():
-                self.buttonGroup.removeButton(button)
+            del self.buttonGroup
             if partialDevSelected is None:
                 for item in self.holdSelectedDev:
                     item.setChecked(True)
