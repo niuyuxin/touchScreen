@@ -21,8 +21,6 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
         # self.createAllWidget(subDevList, self.widgetNumber)
         self.nextPushButton.clicked.connect(self.onNextPushButtonClicked)
         self.previousPushButton.clicked.connect(self.onPreviousPushButtonClicked)
-        self.move((qApp.desktop().width() - self.width()),
-                  (qApp.desktop().height() - self.height()))
     def createAllWidget(self, subDevList, num = 0):
         count = 0
         self.widgetList = []
