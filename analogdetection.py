@@ -123,7 +123,7 @@ class AnalogDetection(QObject):
         self.pixel = 0
         self.strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
         self.strip.begin()
-
+        self.internetState = 0
         self.keyTimer = QTimer(self)
         self.keyTimer.timeout.connect(self.onKeyTimerTimeout)
         self.keyTimer.start(10)
@@ -178,6 +178,8 @@ class AnalogDetection(QObject):
             self.ADValueChanged.emit(0, value*100//255)
 
     def onPcf8591Mode(self, mode):
+        if self.internetState == 0:
+            return
         self.pcf8591LedMode = mode
         if mode == AnalogDetection.PCF8591_NOSELECTED:
             for i in range(8):
@@ -195,14 +197,14 @@ class AnalogDetection(QObject):
         if self.pcf8591LedMode == AnalogDetection.PCF8591_IDEL:
             if self.pcf8591BreathDir == 0:
                 self.pcf8591BreathCount += 1
-            if self.pcf8591BreathCount % 255 >= 254:
-                self.pcf8591BreathDir = 1
+                if self.pcf8591BreathCount % 255 >= 254:
+                    self.pcf8591BreathDir = 1
             else:
-            if self.pcf8591BreathCount > 0:
-                self.pcf8591BreathCount -= 1
-            if self.pcf8591BreathCount == 0:
-                self.pcf8591BreathDir = 0
-                self.pcf8591BreathColor = not self.pcf8591BreathColor
+                if self.pcf8591BreathCount > 0:
+                    self.pcf8591BreathCount -= 1
+                if self.pcf8591BreathCount == 0:
+                    self.pcf8591BreathDir = 0
+                    self.pcf8591BreathColor = not self.pcf8591BreathColor
 
             for i in range(8):
                 if self.pcf8591BreathColor == 0:
@@ -241,13 +243,7 @@ class AnalogDetection(QObject):
         if key in [AnalogDetection.GPIO_DROP,
                     AnalogDetection.GPIO_STOP,
                     AnalogDetection.GPIO_RAISE]:
-            for led in [AnalogDetection.GPIO_RAISE_LED,
-                        AnalogDetection.GPIO_STOP_LED,
-                        AnalogDetection.GPIO_DROP_LED]:
-                if self.ledGpio[led] != key:
-                    GPIO.output(led, AnalogDetection.LED_OFF)
-                else:
-                    GPIO.output(led, AnalogDetection.LED_ON)
+            self.workingLed(self, key)
         elif key in [AnalogDetection.GPIO_ROCKER_ENTER,
                     AnalogDetection.GPIO_ROCKER_DROP,
                     AnalogDetection.GPIO_ROCKER_RAISE
@@ -282,8 +278,31 @@ class AnalogDetection(QObject):
                 else:
                     self.rockerCount = 255
             self.ADWrite(self.rockerCount)
+    def onWorkingState(self, s):
+        if self.internetState == 0:
+            return
+        if s == -1:
+            self.workingLed(AnalogDetection.GPIO_DROP_LED)
+        elif s == 1:
+            self.workingLed(AnalogDetection.GPIO_RAISE_LED)
+        elif s == 0:
+            self.workingLed(AnalogDetection.GPIO_STOP)
+    def onInternetState(self, s):
+        self.internetState = s
+        if s == 0:
+            self.workingLed(AnalogDetection.GPIO_STOP)
+            for i in range(8):
+                    self.strip.setPixelColor(i, Color(0, 255, 0))
+                    self.strip.show()
 
-
+    def workingLed(self, key):
+        for led in [AnalogDetection.GPIO_RAISE_LED,
+                    AnalogDetection.GPIO_STOP_LED,
+                    AnalogDetection.GPIO_DROP_LED]:
+            if self.ledGpio[led] != key:
+                GPIO.output(led, AnalogDetection.LED_OFF)
+            else:
+                GPIO.output(led, AnalogDetection.LED_ON)
 
 
 

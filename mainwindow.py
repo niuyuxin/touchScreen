@@ -23,8 +23,10 @@ class MainWindow(QFrame):
     tcpSocketManagement = pyqtSignal(int)
     mainWindowOrder = pyqtSignal(str, dict)
     userKeySelected = pyqtSignal(dict)
-    runningState = pyqtSignal(int)
+    workingStateSignal = pyqtSignal(int)
     pcf8591Mode = pyqtSignal(int)
+    deviceStateSignal = pyqtSignal(int)
+    internetStateSiganl = pyqtSignal(int)
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.rtc = QTimer()
@@ -59,11 +61,14 @@ class MainWindow(QFrame):
         self.analogDetection.GPIOState.connect(self.onPhysicalKeyClicked)
         self.analogDetectionThread.started.connect(self.analogDetection.init)
         self.pcf8591Mode.connect(self.analogDetection.onPcf8591Mode)
+        self.workingStateSignal.connect(self.analogDetection.onWorkingState)
+        self.internetStateSiganl.connect(self.analogDetection.onInternetState)
         self.analogDetectionThread.start()
         self.mouseMoveTimer = QTimer(self)
         self.mouseMoveTimer.timeout.connect(self.onMouseMoveTimer)
         self.mouseMoveTimer.start(60 * 1000)
         self.workingState = 0
+        self.internetState = 0
         self.init_mainWindow()
     def init_mainWindow(self):
         # independent control widget
@@ -220,10 +225,14 @@ class MainWindow(QFrame):
         try:
             if s == QTcpSocket.ConnectedState:
                 self.mainWindow.internetLabel.setText(self.tr("网络已连接"))
+                self.internetState = 1
             elif s == QTcpSocket.ConnectingState:
                 self.mainWindow.internetLabel.setText(self.tr("网络正在连接..."))
+                self.internetState = 0
             else:
                 self.mainWindow.internetLabel.setText(self.tr("网络已断开"))
+                self.internetState = 0
+            self.internetStateSiganl.emit(self.internetState)
         except Exception as e:
             print(str(e))
 
@@ -322,7 +331,7 @@ class MainWindow(QFrame):
             self.workingState = -1
         elif button.objectName() == "stopPushButton":
             self.workingState = 0
-
+        self.workingStateSignal.emit(self.workingState)
         value = self.mainWindow.speedSetSlider.value()
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.SpeedSet, {"Value": value})
         self.sendDataToTcpSocket.emit(TcpSocket.Call, TcpSocket.OperationalCtrl, {"State":self.workingState})
