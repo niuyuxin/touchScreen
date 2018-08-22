@@ -181,6 +181,7 @@ class AnalogDetection(QObject):
             self.ADValueChanged.emit(0, value*100//255)
 
     def onPcf8591Mode(self, mode):
+        if not self.isRaspberryPi: return
         if self.internetState == 0:
             return
         self.pcf8591LedMode = mode
@@ -278,6 +279,7 @@ class AnalogDetection(QObject):
             self.userKeyLightMethod[key] = state
 
     def onPerSecondTimerTimeout(self):
+        if not self.isRaspberryPi: return
         if self.isRocker:
             if self.rockerKeyBuf[AnalogDetection.GPIO_ROCKER_DROP] == AnalogDetection.KEY_DOWN:
                 if self.rockerCount > 7:
@@ -291,6 +293,7 @@ class AnalogDetection(QObject):
                     self.rockerCount = 255
             self.ADWrite(self.rockerCount)
     def onWorkingState(self, s):
+        if not self.isRaspberryPi: return
         if self.internetState == 0:
             return
         if s == -1:
@@ -300,6 +303,7 @@ class AnalogDetection(QObject):
         elif s == 0:
             self.workingLed(AnalogDetection.GPIO_STOP)
     def onInternetState(self, s):
+        if not self.isRaspberryPi: return
         self.internetState = s
         if s == 0:
             self.workingLed(AnalogDetection.GPIO_STOP)

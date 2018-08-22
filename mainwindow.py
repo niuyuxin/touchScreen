@@ -392,6 +392,9 @@ class MainWindow(QFrame):
     def mousePressEvent(self, QMouseEvent):
         self.mouseMoveTimer.start(60*1000)
         self.pcf8591Lights()
+    def mouseMoveEvent(self, QMouseEvent):
+        self.mouseMoveTimer.start(60*1000)
+        self.pcf8591Lights()
 
     def onMouseMoveTimer(self):
         self.pcf8591Mode.emit(AnalogDetection.PCF8591_IDEL)

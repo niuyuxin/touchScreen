@@ -77,7 +77,7 @@ QPushButton#accountPushButton:hover
 }
 QLabel#settingTextLabel {
     color: white;
-    font-size:15px;
+    font-size: 18pt;
     min-height: 60px;
     min-width: 80px;
 }
