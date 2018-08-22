@@ -42,7 +42,6 @@ class KeyBoard(QWidget):
             if newWidget is not None and newWidget.isVisible():
                 if newWidget.inherits("QLineEdit") or newWidget.inherits("QSpinBox"):
                     self.focusWidget = newWidget
-                    print(self.focusWidget.objectName())
                     width = qApp.desktop().screenGeometry().width()
                     height = qApp.desktop().screenGeometry().height()
                     globalPos = self.focusWidget.mapToGlobal(QPoint(0, 0))
