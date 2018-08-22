@@ -302,6 +302,8 @@ class AnalogDetection(QObject):
         if s == 0:
             self.workingLed(AnalogDetection.GPIO_STOP)
             self.pcf8591LedLights(AnalogDetection.COLOR_R, 255)
+        else:
+            self.pcf8591LedLights(AnalogDetection.COLOR_R, 0)
 
     def workingLed(self, key):
         for led in [AnalogDetection.GPIO_RAISE_LED,

@@ -229,9 +229,11 @@ class MainWindow(QFrame):
             elif s == QTcpSocket.ConnectingState:
                 self.mainWindow.internetLabel.setText(self.tr("网络正在连接..."))
                 self.internetState = 0
+                self.pcf8591Mode.emit(AnalogDetection.PCF8591_NOSELECTED)
             else:
                 self.mainWindow.internetLabel.setText(self.tr("网络已断开"))
                 self.internetState = 0
+                self.pcf8591Mode.emit(AnalogDetection.PCF8591_NOSELECTED)
             self.internetStateSiganl.emit(self.internetState)
         except Exception as e:
             print(str(e))
