@@ -124,7 +124,7 @@ QTabBar::tab {
      */
      background-color:#2e4465;
      min-width: 15ex;
-     min-height: 7ex;
+     min-height: 5ex;
 
  }
 
@@ -179,17 +179,17 @@ QLabel{
 }
 QLineEdit, QSpinBox, QComboBox{
     background-color: white;
-    min-height: 30px;
+    min-height: 40px;
     font-size: 20px;
 }
 QLineEdit#serverIpLineEdit {
-    min-width: 100px;
+    min-width: 180px;
 }
 UserKeysDialog {
     min-width:650px;
-    min-height:500px;
+    min-height:600px;
     max-width:650px;
-    max-height:500px;
+    max-height:600px;
     background-color: #1b1f2b
 }
 QPushButton#UserKeysUnit,
