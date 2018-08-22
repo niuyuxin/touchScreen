@@ -23,6 +23,9 @@ LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 class AnalogDetection(QObject):
     # pwm = 8, AD = 2,3
+    COLOR_R = 0
+    COLOR_G = 1
+    COLOR_B = 2
     KEY_UP = 1
     KEY_DOWN = 0
     LED_ON  = 1 # GPIO.HIGH
@@ -130,7 +133,7 @@ class AnalogDetection(QObject):
         self.perSecondTimer = QTimer(self)
         self.perSecondTimer.timeout.connect(self.onPerSecondTimerTimeout)
         self.perSecondTimer.start(1000)
-        self.onPcf8591Mode(AnalogDetection.PCF8591_NOSELECTED)
+        self.pcf8591LedLights(AnalogDetection.COLOR_R, 255)
 
     def onKeyTimerTimeout(self):
         if not self.isRocker:
@@ -182,13 +185,9 @@ class AnalogDetection(QObject):
             return
         self.pcf8591LedMode = mode
         if mode == AnalogDetection.PCF8591_NOSELECTED:
-            for i in range(8):
-                self.strip.setPixelColor(i, Color(0, 0, 0))
-                self.strip.show()
+            self.pcf8591LedLights(AnalogDetection.COLOR_B, 0)
         elif mode == AnalogDetection.PCF8591_SELECTED:
-            for i in range(8):
-                self.strip.setPixelColor(i, Color(0, 0, 255))
-                self.strip.show()
+            self.pcf8591LedLights(AnalogDetection.COLOR_B, 255)
         # elif mode == AnalogDetection.PCF8591_RUNNING:
         #     for i in range(8):
         #         self.strip.setPixelColor(i, Color(255, 0, 0))
@@ -206,13 +205,24 @@ class AnalogDetection(QObject):
                     self.pcf8591BreathDir = 0
                     self.pcf8591BreathColor = not self.pcf8591BreathColor
 
+            if self.pcf8591BreathColor == 0:
+                self.pcf8591LedLights(AnalogDetection.COLOR_B, self.pcf8591BreathCount)
+            else:
+                self.pcf8591LedLights(AnalogDetection.COLOR_R, self.pcf8591BreathCount)
+
+    def pcf8591LedLights(self, color, value):
+        if color == AnalogDetection.COLOR_R:
             for i in range(8):
-                if self.pcf8591BreathColor == 0:
-                    self.strip.setPixelColor(i, Color(0, 0, self.pcf8591BreathCount))
-                    self.strip.show()
-                else:
-                    self.strip.setPixelColor(i, Color(0, self.pcf8591BreathCount, 0))
-                    self.strip.show()
+                self.strip.setPixelColor(i, Color(0, value, 0))
+                self.strip.show()
+        elif color == AnalogDetection.COLOR_B:
+            for i in range(8):
+                self.strip.setPixelColor(i, Color(0, 0, value))
+                self.strip.show()
+        elif color == AnalogDetection.COLOR_G:
+            for i in range(8):
+                self.strip.setPixelColor(i, Color(value, 0, 0))
+                self.strip.show()
 
     def ADWrite(self, value):
         ADC.write(value)
@@ -243,7 +253,7 @@ class AnalogDetection(QObject):
         if key in [AnalogDetection.GPIO_DROP,
                     AnalogDetection.GPIO_STOP,
                     AnalogDetection.GPIO_RAISE]:
-            self.workingLed(self, key)
+            self.workingLed(key)
         elif key in [AnalogDetection.GPIO_ROCKER_ENTER,
                     AnalogDetection.GPIO_ROCKER_DROP,
                     AnalogDetection.GPIO_ROCKER_RAISE
@@ -291,9 +301,7 @@ class AnalogDetection(QObject):
         self.internetState = s
         if s == 0:
             self.workingLed(AnalogDetection.GPIO_STOP)
-            for i in range(8):
-                    self.strip.setPixelColor(i, Color(0, 255, 0))
-                    self.strip.show()
+            self.pcf8591LedLights(AnalogDetection.COLOR_R, 255)
 
     def workingLed(self, key):
         for led in [AnalogDetection.GPIO_RAISE_LED,
