@@ -179,11 +179,9 @@ QLabel{
 }
 QLineEdit, QSpinBox, QComboBox{
     background-color: white;
+    min-width: 150px;
     min-height: 40px;
     font-size: 20px;
-}
-QLineEdit#serverIpLineEdit {
-    min-width: 180px;
 }
 UserKeysDialog {
     min-width:650px;
