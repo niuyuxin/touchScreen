@@ -193,6 +193,8 @@ class AnalogDetection(QObject):
         #         self.strip.setPixelColor(i, Color(255, 0, 0))
         #         self.strip.show()
     def pcf8591Breath(self):
+        if self.internetState == 0:
+            return
         if self.pcf8591LedMode == AnalogDetection.PCF8591_IDEL:
             if self.pcf8591BreathDir == 0:
                 self.pcf8591BreathCount += 1
