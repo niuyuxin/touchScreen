@@ -35,7 +35,7 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
                 elif item.isUsed == False:
                     item.setEnabled(True)
                     item.setChecked(True)
-                if count%60 == 0:
+                if count%50 == 0:
                     hCount = 0
                     vCount = 0
                     subWidget = QWidget()
@@ -45,7 +45,7 @@ class ForbidDevDialog(QDialog, ui_forbiddevdialog.Ui_ForbidDevDialog):
                     self.vLayout.addWidget(subWidget)
                 layout.addWidget(item, hCount, vCount)
                 vCount += 1
-                if vCount >= 12:
+                if vCount >= 10:
                     vCount = 0
                     hCount += 1
                 count += 1

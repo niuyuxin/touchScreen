@@ -62,7 +62,7 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
             devFrame.setLayout(gridLayout)
             for subDev in subDevList[i]:
                 self.devButtonGroup.addButton(subDev)
-                subDev.setFixedSize(120, 120)
+                subDev.setFixedSize(160, 160)
                 if not subDev.isUsed:
                     subDev.setEnabled(False)
                 elif subDev.text() in allSelectedDev:
@@ -75,7 +75,7 @@ class SingleCtrlWidget(QWidget, ui_singlectrlwidget.Ui_SingleCtrlWidget):
                     self.subUpDevScrollArea.setWidget(devFrame)
                 else:
                     self.subDownDevScrollArea.setWidget(devFrame)
-                gridLayout.addWidget(subDev, count/10, count%10)
+                gridLayout.addWidget(subDev, count/9, count%9)
                 count += 1
     def onCancelPushButtonClicked(self):
         try:

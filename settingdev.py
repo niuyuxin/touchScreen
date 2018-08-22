@@ -11,7 +11,7 @@ class SettingDevUnit(QWidget):
     def __init__(self, subDev=None):
         super().__init__()
         if subDev is not None:
-            idLabel = QLabel(subDev.devKey)
+            idLabel = QLabel("") #(subDev.devKey)
             idLabel.setAlignment(Qt.AlignHCenter)
             nameLabel = QLabel(subDev.text())
             nameLabel.setFrameShadow(QFrame.Raised)
@@ -28,7 +28,7 @@ class SettingDevUnit(QWidget):
             vLayout.addWidget(idLabel)
             vLayout.addWidget(nameLabel)
             vLayout.addLayout(hLayout)
-            subDev.setFixedSize(100, 50)
+            subDev.setFixedSize(160, 50)
             vLayout.addWidget(subDev, alignment=Qt.AlignHCenter)
             self.setLayout(vLayout)
             self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)

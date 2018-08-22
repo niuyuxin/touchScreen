@@ -181,7 +181,7 @@ class MainWindow(QFrame):
                 sp = ":"
                 if sp in item[1]:
                     infoList = str(item[1]).split(sp)
-                    button = SubDevAttr(100+count, infoList[0], item[0])
+                    button = SubDevAttr(0, infoList[0], item[0])
                     button.setText(infoList[1])
                     subDevList.append(button)
                     button.clicked.connect(self.onAllSubDevPushButtonClicked)
